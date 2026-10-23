@@ -1,0 +1,7 @@
+[
+  { "id": 1, "title": "Panduan Memilih Target Karier", "type": "article", "category": "Career", "status": "published", "author": "Admin SkillBridge", "views": 1240, "updated_at": "2026-03-20" },
+  { "id": 2, "title": "Cara Menulis Evidence yang Kuat", "type": "article", "category": "Portfolio", "status": "published", "author": "Admin SkillBridge", "views": 890, "updated_at": "2026-03-24" },
+  { "id": 3, "title": "Roadmap Belajar Backend Developer", "type": "guide", "category": "Learning", "status": "published", "author": "Admin SkillBridge", "views": 2105, "updated_at": "2026-04-01" },
+  { "id": 4, "title": "Tips Interview Teknis", "type": "article", "category": "Career", "status": "draft", "author": "Admin SkillBridge", "views": 0, "updated_at": "2026-04-10" },
+  { "id": 5, "title": "Daftar Skill Paling Dicari 2026", "type": "guide", "category": "Learning", "status": "published", "author": "Admin SkillBridge", "views": 3320, "updated_at": "2026-04-08" }
+]

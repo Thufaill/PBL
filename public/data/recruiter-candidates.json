@@ -1,0 +1,6 @@
+[
+  { "id": 1, "name": "Geraldi Rama", "email": "geraldi@mail.com", "target_role": "Backend Developer", "matched_skills": ["Node.js", "SQL", "Git"], "gap_skills": ["Express.js"], "evidence_count": 4, "status": "active" },
+  { "id": 2, "name": "Nadia Putri", "email": "nadia@mail.com", "target_role": "UI/UX Designer", "matched_skills": ["Figma", "User Research"], "gap_skills": ["Prototyping"], "evidence_count": 6, "status": "active" },
+  { "id": 3, "name": "Bima Santoso", "email": "bima@mail.com", "target_role": "Frontend Developer", "matched_skills": ["React", "JavaScript", "CSS"], "gap_skills": ["TypeScript"], "evidence_count": 3, "status": "active" },
+  { "id": 4, "name": "Rani Wulandari", "email": "rani@mail.com", "target_role": "Data Analyst", "matched_skills": ["Python", "SQL", "Excel"], "gap_skills": ["PowerBI"], "evidence_count": 5, "status": "active" }
+]

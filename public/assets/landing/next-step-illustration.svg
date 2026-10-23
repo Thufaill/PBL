@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Next step illustration">
+<rect id="Starting point" x="5" y="68" width="25" height="25" rx="6" fill="#1E1E59"/>
+<path id="Forward path" d="M12 88V57C12 48.3333 17.4286 44 28.2857 44H54.3429C65.2 44 70.6286 39 70.6286 29V12M88 29L70.6286 12L53.2571 29" stroke="#FF1377" stroke-width="8" stroke-linecap="round"/>
+</g>
+</svg>

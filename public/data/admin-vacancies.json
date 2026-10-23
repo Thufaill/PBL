@@ -1,0 +1,8 @@
+[
+  { "id": 1, "title": "Backend Developer", "company": "TechCorp", "location": "Jakarta", "type": "Full-time", "status": "open", "applicants": 24, "posted_by": "Rizky Pratama", "created_at": "2026-03-01" },
+  { "id": 2, "title": "Frontend Developer", "company": "StartupB", "location": "Bandung", "type": "Full-time", "status": "open", "applicants": 18, "posted_by": "Maya Sari", "created_at": "2026-03-05" },
+  { "id": 3, "title": "Data Analyst Intern", "company": "Corp C", "location": "Remote", "type": "Internship", "status": "open", "applicants": 31, "posted_by": "Dian Nugroho", "created_at": "2026-03-12" },
+  { "id": 4, "title": "UI/UX Designer", "company": "TechCorp", "location": "Jakarta", "type": "Full-time", "status": "closed", "applicants": 42, "posted_by": "Faisal Reza", "created_at": "2026-02-20" },
+  { "id": 5, "title": "DevOps Engineer", "company": "StartupB", "location": "Remote", "type": "Contract", "status": "open", "applicants": 12, "posted_by": "Maya Sari", "created_at": "2026-03-18" },
+  { "id": 6, "title": "QA Engineer", "company": "Corp C", "location": "Surabaya", "type": "Full-time", "status": "draft", "applicants": 0, "posted_by": "Dian Nugroho", "created_at": "2026-04-02" }
+]

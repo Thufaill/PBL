@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "source_type": "project",
+    "title": "SkillBridge Front-End",
+    "description": "Built the HTML/CSS/JS layer for a student skill-gap app.",
+    "file_url": "https://example.com/skillbridge",
+    "metadata": { "date": "2026-08-14" },
+    "skill_ids": [5, 6, 7, 8, 10]
+  },
+  {
+    "id": 2,
+    "source_type": "certificate",
+    "title": "Responsive Web Design",
+    "description": "Completed the responsive layout certification.",
+    "file_url": "https://example.com/cert/rwd",
+    "metadata": { "date": "2026-06-02" },
+    "skill_ids": [5, 6, 8]
+  },
+  {
+    "id": 3,
+    "source_type": "portfolio",
+    "title": "Personal Portfolio Site",
+    "description": "Static portfolio with a CSS grid layout.",
+    "file_url": "https://example.com/portfolio",
+    "metadata": { "date": "2026-05-21" },
+    "skill_ids": [5, 6]
+  }
+]

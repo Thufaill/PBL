@@ -1,0 +1,20 @@
+[
+  { "id": 1,  "name": "PHP",                "category": "Programming" },
+  { "id": 2,  "name": "Python",             "category": "Programming" },
+  { "id": 3,  "name": "SQL",                "category": "Database" },
+  { "id": 4,  "name": "PostgreSQL",         "category": "Database" },
+  { "id": 5,  "name": "HTML",               "category": "Web" },
+  { "id": 6,  "name": "CSS",                "category": "Web" },
+  { "id": 7,  "name": "JavaScript",         "category": "Web" },
+  { "id": 8,  "name": "Responsive Design",  "category": "Web" },
+  { "id": 9,  "name": "REST APIs",          "category": "Web" },
+  { "id": 10, "name": "Git",                "category": "Tools" },
+  { "id": 11, "name": "Figma",              "category": "Tools" },
+  { "id": 12, "name": "Excel",              "category": "Data" },
+  { "id": 13, "name": "Data Visualisation", "category": "Data" },
+  { "id": 14, "name": "Statistics",         "category": "Data" },
+  { "id": 15, "name": "User Research",      "category": "Design" },
+  { "id": 16, "name": "Wireframing",        "category": "Design" },
+  { "id": 17, "name": "Prototyping",        "category": "Design" },
+  { "id": 18, "name": "Usability Testing",  "category": "Design" }
+]

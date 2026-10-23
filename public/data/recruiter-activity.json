@@ -1,0 +1,9 @@
+[
+  { "id": 1, "time": "10:42", "actor": "Nadia Putri", "text": "mengundang Geraldi Rama ke wawancara", "type": "interview", "type_label": "Interview" },
+  { "id": 2, "time": "09:58", "actor": "Aditya Pratama", "text": "menambahkan target role \"DevOps Engineer\"", "type": "role", "type_label": "Target Role" },
+  { "id": 3, "time": "Kemarin", "actor": "Rani Wulandari", "text": "meninjau portofolio 5 kandidat Backend", "type": "review", "type_label": "Review" },
+  { "id": 4, "time": "Kemarin", "actor": "Bima Santoso", "text": "memperbarui kebutuhan skill Frontend Developer", "type": "role", "type_label": "Target Role" },
+  { "id": 5, "time": "2 hari lalu", "actor": "Nadia Putri", "text": "meninjau evidence 3 kandidat UI/UX Designer", "type": "review", "type_label": "Review" },
+  { "id": 6, "time": "3 hari lalu", "actor": "Aditya Pratama", "text": "mengundang Dimas Saputra bergabung sebagai Recruiter", "type": "interview", "type_label": "Interview" },
+  { "id": 7, "time": "4 hari lalu", "actor": "Rani Wulandari", "text": "menutup pipeline kandidat Data Analyst", "type": "review", "type_label": "Review" }
+]

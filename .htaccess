@@ -1,0 +1,12 @@
+# Dipakai hanya jika document root = root repo (mis. shared hosting).
+# Disarankan: arahkan document root ke folder public/ saja.
+DirectoryIndex public/index.php index.php
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Folder & file internal tidak boleh diakses lewat web
+  RewriteRule ^(includes|db|tools|docker|docs)(/|$) - [F,L]
+  RewriteRule ^(\.|Dockerfile|CLAUDE\.md|README\.md) - [F,L]
+  RewriteRule \.(sql|md|env)$ - [F,L]
+</IfModule>
