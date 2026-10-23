@@ -56,6 +56,7 @@ try {
                     $skill = $insert->fetch();
                 }
                 $skillId = (int) $skill['id'];
+                $skill['id'] = $skillId;
             } else {
                 $check = $pdo->prepare('SELECT id, name, category FROM skills WHERE id = :id');
                 $check->execute([':id' => $skillId]);
@@ -63,6 +64,7 @@ try {
                 if (!$skill) {
                     api_error('Skill tidak ada di katalog.', 404);
                 }
+                $skill['id'] = (int) $skill['id'];
             }
 
             $own = $pdo->prepare(
@@ -81,6 +83,7 @@ try {
             ]);
 
             api_out(['ok' => true, 'skill' => $skill, 'skills' => api_user_skills($pdo, $uid)], 201);
+            break;
         }
 
         case 'PATCH': {

@@ -14,18 +14,17 @@ require_once __DIR__ . '/../../includes/layouts/head.php';
 require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
 ?>
 
-
-    <main style="max-width: 1040px; margin: 0 auto; padding: 40px 48px 48px">
+    <main class="container">
       <!-- Page Heading -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 24px">
-        <div style="max-width: 760px">
+      <div class="page-head">
+        <div class="page-head-left" style="max-width: 760px">
           <p class="eyebrow">Semester 3 focus</p>
-          <h1 style="margin-top: 8px">Finding your direction doesn't have to feel overwhelming.</h1>
-          <p style="margin-top: 10px; font-size: 15px; line-height: 1.45; color: var(--text-muted)">
+          <h1>Finding your direction doesn't have to feel overwhelming.</h1>
+          <p>
             Keep your target career, current skills, and next steps in one calm and simple place.
           </p>
         </div>
-        <a class="btn btn-accent" href="evidence.php" style="height: 44px; padding: 0 17px; border-radius: 10px; gap: 8px; box-shadow: var(--shadow-btn)">
+        <a class="btn btn-accent btn-44" href="evidence.php">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M3.333 8h9.334M8 3.333v9.334"/>
           </svg>
@@ -43,7 +42,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               <div style="display: flex; justify-content: space-between; align-items: flex-start">
                 <h3>Target career</h3>
                 <div class="card-icon-box">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1">
+                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M8.5 8.5h.007M11.334 4.25V2.833a1.417 1.417 0 0 0-1.417-1.417H7.083a1.417 1.417 0 0 0-1.417 1.417V4.25M15.584 9.208a11.333 11.333 0 0 1-14.168 0M2.833 4.25h11.334c.782 0 1.416.634 1.416 1.416v7.084c0 .782-.634 1.416-1.416 1.416H2.833a1.417 1.417 0 0 1-1.417-1.416V5.666c0-.782.634-1.416 1.417-1.416z"/>
                   </svg>
                 </div>
@@ -57,11 +56,11 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
 
           <!-- Card 2: Skills Summary -->
           <a href="skills.php" class="card-interactive">
-            <article class="card-lg" style="gap: 9px">
+            <article class="card-lg" style="gap: 12px">
               <div style="display: flex; justify-content: space-between; align-items: flex-start">
                 <h3>Skills summary</h3>
                 <div class="card-icon-box">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1">
+                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M9.088 1.544a1.417 1.417 0 0 0-1.176 0L1.841 4.307a.709.709 0 0 0 0 1.296l6.078 2.77a1.417 1.417 0 0 0 1.176 0l6.078-2.763a.708.708 0 0 0 0-1.296L9.088 1.544zM1.416 8.5c0 .135.038.268.111.382.072.115.177.206.3.263l6.092 2.77a1.417 1.417 0 0 0 1.169 0l6.078-2.763a.708.708 0 0 0 0-1.296M1.416 12.042c0 .135.038.268.111.382.072.114.177.205.3.262l6.092 2.77a1.417 1.417 0 0 0 1.169 0l6.078-2.763a.708.708 0 0 0 0-1.296"/>
                   </svg>
                 </div>
@@ -79,7 +78,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               <div style="display: flex; justify-content: space-between; align-items: flex-start">
                 <h3>Simple skill gap</h3>
                 <div class="card-icon-box">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1">
+                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                     <circle cx="8.5" cy="8.5" r="7.084"/>
                   </svg>
                 </div>
@@ -96,8 +95,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
         <article class="card-lg" style="gap: 18px; align-self: start">
           <div style="display: flex; justify-content: space-between; align-items: flex-start">
             <h3>Evidence summary</h3>
-            <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--tint-pink); display: grid; place-items: center">
-              <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1">
+            <div class="card-icon-box" style="background: var(--tint-pink); color: var(--accent); border-color: var(--pink-border)">
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M6.375 9.208l1.417 1.417 2.833-2.834M14.167 14.166a1.417 1.417 0 0 0 1.417-1.416V5.666a1.417 1.417 0 0 0-1.417-1.416H8.571a1.416 1.416 0 0 0-1.68-.375L6.8 2.762a1.417 1.417 0 0 0-1.183-.637H2.833a1.417 1.417 0 0 0-1.417 1.417v9.208c0 .782.635 1.416 1.417 1.416h11.334z"/>
               </svg>
             </div>
@@ -106,8 +105,6 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
         </article>
       </div>
     </main>
-
-    
 
 <?php require_once __DIR__ . '/../../includes/layouts/mahasiswa_footer.php'; ?>
 

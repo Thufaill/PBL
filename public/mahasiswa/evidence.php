@@ -96,7 +96,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
           </div>
 
           <!-- AI Demo Banner -->
-          <div id="demo-banner" style="padding: 14px 16px; border: 2px dashed #A5B4FC; background: #F8F7FF; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s" onmouseover="this.style.background='#F3F0FF'" onmouseout="this.style.background='#F8F7FF'">
+          <div id="demo-banner" style="padding: 12px 16px; border: 1.5px dashed #bfdbfe; background: var(--primary-subtle); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s">
             <div style="display: flex; align-items: center; gap: 10px">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z" fill="#818CF8"/></svg>
               <span style="font-size: 14px; font-weight: 600; color: #6366F1">Isi dengan contoh CV</span>
@@ -145,8 +145,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
 
           <!-- Footer Actions -->
           <div style="border-top: 1px solid #E2E8F0; padding-top: 24px; display: flex; justify-content: flex-end; gap: 12px">
-            <button type="button" id="btn-cancel" style="padding: 10px 24px; border: 1px solid #CBD5E1; background: white; color: #1E293B; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">Batal</button>
-            <button type="submit" style="padding: 10px 24px; border: none; background: #FF007A; color: white; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s" onmouseover="this.style.background='#EC4899'" onmouseout="this.style.background='#FF007A'">Simpan bukti</button>
+            <button type="button" id="btn-cancel" class="btn btn-secondary btn-44">Batal</button>
+            <button type="submit" class="btn btn-accent btn-44">Simpan bukti</button>
           </div>
         </form>
         </div>

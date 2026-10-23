@@ -39,8 +39,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
           <article class="card-lg" style="display: grid; gap: 18px">
             <div style="display: flex; justify-content: space-between; align-items: flex-start">
               <h3>Target career</h3>
-              <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary); display: grid; place-items: center">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="white" stroke-width="1">
+              <div class="card-icon-box" style="background: var(--primary-subtle); color: var(--primary); border-color: #bfdbfe">
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M8.5 8.5h.007M11.334 4.25V2.833a1.417 1.417 0 0 0-1.417-1.417H7.083a1.417 1.417 0 0 0-1.417 1.417V4.25M15.584 9.208a11.333 11.333 0 0 1-14.168 0M2.833 4.25h11.334c.782 0 1.416.634 1.416 1.416v7.084c0 .782-.634 1.416-1.416 1.416H2.833a1.417 1.417 0 0 1-1.417-1.416V5.666c0-.782.634-1.416 1.417-1.416z"/>
                 </svg>
               </div>
@@ -72,8 +72,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
           <article class="card-lg" style="display: grid; gap: 18px">
             <div style="display: flex; justify-content: space-between; align-items: flex-start">
               <h3>Evidence summary</h3>
-              <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--tint-pink); display: grid; place-items: center">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1">
+              <div class="card-icon-box" style="background: var(--tint-pink); color: var(--accent); border-color: var(--pink-border)">
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M6.375 9.208l1.417 1.417 2.833-2.834M14.167 14.166a1.417 1.417 0 0 0 1.417-1.416V5.666a1.417 1.417 0 0 0-1.417-1.416H8.571a1.416 1.416 0 0 0-1.68-.375L6.8 2.762a1.417 1.417 0 0 0-1.183-.637H2.833a1.417 1.417 0 0 0-1.417 1.417v9.208c0 .782.635 1.416 1.417 1.416h11.334z"/>
                 </svg>
               </div>
@@ -85,8 +85,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
           <article class="card-lg" style="display: grid; gap: 18px">
             <div style="display: flex; justify-content: space-between; align-items: flex-start">
               <h3>Simple skill gap</h3>
-              <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--tint-pink); display: grid; place-items: center">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1">
+              <div class="card-icon-box" style="background: var(--surface-subtle); color: var(--text-muted); border-color: var(--border)">
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
                   <circle cx="8.5" cy="8.5" r="7.084"/>
                   <path d="M8.5 4.25v4.25l2.833 1.417"/>
                 </svg>

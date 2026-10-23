@@ -179,6 +179,7 @@ const API = (() => {
 
   // POST api/skills.php { name, category } -> skill master dibuat/dipakai ulang
   async function addCustomSkill(name, category) {
+    catalogPromise = null;
     await ensureSession();
     const data = await request("POST", "/api/skills.php", { name, category });
     return data.skill;
@@ -315,10 +316,12 @@ const API = (() => {
   }
 
   async function addMasterSkill(payload) {
+    catalogPromise = null;
     return request("POST", "/api/admin/skills.php", payload);
   }
 
   async function updateMasterSkill(payload) {
+    catalogPromise = null;
     return request("PATCH", "/api/admin/skills.php", payload);
   }
 
