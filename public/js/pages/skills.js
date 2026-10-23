@@ -26,7 +26,7 @@
     return el("div", {
       class: `skill-avatar-tile skill-avatar-tile-${variant}`,
       style: `width: ${size}px; height: ${size}px`,
-      innerHTML: categoryIconSvg(skill.category),
+      innerHTML: categoryIconSvg(skill ? skill.category : null),
     });
   }
   const [careers, catalog, gap] = await Promise.all([
@@ -39,13 +39,23 @@
 
   const mine = API.getMySkills();
   const targetId = API.getTargetId();
-  const target = careers.find((c) => c.id === targetId) || careers[0];
+  const target = (careers && careers.length > 0)
+    ? (careers.find((c) => c.id === targetId) || careers[0])
+    : null;
 
   // Card: Target Career
-  document.getElementById("card-target").append(
-    el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
-    el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
-  );
+  const targetCard = document.getElementById("card-target");
+  if (target) {
+    targetCard.append(
+      el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
+      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
+    );
+  } else {
+    targetCard.append(
+      el("h2", { style: "font-size: 24px; font-weight: 700; color: var(--text-primary)", text: "No target career set" }),
+      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Choose your target career to view required skills." })
+    );
+  }
 
   // Skills Summary - badge count
   const strongCount = mine.filter((s) => s.label === "Strong").length;
@@ -57,10 +67,13 @@
     listEl.append(el("p", { style: "color: var(--text-muted); font-size: 15px", text: "No skills added yet. Use the Add skill button to start building your profile." }));
   } else {
     const skillRows = mine.map((s) => {
-      const skill = catalog.find((c) => c.id === s.skill_id);
-      if (!skill) return null;
+      const skill = catalog.find((c) => c.id === s.skill_id) || {
+        id: s.skill_id,
+        name: s.skill_name,
+        category: s.skill_category,
+      };
       return renderSkillRow(skill, s.evidence_count, s.label);
-    }).filter(Boolean);
+    });
 
     listEl.append(el("div", { style: "display: grid; gap: 16px" }, skillRows));
   }
@@ -79,7 +92,7 @@
 
   // Card: Skill Gap
   const gapEl = document.getElementById("card-gap");
-  if (gap.explore.length === 0) {
+  if (!gap || !gap.explore || gap.explore.length === 0) {
     gapEl.append(
       el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: "All covered" }),
       el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "You have all required skills for your target career." })
@@ -108,7 +121,7 @@
     const available = catalog.filter((s) => !mine.has(s.id));
     // Kategori datang dari database; daftar ini hanya jaga-jaga kalau katalog
     // skill masih kosong sehingga picker tetap bisa dipakai.
-    const categoryOptions = categories.length
+    const categoryOptions = categories && categories.length
       ? categories
       : ["Programming", "Database", "Web", "Tools", "Data", "Design"];
 
@@ -198,7 +211,8 @@
     const errorEl = el("p", { class: "field-error", style: "display: none" });
 
     function toggleMode() {
-      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const checkedMode = document.querySelector('input[name="mode"]:checked');
+      const mode = checkedMode ? checkedMode.value : "existing";
       selectField.style.display = mode === "existing" ? "" : "none";
       newFields.style.display = mode === "new" ? "grid" : "none";
       errorEl.style.display = "none";
@@ -223,7 +237,8 @@
       submitLabel: "Add",
       onSubmit: async (close, form) => {
         errorEl.style.display = "none";
-        const mode = form.querySelector('input[name="mode"]:checked').value;
+        const modeInput = form.querySelector('input[name="mode"]:checked') || modeExisting;
+        const mode = modeInput ? modeInput.value : "existing";
 
         if (mode === "existing") {
           if (!selectedSkillId) {
@@ -244,8 +259,9 @@
         }
 
         const nameInput = form.querySelector("#skill-name");
-        const name = String(nameInput.value || "").trim();
-        const category = form.querySelector("#skill-category").value;
+        const name = String(nameInput ? nameInput.value : "").trim();
+        const categorySelect = form.querySelector("#skill-category");
+        const category = categorySelect ? categorySelect.value : "Programming";
         if (!name) {
           errorEl.textContent = "Skill name required.";
           errorEl.style.display = "block";
@@ -254,14 +270,25 @@
         const allSkills = await API.getSkillCatalog();
         const dup = allSkills.find((s) => s.name.toLowerCase() === name.toLowerCase());
         if (dup) {
-          errorEl.textContent = `"${name}" sudah ada di katalog.`;
-          errorEl.style.display = "block";
-          return false;
+          if (mine.has(dup.id)) {
+            errorEl.textContent = `"${dup.name}" sudah ada di profil Anda.`;
+            errorEl.style.display = "block";
+            return false;
+          }
+          try {
+            await API.addSkill(dup.id);
+          } catch (err) {
+            errorEl.textContent = err.message;
+            errorEl.style.display = "block";
+            return false;
+          }
+          UI.toast("Skill ditambahkan");
+          setTimeout(() => location.reload(), 300);
+          return true;
         }
 
         try {
-          const skill = await API.addCustomSkill(name, category);
-          await API.addSkill(skill.id);
+          await API.addCustomSkill(name, category);
         } catch (err) {
           errorEl.textContent = err.message;
           errorEl.style.display = "block";

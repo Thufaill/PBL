@@ -9,9 +9,15 @@ const UI = (() => {
       if (value === undefined || value === null) continue;
       if (key === "class") node.className = value;
       else if (key === "text") node.textContent = value;
-      else if (key === "onClick") node.addEventListener("click", value);
+      else if (key.startsWith("on") && typeof value === "function") {
+        node.addEventListener(key.slice(2).toLowerCase(), value);
+      }
       // HANYA untuk markup statis tepercaya (mis. ikon SVG). Jangan isi dengan data pengguna/API.
       else if (key === "innerHTML") node.innerHTML = value;
+      else if (key === "checked" || key === "disabled" || key === "selected") {
+        node[key] = Boolean(value);
+        if (value) node.setAttribute(key, "");
+      }
       else node.setAttribute(key, value);
     }
     for (const child of [].concat(children)) {
@@ -45,9 +51,18 @@ const UI = (() => {
   function modal({ title, body = [], submitLabel = "Save", cancelLabel = "Cancel", onSubmit }) {
     const previouslyFocused = document.activeElement;
 
-    const form = el("form", { class: "modal-form", novalidate: "novalidate" }, body);
+    const formId = "modal-form-" + Math.random().toString(36).slice(2, 9);
+    const form = el("form", { id: formId, class: "modal-form", novalidate: "novalidate" }, body);
     const cancelBtn = el("button", { type: "button", class: "btn btn-secondary", text: cancelLabel, onClick: () => close() });
-    const submitBtn = el("button", { type: "submit", class: "btn btn-accent", text: submitLabel });
+    const submitBtn = el("button", { type: "submit", class: "btn btn-accent", text: submitLabel, form: formId });
+    submitBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }
+    });
 
     const dialog = el("div", { class: "modal", role: "dialog", "aria-modal": "true", "aria-label": title }, [
       el("h3", { class: "modal-title", text: title }),
