@@ -57,7 +57,7 @@ SkillBridge/
 │   ├── css/                         # style.css, recruiter.css, admin.css
 │   ├── js/                          # ui.js, api.js, landing.js, admin-nav.js, pages/*.js
 │   └── assets/                      # icons/, landing/
-├── db/                              # schema.sql, seed.sql, optional_hr_role.sql
+├── db/                              # schema.sql (skema + seed sekaligus)
 └── tools/                           # create_admin.php (CLI)
 
 (Data JSON dummy ada di public/data/. Role DB 'user' dipetakan ke role aplikasi 'mahasiswa'.)

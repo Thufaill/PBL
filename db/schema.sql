@@ -1,13 +1,32 @@
 -- ============================================================
--- SkillBridge Database Schema (PostgreSQL) - Final (Opsi A)
--- Role: user & admin. Profil publik read-only lewat token.
+-- SkillBridge Database Schema + Seed (PostgreSQL) - Final (Opsi A)
+-- File tunggal: enum, tabel, index, trigger, view, dan data awal.
+-- Role: user & admin, plus 'hr' untuk konsol HR.
+-- Profil publik read-only lewat token.
 -- Evidence: kolom JSONB metadata (Keputusan G03).
 -- Hasil ekstraksi CV berstatus 'candidate' sampai dikonfirmasi (G02).
 -- Tanpa skor/persentase kesiapan (Keputusan G01).
+--
+-- PERINGATAN: file ini menghapus objek lama (DROP ... CASCADE).
+-- Seluruh data SkillBridge di database akan hilang. File aman
+-- dijalankan ulang pada database yang sama.
+--
+-- Pemakaian:
+--   createdb skillbridge
+--   psql skillbridge -f db/schema.sql
 -- ============================================================
 
+BEGIN;
+
+-- ---------- BERSIHKAN OBJEK LAMA ----------
+DROP VIEW IF EXISTS v_skill_gap;
+DROP TABLE IF EXISTS evidence_skills, user_skills, evidence,
+    student_profiles, career_skill_requirements, users, skills, careers CASCADE;
+DROP FUNCTION IF EXISTS set_updated_at() CASCADE;
+DROP TYPE IF EXISTS user_role, evidence_source_type, skill_source, skill_status CASCADE;
+
 -- ---------- ENUM ----------
-CREATE TYPE user_role AS ENUM ('user', 'admin');
+CREATE TYPE user_role AS ENUM ('user', 'admin', 'hr');
 CREATE TYPE evidence_source_type AS ENUM ('cv', 'project', 'portfolio', 'certificate');
 CREATE TYPE skill_source AS ENUM ('manual', 'cv_extracted');
 CREATE TYPE skill_status AS ENUM ('candidate', 'confirmed');
@@ -145,3 +164,68 @@ LEFT JOIN user_skills us
 --   Skill gap user 1      : SELECT * FROM v_skill_gap WHERE user_id = 1 AND NOT has_skill;
 --   Skill yang sudah ada  : SELECT * FROM v_skill_gap WHERE user_id = 1 AND has_skill;
 --   Profil publik         : SELECT ... FROM student_profiles WHERE public_token = $1 AND is_public;
+
+-- ---------- DATA AWAL (seed) ----------
+-- Dibuat dari public/data/skills.json & careers.json.
+-- ON CONFLICT DO NOTHING membuat blok ini tetap aman bila dijalankan ulang.
+
+-- Skills
+INSERT INTO skills (name, category) VALUES
+  ('PHP', 'Programming'),
+  ('Python', 'Programming'),
+  ('SQL', 'Database'),
+  ('PostgreSQL', 'Database'),
+  ('HTML', 'Web'),
+  ('CSS', 'Web'),
+  ('JavaScript', 'Web'),
+  ('Responsive Design', 'Web'),
+  ('REST APIs', 'Web'),
+  ('Git', 'Tools'),
+  ('Figma', 'Tools'),
+  ('Excel', 'Data'),
+  ('Data Visualisation', 'Data'),
+  ('Statistics', 'Data'),
+  ('User Research', 'Design'),
+  ('Wireframing', 'Design'),
+  ('Prototyping', 'Design'),
+  ('Usability Testing', 'Design')
+ON CONFLICT (name) DO NOTHING;
+
+-- Careers
+INSERT INTO careers (name, description) VALUES
+  ('Backend Developer', 'Build APIs, databases, and server-side services for web products.'),
+  ('Frontend Developer', 'Create accessible, responsive interfaces for websites and web apps.'),
+  ('Data Analyst', 'Prepare data, explore patterns, and explain useful findings clearly.'),
+  ('UI/UX Designer', 'Plan simple digital experiences and create clear interface designs.')
+ON CONFLICT (name) DO NOTHING;
+
+-- Skill yang dibutuhkan tiap karier
+INSERT INTO career_skill_requirements (career_id, skill_id)
+SELECT c.id, s.id
+FROM (VALUES
+  ('Backend Developer', 'PHP'),
+  ('Backend Developer', 'SQL'),
+  ('Backend Developer', 'PostgreSQL'),
+  ('Backend Developer', 'REST APIs'),
+  ('Backend Developer', 'Git'),
+  ('Frontend Developer', 'HTML'),
+  ('Frontend Developer', 'CSS'),
+  ('Frontend Developer', 'JavaScript'),
+  ('Frontend Developer', 'Responsive Design'),
+  ('Frontend Developer', 'Git'),
+  ('Data Analyst', 'Excel'),
+  ('Data Analyst', 'SQL'),
+  ('Data Analyst', 'Python'),
+  ('Data Analyst', 'Data Visualisation'),
+  ('Data Analyst', 'Statistics'),
+  ('UI/UX Designer', 'User Research'),
+  ('UI/UX Designer', 'Wireframing'),
+  ('UI/UX Designer', 'Figma'),
+  ('UI/UX Designer', 'Prototyping'),
+  ('UI/UX Designer', 'Usability Testing')
+) AS m(career_name, skill_name)
+JOIN careers c ON c.name = m.career_name
+JOIN skills  s ON s.name = m.skill_name
+ON CONFLICT (career_id, skill_id) DO NOTHING;
+
+COMMIT;
