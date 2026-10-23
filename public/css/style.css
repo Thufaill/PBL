@@ -1,74 +1,82 @@
-/* ============ 1. Design Tokens (Impeccable System) ============ */
+/* ============ 1. Design Tokens (The Architectural Modernist) ============ */
 :root {
-  /* Brand & Neutrals (Deep Slate & Royal Indigo) */
-  --text-primary: #0f172a;       /* Slate 900 - High contrast, deep, authoritative */
-  --text-muted: #475569;         /* Slate 600 - WCAG AA compliant (5.5:1 on white) */
+  /* Architectural Neutral Palette (Slate) */
+  --text-primary: #090d16;       /* Deep Obsidian Slate - Razor-sharp contrast */
+  --text-secondary: #334155;     /* Slate 700 */
+  --text-muted: #475569;         /* Slate 600 - WCAG AA compliant */
   --text-light: #64748b;         /* Slate 500 - Subdued metadata */
   --text-inverse: #ffffff;
   
-  --border: #e2e8f0;             /* Slate 200 - Clean, subtle hairline */
-  --border-subtle: #f1f5f9;      /* Slate 100 */
-  --border-focus: #3b82f6;       /* Blue 500 */
-  --border-gap: #e2e8f0;
-  
-  --primary: #2563eb;            /* Royal Blue 600 - Dynamic, premium, trustworthy */
-  --primary-hover: #1d4ed8;      /* Royal Blue 700 */
-  --primary-dark: #1e3a8a;       /* Deep Navy 900 */
-  --primary-subtle: #eff6ff;     /* Blue 50 */
-  
-  /* Accent: Warm Rose / Coral instead of neon magenta */
-  --accent: #f43f5e;             /* Rose 500 - Refined, vivid, elegant */
-  --accent-hover: #e11d48;       /* Rose 600 */
-  --accent-sparkle: #f59e0b;     /* Amber 500 */
-  
-  /* Tints & Surfaces */
   --surface: #ffffff;
   --surface-subtle: #f8fafc;     /* Slate 50 */
   --surface-elevated: #ffffff;
-  --bg: #f8fafc;                 /* Warm modern slate canvas */
+  --bg: #f8fafc;                 /* Cool Architectural Slate Canvas */
   
+  --border: #e2e8f0;             /* Hairline 1px Slate 200 */
+  --border-subtle: #f1f5f9;      /* Slate 100 */
+  --border-hover: #cbd5e1;       /* Slate 300 */
+  --border-focus: #2563eb;       /* Royal Cobalt 600 */
+  --border-gap: #e2e8f0;
+
+  /* Brand: Electric Royal Cobalt / Indigo */
+  --primary: #2563eb;            /* Royal Cobalt 600 */
+  --primary-hover: #1d4ed8;      /* Cobalt 700 */
+  --primary-dark: #0f172a;       /* Slate 900 */
+  --primary-subtle: #eff6ff;     /* Cobalt 50 */
+  
+  /* Accents */
+  --accent: #f43f5e;             /* Rose Coral 500 */
+  --accent-hover: #e11d48;       /* Rose 600 */
+  --accent-sparkle: #f59e0b;     /* Warm Amber 500 */
+  
+  /* Semantic Badges & Tints */
   --tint-pink: #fff1f2;          /* Rose 50 */
-  --tint-indigo: #e0e7ff;        /* Indigo 100 */
-  --tint-blue: #eff6ff;          /* Blue 50 */
+  --tint-indigo: #eff6ff;        /* Cobalt/Indigo 50 */
+  --tint-blue: #eff6ff;          /* Cobalt 50 */
   --tint-gray: #f8fafc;          /* Slate 50 */
-  --badge-border: #c7d2fe;       /* Indigo 200 */
+  --badge-border: #bfdbfe;       /* Cobalt 200 */
   
-  /* Shared admin & recruiter tokens */
   --row-hover: #f8fafc;
   --nav-hover: #f1f5f9;
-  --pink-border: #fecdd3;        /* Rose 200 */
-  --pink-muted: #9f1239;         /* Rose 800 */
-  --amber-bg: #fffbeb;           /* Amber 50 */
-  --amber-border: #fde68a;       /* Amber 200 */
-  --amber-text: #b45309;         /* Amber 700 - WCAG compliant */
-  --success-bg: #ecfdf5;         /* Emerald 50 */
-  --success-border: #a7f3d0;     /* Emerald 200 */
-  --success-text: #047857;       /* Emerald 700 */
+  --pink-border: #fecdd3;
+  --pink-muted: #9f1239;
+  
+  --amber-bg: #fffbeb;
+  --amber-border: #fde68a;
+  --amber-text: #b45309;
+  
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --success-text: #047857;
+  
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #b91c1c;
 
-  /* Spacing & Harmonic Radius Scale */
+  /* Harmonic Radii */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius: 10px;                /* Base card radius */
   --radius-md: 10px;
-  --radius-lg: 14px;             /* Large containers / hero */
+  --radius-lg: 14px;             /* Large container / hero */
   --radius-xl: 18px;
   --radius-round: 9999px;        /* Pills & avatars */
 
-  /* Impeccable Soft Elevation Shadows */
-  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
-  --shadow-xl: 0 20px 32px -6px rgba(15, 23, 42, 0.10), 0 8px 10px -4px rgba(15, 23, 42, 0.04);
+  /* Linear-grade Soft Layered Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.03);
+  --shadow-sm: 0 2px 6px -1px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 8px 18px -3px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 16px 32px -4px rgba(15, 23, 42, 0.10), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 24px 48px -8px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
   
-  --shadow-btn: 0 2px 8px rgba(37, 99, 235, 0.20);
-  --shadow-btn-hover: 0 4px 14px rgba(37, 99, 235, 0.30);
-  --shadow-btn-accent: 0 2px 8px rgba(244, 63, 94, 0.25);
-  --shadow-btn-accent-hover: 0 4px 14px rgba(244, 63, 94, 0.35);
-  --shadow-nav-active: 0 2px 6px rgba(37, 99, 235, 0.15);
+  --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --shadow-btn-hover: 0 4px 12px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --shadow-btn-accent: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --shadow-btn-accent-hover: 0 4px 12px rgba(244, 63, 94, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  --shadow-nav-active: 0 2px 6px rgba(37, 99, 235, 0.15);
 
-  /* Transitions & Timing Curves (Impeccable spring ease) */
+  /* Transitions & Timing Curves (Spring Ease) */
   --ease-spring: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 150ms;
   --duration-normal: 200ms;
@@ -196,9 +204,9 @@ small {
 
 /* ============ 3. Navbar ============ */
 .navbar {
-  height: 72px;
+  height: 68px;
   padding: 0 32px;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.88);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -206,8 +214,8 @@ small {
   position: sticky;
   top: 0;
   z-index: 40;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .navbar-brand {
@@ -218,55 +226,56 @@ small {
 }
 
 .navbar-logo {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .navbar-brand-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .navbar-brand-name {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
 }
 
 .navbar-brand-subtitle {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--text-light);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .navbar-nav {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
   margin: 0 24px;
 }
 
 .nav-item {
-  height: 40px;
+  height: 38px;
   padding: 0 14px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
@@ -279,11 +288,11 @@ small {
 }
 
 .nav-item.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--primary);
   font-weight: 600;
-  box-shadow: var(--shadow-nav-active);
+  box-shadow: var(--shadow-xs);
 }
 
 .navbar-profile {
@@ -301,30 +310,34 @@ small {
 }
 
 .navbar-profile-name {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13.5px;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .navbar-profile-email {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
   color: var(--text-light);
 }
 
 .navbar-avatar {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-round);
-  background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
-  color: #fff;
+  background: var(--surface-subtle);
+  border: 1.5px solid var(--border);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
   flex-shrink: 0;
-  box-shadow: var(--shadow-xs);
+  transition: border-color var(--duration-fast) var(--ease-spring);
+}
+
+.navbar-avatar:hover {
+  border-color: var(--primary);
 }
 
 /* ============ 4. Buttons (Standardized Multi-Role System) ============ */
