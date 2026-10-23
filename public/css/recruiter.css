@@ -29,7 +29,7 @@
   background: var(--rec-bg);
   min-height: 100vh;
   font-family: var(--font-family);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 /* ===== Sidebar (selaras .admin-sidebar dari Panel Admin) ===== */
@@ -41,10 +41,10 @@
   overflow-y: auto;
   background: var(--rec-surface);
   border-right: 1px solid var(--rec-border);
-  padding: 26px 16px 24px;
+  padding: 22px 14px 20px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 24px;
   z-index: 30;
 }
 
@@ -56,14 +56,14 @@
 }
 
 .rec-brand-mark {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   background: var(--rec-primary);
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -76,13 +76,13 @@
 }
 
 .rec-brand-name {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--rec-ink);
 }
 
 .rec-brand-type {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
   color: var(--rec-light);
   letter-spacing: 0.4px;
@@ -113,10 +113,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 42px;
+  height: 40px;
   padding: 0 14px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-ink);
   cursor: pointer;
@@ -164,10 +164,10 @@
 /* item nav */
 .rec-nav-item {
   position: relative;
-  height: 38px;
+  height: 36px;
   padding: 0 12px 0 30px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--rec-muted);
   background: transparent;
@@ -201,10 +201,10 @@
 .rec-context {
   background: var(--rec-tint-indigo);
   border-radius: 10px;
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .rec-context-head {
@@ -212,12 +212,12 @@
   align-items: center;
   gap: 8px;
   color: var(--rec-primary);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
 }
 
 .rec-context p:last-child {
-  font-size: 11px;
+  font-size: 10.5px;
   line-height: 1.5;
   color: var(--rec-muted);
 }
@@ -238,7 +238,7 @@
 }
 
 .rec-logout-footer a {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-muted);
 }
@@ -261,13 +261,13 @@
 }
 
 .rec-header {
-  height: 88px;
+  height: 72px;
   background: var(--rec-surface);
   border-bottom: 1px solid var(--rec-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 28px;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -282,10 +282,10 @@
 .rec-workspace-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: var(--rec-tint-indigo);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 10px;
 }
 
 .rec-workspace-title svg {
@@ -294,7 +294,7 @@
 }
 
 .rec-workspace-title span {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--rec-primary-soft);
   white-space: nowrap;
@@ -302,10 +302,10 @@
 
 .rec-role-pill {
   background: var(--rec-gray-bg);
-  height: 26px;
-  padding: 5px 10px;
+  height: 24px;
+  padding: 4px 9px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--rec-muted);
   display: inline-flex;
@@ -326,36 +326,36 @@
 }
 
 .rec-header-name {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--rec-ink);
 }
 
 .rec-header-role {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
 }
 
 .rec-avatar {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 40px;
   background: var(--rec-primary);
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   flex-shrink: 0;
 }
 
 /* ===== Page content ===== */
 .rec-page-content {
-  padding: 32px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 1344px;
+  gap: 20px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
 }
@@ -368,7 +368,7 @@
 }
 
 .rec-breadcrumb {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.4px;
   color: var(--rec-primary);
@@ -378,7 +378,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
@@ -387,26 +387,26 @@
 }
 
 .rec-page-title {
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.3px;
   line-height: 1.2;
   color: var(--rec-ink);
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .rec-page-desc {
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.5;
   color: var(--rec-muted);
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .rec-page-heading {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
@@ -423,17 +423,17 @@
   background: linear-gradient(135deg, #f8faff 0%, var(--rec-surface) 100%);
   border: 1px solid #bfdbfe;
   border-radius: var(--radius-lg, 14px);
-  padding: 24px;
+  padding: 20px;
   display: flex;
   align-items: center;
-  gap: 18px;
-  min-height: 120px;
+  gap: 16px;
+  min-height: 104px;
   box-shadow: var(--shadow-xs, 0 1px 2px rgba(15, 23, 42, 0.05));
 }
 
 .rec-company-emblem {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-md, 10px);
   background: var(--rec-surface);
   border: 1px solid #bfdbfe;
@@ -452,11 +452,11 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .rec-company-title {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--rec-primary-soft);
 }
@@ -470,14 +470,14 @@
 .rec-badge-verified {
   background: var(--rec-primary);
   color: #fff;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
-  padding: 5px 10px;
+  padding: 4px 9px;
   border-radius: 999px;
 }
 
 .rec-company-sub {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--rec-muted);
 }
 
@@ -485,18 +485,18 @@
 .rec-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .rec-stat-card {
   background: var(--rec-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 140px;
+  gap: 10px;
+  min-height: 112px;
   justify-content: space-between;
   box-shadow: var(--shadow-xs);
   transition: transform var(--duration-fast, 150ms) var(--ease-spring, ease), box-shadow var(--duration-fast, 150ms) var(--ease-spring, ease), border-color var(--duration-fast, 150ms) var(--ease-spring, ease);
@@ -509,13 +509,13 @@
 }
 
 .rec-stat-label {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-muted);
 }
 
 .rec-stat-value {
-  font-size: 34px;
+  font-size: 26px;
   font-weight: 800;
   line-height: 1.1;
   color: var(--rec-ink);
@@ -524,11 +524,11 @@
 
 .rec-stat-value--primary {
   color: var(--rec-primary-soft);
-  font-size: 30px;
+  font-size: 24px;
 }
 
 .rec-stat-context {
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.45;
   color: var(--rec-muted);
 }
@@ -538,20 +538,20 @@
   background: var(--rec-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .rec-card-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--rec-ink);
 }
 
 .rec-card-sub {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
   margin-top: 4px;
 }
@@ -569,7 +569,7 @@
 }
 
 .rec-card-count {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--rec-muted);
 }
 
@@ -578,7 +578,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
   flex-wrap: wrap;
 }
@@ -587,7 +587,7 @@
 .rec-dual-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -601,11 +601,11 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  height: 42px;
-  padding: 0 16px;
+  height: 38px;
+  padding: 0 14px;
   background: var(--rec-gray-bg);
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--rec-muted);
 }
@@ -639,8 +639,8 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  min-height: 68px;
-  padding: 14px 16px;
+  min-height: 60px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -661,14 +661,14 @@
 }
 
 .rec-avatar-sm {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--rec-tint-indigo);
   color: var(--rec-primary);
   display: grid;
   place-items: center;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -687,7 +687,7 @@
 }
 
 .rec-row-name-sub {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -819,10 +819,10 @@ table.rec-native-table .rec-col-actions {
 .rec-badge {
   display: inline-flex;
   align-items: center;
-  height: 26px;
-  padding: 0 10px;
+  height: 24px;
+  padding: 0 9px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   white-space: nowrap;
   background: var(--rec-gray-bg);
@@ -841,12 +841,12 @@ table.rec-native-table .rec-col-actions {
   gap: 7px;
   background: var(--tint-gray);
   border: 1px solid var(--border);
-  padding: 4px 12px;
+  padding: 4px 11px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--rec-primary);
-  min-height: 25px;
+  min-height: 24px;
 }
 
 .rec-skill-chip::before {
@@ -860,9 +860,9 @@ table.rec-native-table .rec-col-actions {
 
 /* Varian kecil untuk sel tabel (tanpa dot) */
 .rec-skill-chip--sm {
-  padding: 5px 12px;
-  min-height: 29px;
-  font-size: 11px;
+  padding: 4px 10px;
+  min-height: 26px;
+  font-size: 10.5px;
 }
 
 .rec-skill-chip--sm::before {
@@ -880,7 +880,7 @@ table.rec-native-table .rec-col-actions {
 /* Baris lebih tinggi dari tabel biasa karena chip skill bisa membungkus.
    min-height diabaikan pada <tr>, jadi tinggi dipasang di sel. */
 table.rec-native-table tbody tr.rec-cand-row > td {
-  height: 92px;
+  height: 84px;
 }
 
 /* Kolom tabel kandidat. Dengan table-layout: fixed, lebar di bawah ini
@@ -891,7 +891,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 }
 
 .rec-cand-role {
-  width: 150px;
+  width: 170px;
 }
 
 .rec-cand-gaps {
@@ -900,7 +900,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 
 .rec-cand-evidence {
   width: 96px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-primary-soft);
 }
@@ -924,6 +924,18 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   align-items: flex-start;
 }
 
+/* Dua badge (role + status) tidak muat sebaris di kolom 150px;
+   biarkan bertumpuk agar badge status tidak terpotong kolom sebelah. */
+.rec-cand-role .rec-cell {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rec-cell-empty {
+  font-size: 12.5px;
+  color: var(--rec-muted);
+}
+
 .rec-cand-actions .rec-cell {
   gap: 8px;
   flex-wrap: wrap;
@@ -935,10 +947,10 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 34px;
-  padding: 0 12px;
+  height: 32px;
+  padding: 0 11px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   border: 1px solid var(--border);
   background: var(--rec-gray-bg);
@@ -986,7 +998,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 
 .rec-info-strip--indigo .rec-info-strip-sub {
   color: var(--rec-muted);
-  font-size: 13px;
+  font-size: 11.5px;
   line-height: 1.5;
 }
 
@@ -995,11 +1007,11 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   display: flex;
   gap: 12px;
   align-items: center;
-  height: 42px;
-  padding: 0 16px;
+  height: 38px;
+  padding: 0 14px;
   background: var(--rec-gray-bg);
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--rec-muted);
 }
@@ -1028,8 +1040,8 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   display: flex;
   gap: 12px;
   align-items: center;
-  min-height: 100px;
-  padding: 16px;
+  min-height: 76px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1078,7 +1090,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 }
 
 .rec-role-match-value {
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--rec-primary-soft);
 }
@@ -1109,7 +1121,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 .rec-activity-time {
   width: 72px;
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
 }
 
@@ -1124,7 +1136,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 .rec-activity-text {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--rec-ink);
 }
 
@@ -1136,11 +1148,11 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 .rec-info-strip {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: var(--rec-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: 14px;
 }
 
 .rec-info-strip--pink {
@@ -1168,13 +1180,13 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 }
 
 .rec-info-strip-title {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--rec-ink);
 }
 
 .rec-info-strip-sub {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
@@ -1195,7 +1207,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 38px;
   padding: 0 12px;
   background: var(--rec-surface);
   border: 1px solid var(--border);
@@ -1217,7 +1229,7 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   border: 0;
   outline: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--rec-ink);
   width: 100%;
 }
@@ -1227,12 +1239,12 @@ table.rec-native-table tbody tr.rec-cand-row > td {
 }
 
 .rec-select {
-  height: 40px;
+  height: 38px;
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--rec-surface);
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--rec-ink);
 }
 
@@ -1248,13 +1260,13 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
 }
 
 .rec-pager-page {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
   background: var(--rec-primary);
   color: #fff;
@@ -1320,11 +1332,20 @@ table.rec-native-table {
   min-width: 880px;
 }
 
+/* Tabel kandidat punya enam kolom; beri ruang cukup untuk chip skill
+   agar tidak tergencet saat tabel mencapai lebar minimumnya. Hanya
+   berlaku di desktop — di ponsel tabel berubah menjadi kartu. */
+@media (min-width: 1400px) {
+  .rec-table-wrap table.rec-native-table:has(.rec-cand-id) {
+    min-width: 1000px;
+  }
+}
+
 table.rec-native-table thead th {
   text-align: left;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: var(--surface-subtle, #f8fafc);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1343,8 +1364,8 @@ table.rec-native-table thead th:last-child {
 }
 
 table.rec-native-table tbody td {
-  padding: 14px 16px;
-  font-size: 13.5px;
+  padding: 11px 14px;
+  font-size: 13px;
   color: var(--rec-ink);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
@@ -1380,12 +1401,12 @@ table.rec-native-table tbody tr:hover {
   background: var(--rec-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   flex-wrap: wrap;
 }
 
 .rec-save-note {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--rec-muted);
 }
 
@@ -1399,13 +1420,13 @@ table.rec-native-table tbody tr:hover {
 .rec-field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 
 .rec-field {
   display: grid;
   gap: 6px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .rec-field.full {
@@ -1413,7 +1434,7 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-field label {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--rec-ink);
 }
@@ -1423,11 +1444,12 @@ table.rec-native-table tbody tr:hover {
 .rec-field textarea {
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 9px 12px;
   background: var(--rec-surface);
   color: var(--rec-ink);
   width: 100%;
   font-family: inherit;
+  font-size: 14px;
 }
 
 .rec-field input:focus,
@@ -1439,7 +1461,7 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-field textarea {
-  min-height: 90px;
+  min-height: 80px;
   resize: vertical;
 }
 
@@ -1447,14 +1469,14 @@ table.rec-native-table tbody tr:hover {
 .rec-logo-row {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
 .rec-logo-preview {
-  width: 84px;
-  height: 84px;
-  border-radius: 12px;
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
   background: var(--rec-tint-indigo);
   display: grid;
   place-items: center;
@@ -1472,13 +1494,13 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-logo-label {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-ink);
 }
 
 .rec-logo-hint {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
 }
 
@@ -1490,19 +1512,19 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-logo-filename {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
 /* ===== Section title ===== */
 .rec-section-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--rec-ink);
 }
 
 .rec-section-sub {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
@@ -1510,7 +1532,7 @@ table.rec-native-table tbody tr:hover {
 .rec-mapping-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -1522,9 +1544,9 @@ table.rec-native-table tbody tr:hover {
 .rec-mapped-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 78px;
-  padding: 14px 0;
+  gap: 10px;
+  min-height: 68px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1533,9 +1555,9 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-mapped-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   background: var(--rec-tint-indigo);
   color: var(--rec-primary);
   display: grid;
@@ -1546,13 +1568,13 @@ table.rec-native-table tbody tr:hover {
 .rec-mapped-name {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-ink);
 }
 
 .rec-mapped-remove {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--rec-primary);
   cursor: pointer;
@@ -1570,9 +1592,9 @@ table.rec-native-table tbody tr:hover {
 .rec-check-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 62px;
-  padding: 10px 0;
+  gap: 10px;
+  min-height: 54px;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1581,8 +1603,8 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-check-box {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   border-radius: 4px;
   border: 2px solid var(--border);
   display: grid;
@@ -1609,18 +1631,13 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-check-name {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-ink);
 }
 
 .rec-check-category {
-  font-size: 11px;
-  color: var(--rec-muted);
-}
-
-.rec-check-category {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
 }
 
@@ -1632,19 +1649,19 @@ table.rec-native-table tbody tr:hover {
 .rec-role-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 16px;
 }
 
 .rec-role-card {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--rec-surface);
-  padding: 18px;
+  padding: 16px;
   text-align: left;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
@@ -1665,13 +1682,13 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-role-card-name {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--rec-ink);
 }
 
 .rec-role-card-pos {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--rec-primary);
   background: var(--rec-gray-bg);
@@ -1680,7 +1697,7 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-role-card-cat {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
@@ -1694,12 +1711,12 @@ table.rec-native-table tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
 .rec-info-note {
-  font-size: 11px;
+  font-size: 10.5px;
   line-height: 1.5;
   color: var(--rec-muted);
   background: var(--rec-gray-bg);
@@ -1711,22 +1728,22 @@ table.rec-native-table tbody tr:hover {
 .rec-mapping-col {
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 18px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   background: var(--rec-surface);
-  min-height: 320px;
+  min-height: 300px;
 }
 
 .rec-mapping-col-title {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--rec-ink);
 }
 
 .rec-mapping-col-sub {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
@@ -1739,8 +1756,8 @@ table.rec-native-table tbody tr:hover {
 .rec-mapping-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 0;
+  gap: 10px;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1751,18 +1768,18 @@ table.rec-native-table tbody tr:hover {
 .rec-mapping-item-name {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-ink);
 }
 
 .rec-mapping-item-cat {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
 }
 
 .rec-mapping-count {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--rec-muted);
 }
 
@@ -1774,7 +1791,7 @@ table.rec-native-table tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
 }
@@ -1790,13 +1807,13 @@ table.rec-native-table tbody tr:hover {
 }
 
 .rec-check-name {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--rec-ink);
 }
 
 .rec-check-cat {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--rec-muted);
   margin-left: auto;
 }
@@ -1813,19 +1830,19 @@ table.rec-native-table tbody tr:hover {
 /* ===== Settings tabs ===== */
 .rec-tabs {
   display: flex;
-  gap: 30px;
+  gap: 24px;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--border);
 }
 
 .rec-tab {
-  height: 48px;
+  height: 44px;
   padding: 0;
   border: 0;
   border-bottom: 2px solid transparent;
   background: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--rec-muted);
   cursor: pointer;
@@ -1853,7 +1870,7 @@ table.rec-native-table tbody tr:hover {
 .rec-tab-panel.active {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .rec-check-row input[type="checkbox"] {
@@ -1958,7 +1975,14 @@ table.rec-native-table tbody tr:hover {
 
   .rec-header {
     position: static;
-    padding: 0 20px;
+    padding: 0 16px;
+  }
+
+  /* Target sentuh 44px untuk navigasi di drawer. */
+  .rec-sidebar .rec-nav-group-head,
+  .rec-sidebar .rec-nav-item {
+    height: auto;
+    min-height: 44px;
   }
 }
 
@@ -1976,11 +2000,16 @@ table.rec-native-table tbody tr:hover {
   }
 
   .rec-page-content {
-    padding: 20px;
+    padding: 16px;
+    gap: 16px;
   }
 
   .rec-page-title {
-    font-size: 24px;
+    font-size: 20px;
+  }
+
+  .rec-page-desc {
+    font-size: 13px;
   }
 
   .rec-company-strip {
@@ -1998,6 +2027,24 @@ table.rec-native-table tbody tr:hover {
 
   .rec-role-cards {
     grid-template-columns: 1fr;
+  }
+
+  /* Kontrol toolbar memenuhi target sentuh dan gutter ponsel. */
+  .rec-toolbar .rec-search input,
+  .rec-toolbar select {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .rec-toolbar .btn {
+    height: 44px;
+  }
+
+  /* Cegah zoom otomatis iOS saat kontrol difokuskan. */
+  .rec-field input,
+  .rec-field select,
+  .rec-field textarea {
+    font-size: 16px;
   }
 }
 

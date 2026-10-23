@@ -130,7 +130,40 @@ const UI = (() => {
   }
 
 
+  // Tabel data menjadi kartu bertumpuk di ponsel. CSS memakai
+  // td[data-label] sebagai judul kolom; label disalin dari <thead> dan
+  // diperbarui lewat observer karena baris dirender ulang oleh page script.
+  function labelTable(table) {
+    const headers = Array.from(table.tHead?.rows[0]?.cells || []).map((th) => th.textContent.trim());
+    if (headers.length === 0) return;
+
+    table.querySelectorAll("tbody").forEach((tbody) => {
+      const applyLabels = () => {
+        for (const row of tbody.rows) {
+          Array.from(row.cells).forEach((cell, index) => {
+            if (cell.colSpan > 1 || !headers[index]) {
+              cell.removeAttribute("data-label");
+              return;
+            }
+            cell.dataset.label = headers[index];
+          });
+        }
+      };
+
+      applyLabels();
+      if (tbody.dataset.sbLabels === "true") return;
+      tbody.dataset.sbLabels = "true";
+      new MutationObserver(applyLabels).observe(tbody, { childList: true });
+    });
+  }
+
+  function initTableLabels() {
+    document.querySelectorAll("table").forEach(labelTable);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
+    initTableLabels();
+
     // Event Delegation: Navbar Hamburger Toggle Mobile
     document.addEventListener("click", (e) => {
       const toggle = e.target.closest(".navbar-toggle");
@@ -196,6 +229,204 @@ const UI = (() => {
     if (Number.isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   }
+
+  // ---- Loading state halaman ----
+  // Region bertanda [data-loading] diisi skeleton sampai halaman menulis
+  // konten asli, empty state, atau pesan error. Form memakai overlay karena
+  // nilainya diisi lewat properti input, bukan mutasi DOM.
+  const SKELETON_ATTR = "data-sb-skeleton";
+  const regionObservers = new WeakMap();
+  let progressBar = null;
+  let progressShowTimer = null;
+  let progressHideTimer = null;
+  let settleTimer = null;
+  let activeRequests = 0;
+  let initialSettled = false;
+
+  function skeletonLine(width, extraClass = "") {
+    return el("span", {
+      class: "sb-skeleton-line" + (extraClass ? " " + extraClass : ""),
+      style: width ? `width: ${width}` : null,
+      "data-sb-skeleton": "",
+      "aria-hidden": "true",
+    });
+  }
+
+  function skeletonCard() {
+    return el("div", { class: "sb-skeleton-card", "data-sb-skeleton": "", "aria-hidden": "true" }, [
+      skeletonLine("48%"),
+      skeletonLine("36%", "sb-skeleton-line--value"),
+      skeletonLine("72%"),
+    ]);
+  }
+
+  function skeletonRow() {
+    return el("div", { class: "sb-skeleton-row", "data-sb-skeleton": "", "aria-hidden": "true" }, [
+      el("span", { class: "sb-skeleton-avatar", "aria-hidden": "true" }),
+      el("span", { class: "sb-skeleton-stack" }, [
+        skeletonLine("34%"),
+        skeletonLine("62%"),
+      ]),
+    ]);
+  }
+
+  function skeletonTableRow(colspan) {
+    return el("tr", { class: "sb-skeleton-tr", "data-sb-skeleton": "", "aria-hidden": "true" }, [
+      el("td", { colspan: String(colspan) }, [
+        el("div", { class: "sb-skeleton-row sb-skeleton-row--table" }, [
+          el("span", { class: "sb-skeleton-avatar", "aria-hidden": "true" }),
+          el("span", { class: "sb-skeleton-stack" }, [
+            skeletonLine("26%"),
+            skeletonLine("54%"),
+          ]),
+        ]),
+      ]),
+    ]);
+  }
+
+  function skeletonTextBlock() {
+    return el("div", { class: "sb-skeleton-text", "data-sb-skeleton": "", "aria-hidden": "true" }, [
+      skeletonLine("32%", "sb-skeleton-line--title"),
+      skeletonLine("100%"),
+      skeletonLine("88%"),
+      skeletonLine("58%"),
+    ]);
+  }
+
+  function hasMeaningfulContent(region) {
+    for (const node of region.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) return true;
+      if (node.nodeType === Node.ELEMENT_NODE && !node.hasAttribute(SKELETON_ATTR)) return true;
+    }
+    return false;
+  }
+
+  function skeletonCount(region, fallback) {
+    const value = Number.parseInt(region.getAttribute("data-loading-count") || "", 10);
+    return Number.isFinite(value) && value > 0 ? Math.min(value, 8) : fallback;
+  }
+
+  function buildSkeletons(region) {
+    const variant = region.getAttribute("data-loading");
+    if (variant === "cards") {
+      return Array.from({ length: skeletonCount(region, 4) }, () => skeletonCard());
+    }
+    if (variant === "table") {
+      const colspan = Math.max(1, Number.parseInt(region.getAttribute("data-loading-colspan") || "4", 10));
+      return Array.from({ length: skeletonCount(region, 4) }, () => skeletonTableRow(colspan));
+    }
+    if (variant === "text") return [skeletonTextBlock()];
+    return Array.from({ length: skeletonCount(region, 3) }, () => skeletonRow());
+  }
+
+  function finishRegion(region) {
+    const observer = regionObservers.get(region);
+    if (observer) {
+      observer.disconnect();
+      regionObservers.delete(region);
+    }
+    region.querySelectorAll("[data-sb-skeleton]").forEach((node) => node.remove());
+    region.classList.remove("sb-is-loading");
+    region.removeAttribute("aria-busy");
+  }
+
+  function initFormSkeleton(form) {
+    if (!form.querySelector("input, select, textarea")) return;
+    form.classList.add("sb-form-loading");
+    form.setAttribute("aria-busy", "true");
+    if (getComputedStyle(form).position === "static") form.style.position = "relative";
+    form.append(
+      el("div", { class: "sb-form-skeleton", "data-sb-skeleton": "", "aria-hidden": "true" }, [
+        ...Array.from({ length: 3 }, () =>
+          el("div", { class: "sb-skeleton-field" }, [
+            skeletonLine("28%"),
+            skeletonLine("100%"),
+          ])
+        ),
+      ])
+    );
+  }
+
+  function finishFormSkeleton(form) {
+    form.querySelectorAll(".sb-form-skeleton").forEach((node) => node.remove());
+    form.classList.remove("sb-form-loading");
+    form.removeAttribute("aria-busy");
+  }
+
+  function initLoadingRegion(region) {
+    if (region.dataset.sbLoadingInit === "true") return;
+    region.dataset.sbLoadingInit = "true";
+
+    if (region.getAttribute("data-loading") === "form") {
+      initFormSkeleton(region);
+      return;
+    }
+    if (hasMeaningfulContent(region)) return;
+
+    region.append(...buildSkeletons(region));
+    region.classList.add("sb-is-loading");
+    region.setAttribute("aria-busy", "true");
+
+    const observer = new MutationObserver(() => {
+      if (hasMeaningfulContent(region)) finishRegion(region);
+    });
+    observer.observe(region, { childList: true, subtree: true, characterData: true });
+    regionObservers.set(region, observer);
+  }
+
+  function settleInitialLoading() {
+    initialSettled = true;
+    document.querySelectorAll("[data-loading]").forEach((region) => {
+      if (region.getAttribute("data-loading") === "form") finishFormSkeleton(region);
+      else finishRegion(region);
+    });
+    // Placeholder skeleton statis di teks (mis. "Memuat...") tidak punya
+    // observer sendiri, jadi dibersihkan bersama gelombang request pertama.
+    document.querySelectorAll("[data-sb-skeleton]").forEach((node) => node.remove());
+  }
+
+  function showProgress() {
+    if (!progressBar) {
+      progressBar = el("div", { class: "sb-progress", "aria-hidden": "true" }, [
+        el("span", { class: "sb-progress-bar" }),
+      ]);
+      document.body.append(progressBar);
+    }
+    progressBar.classList.add("is-active");
+  }
+
+  function hideProgress() {
+    if (progressBar) progressBar.classList.remove("is-active");
+  }
+
+  function onRequestStart() {
+    activeRequests += 1;
+    clearTimeout(progressHideTimer);
+    clearTimeout(settleTimer);
+    if (activeRequests === 1) {
+      clearTimeout(progressShowTimer);
+      progressShowTimer = setTimeout(showProgress, 120);
+    }
+  }
+
+  function onRequestEnd() {
+    activeRequests = Math.max(0, activeRequests - 1);
+    if (activeRequests !== 0) return;
+
+    clearTimeout(progressShowTimer);
+    progressHideTimer = setTimeout(hideProgress, 160);
+    if (!initialSettled) {
+      settleTimer = setTimeout(settleInitialLoading, 260);
+    }
+  }
+
+  function initLoadingUI() {
+    window.addEventListener("sb:api:start", onRequestStart);
+    window.addEventListener("sb:api:end", onRequestEnd);
+    document.querySelectorAll("[data-loading]").forEach(initLoadingRegion);
+  }
+
+  initLoadingUI();
 
   return { el, clear, safeUrl, toast, formatDate, modal };
 })();

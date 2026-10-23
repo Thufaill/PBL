@@ -47,12 +47,12 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
                 <h2 class="rec-card-title">Profil Perusahaan</h2>
                 <p class="rec-card-sub" id="company-card-sub">Informasi resmi perusahaan Anda untuk mendukung proses rekrutmen.</p>
               </div>
-              <span class="rec-badge-verified" id="company-status-badge">-</span>
+              <span class="rec-badge-verified" id="company-status-badge"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 64px; height: 14px"></span></span>
             </div>
 
             <div class="rec-logo-row">
               <div class="rec-logo-preview" aria-hidden="true">
-                <span id="company-logo-initial">-</span>
+                <span id="company-logo-initial"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 24px; height: 24px"></span></span>
               </div>
               <div class="rec-logo-controls">
                 <span class="rec-logo-label">Logo Perusahaan</span>
@@ -60,7 +60,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
               </div>
             </div>
 
-            <form id="company-form" class="rec-field-grid">
+            <form id="company-form" class="rec-field-grid" data-loading="form">
               <div class="rec-field">
                 <label for="company-name">Nama Perusahaan</label>
                 <input id="company-name" type="text" />

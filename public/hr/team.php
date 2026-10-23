@@ -38,7 +38,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
         </div>
 
         <!-- Metrics -->
-        <section class="rec-stats-grid" id="rec-team-stats" aria-label="Metrik tim recruiter">
+        <section class="rec-stats-grid" id="rec-team-stats" aria-label="Metrik tim recruiter" data-loading="cards" data-loading-count="3">
           <!-- diisi js/pages/recruiter-team.js -->
         </section>
 
@@ -76,9 +76,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
                   <th class="rec-col-actions">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="rec-team-tbody">
-                <tr><td colspan="5" class="rec-empty">Memuat tim recruiter…</td></tr>
-              </tbody>
+              <tbody id="rec-team-tbody" data-loading="table" data-loading-colspan="5" data-loading-count="5"></tbody>
             </table>
           </div>
 

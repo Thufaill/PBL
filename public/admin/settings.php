@@ -37,7 +37,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
             <p class="admin-card-sub">Informasi akun Admin yang sedang aktif.</p>
           </div>
         </div>
-        <form id="form-admin-profile">
+        <form id="form-admin-profile" data-loading="form">
           <div class="field">
             <label for="set-name">Nama lengkap</label>
             <input type="text" id="set-name" name="name" autocomplete="name" />
@@ -68,7 +68,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
             <p class="admin-card-sub">Preferensi umum yang berlaku untuk seluruh pengguna.</p>
           </div>
         </div>
-        <form id="form-platform-config">
+        <form id="form-platform-config" data-loading="form">
           <div class="field">
             <label for="set-sitename">Nama platform</label>
             <input type="text" id="set-sitename" name="site_name" autocomplete="off" />

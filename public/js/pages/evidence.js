@@ -33,9 +33,9 @@
     if (evidence.length === 0) {
       gridEl.style.gridTemplateColumns = "1fr";
       gridEl.append(
-        el("div", { style: "text-align: center; padding: 48px 20px; color: var(--text-muted)" }, [
-          el("p", { style: "font-size: 18px; font-weight: 600; margin-bottom: 8px", text: "Belum ada bukti" }),
-          el("p", { style: "font-size: 15px", text: "Gunakan tombol Add Evidence untuk mulai mendokumentasikan pekerjaanmu." }),
+        el("div", { style: "text-align: center; padding: 40px 20px; color: var(--text-muted)" }, [
+          el("p", { style: "font-size: 16px; font-weight: 600; margin-bottom: 8px", text: "Belum ada bukti" }),
+          el("p", { style: "font-size: 14px", text: "Gunakan tombol Add Evidence untuk mulai mendokumentasikan pekerjaanmu." }),
         ])
       );
       return;
@@ -70,21 +70,21 @@
     const type = TYPE_LABELS[ev.source_type] || TYPE_LABELS.other;
     const icon = TYPE_ICONS[ev.source_type] || TYPE_ICONS.other;
 
-    const card = el("article", { style: "background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); display: grid; gap: 16px; position: relative" });
+    const card = el("article", { style: "background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-sm); display: grid; gap: 14px; position: relative" });
 
     // Top: badge + icon
     card.append(
       el("div", { style: "display: flex; justify-content: space-between; align-items: center" }, [
-        el("span", { style: `display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; background: ${type.bg}; color: ${type.color}`, text: type.label }),
-        el("div", { style: "width: 38px; height: 38px; border-radius: 10px; background: var(--tint-gray); display: grid; place-items: center", innerHTML: icon }),
+        el("span", { style: `display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; background: ${type.bg}; color: ${type.color}`, text: type.label }),
+        el("div", { style: "width: 34px; height: 34px; border-radius: 9px; background: var(--tint-gray); display: grid; place-items: center", innerHTML: icon }),
       ])
     );
 
     // Title + description
     card.append(
-      el("div", { style: "min-height: 80px" }, [
-        el("h3", { style: "font-size: 18px; font-weight: 700; line-height: 1.3; color: var(--text-primary); margin-bottom: 8px", text: ev.title }),
-        el("p", { style: "font-size: 14px; line-height: 1.5; color: var(--text-muted)", text: ev.description || "Belum ada ringkasan." }),
+      el("div", { style: "min-height: 70px" }, [
+        el("h3", { style: "font-size: 16px; font-weight: 700; line-height: 1.3; color: var(--text-primary); margin-bottom: 6px", text: ev.title }),
+        el("p", { style: "font-size: 13.5px; line-height: 1.5; color: var(--text-muted)", text: ev.description || "Belum ada ringkasan." }),
       ])
     );
 
@@ -93,7 +93,7 @@
       card.append(
         el("div", { style: "display: flex; flex-wrap: wrap; gap: 6px" },
           ev.skills.map((name) =>
-            el("span", { style: "font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: var(--radius-round); background: var(--tint-gray); color: var(--primary-dark)", text: name })
+            el("span", { style: "font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: var(--radius-round); background: var(--tint-gray); color: var(--primary-dark)", text: name })
           )
         )
       );
@@ -104,24 +104,24 @@
     const safeLink = ev.file_url ? UI.safeUrl(ev.file_url) : null;
 
     card.append(
-      el("div", { style: "display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border)" }, [
-        el("p", { style: "font-size: 13px; color: var(--text-light); font-weight: 500", text: dateStr ? `Dibuat ${dateStr}` : "Tanpa tanggal" }),
-        el("div", { style: "display: flex; align-items: center; gap: 14px" }, [
+      el("div", { style: "display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border)" }, [
+        el("p", { style: "font-size: 12px; color: var(--text-light); font-weight: 500", text: dateStr ? `Dibuat ${dateStr}` : "Tanpa tanggal" }),
+        el("div", { style: "display: flex; align-items: center; gap: 10px" }, [
           safeLink
             ? el("a", {
                 href: safeLink,
                 target: "_blank",
                 rel: "noopener noreferrer",
-                style: "display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--primary); text-decoration: none",
+                style: "display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: var(--primary); text-decoration: none",
               }, [
                 document.createTextNode("Buka"),
                 el("span", { innerHTML: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10.5 7.583v4.084a1.167 1.167 0 0 1-1.167 1.166H2.333a1.167 1.167 0 0 1-1.166-1.166V4.667A1.167 1.167 0 0 1 2.333 3.5h4.084M8.75 1.167h4.083v4.083M5.833 8.167l6.417-6.417"/></svg>` }),
               ])
-            : el("span", { style: "font-size: 13px; color: var(--text-muted); font-weight: 500", text: "Tanpa tautan" }),
+            : el("span", { style: "font-size: 12px; color: var(--text-muted); font-weight: 500", text: "Tanpa tautan" }),
           el("button", {
             type: "button",
             text: "Hapus",
-            style: "border: none; background: none; padding: 4px 2px; font-family: inherit; font-size: 13px; font-weight: 700; color: #b91c1c; cursor: pointer",
+            style: "border: none; background: none; padding: 4px 2px; font-family: inherit; font-size: 12px; font-weight: 700; color: #b91c1c; cursor: pointer",
             onClick: () => removeEvidence(ev),
           }),
         ]),
@@ -149,7 +149,7 @@
       type: "button",
       text: skill.name,
       title: skill.category ? `${skill.name} · ${skill.category}` : skill.name,
-      style: "padding: 6px 12px; border: 1px solid #E2E8F0; background: #F1F5F9; color: #475569; border-radius: 16px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s",
+      style: "padding: 5px 10px; border: 1px solid #E2E8F0; background: #F1F5F9; color: #475569; border-radius: 14px; font-size: 11.5px; font-weight: 500; cursor: pointer; transition: all 0.2s",
     });
     chip.dataset.skillId = String(skill.id);
 

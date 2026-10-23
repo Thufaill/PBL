@@ -44,7 +44,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
         </div>
 
         <!-- Platform statistics — 5 cards -->
-        <div class="admin-stats-grid" id="admin-stats-grid">
+        <div class="admin-stats-grid" id="admin-stats-grid" data-loading="cards" data-loading-count="5">
           <!-- filled by admin.js -->
         </div>
 
@@ -66,7 +66,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
                 <span class="col-activity">Aktivitas</span>
                 <span class="col-cat">Kategori</span>
               </div>
-              <div class="admin-table-body" id="system-activity-body">
+              <div class="admin-table-body" id="system-activity-body" data-loading="rows" data-loading-count="4">
                 <!-- filled by admin.js -->
               </div>
             </div>
@@ -85,7 +85,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
                 <span class="col-admin">Administrator / aktivitas</span>
                 <span class="col-time-sm">Waktu</span>
               </div>
-              <div class="admin-table-body" id="admin-activity-body">
+              <div class="admin-table-body" id="admin-activity-body" data-loading="rows" data-loading-count="4">
                 <!-- filled by admin.js -->
               </div>
             </div>

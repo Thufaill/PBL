@@ -101,7 +101,7 @@
     );
 
     if (isSelected) {
-      card.append(el("p", { class: "career-card-count", text: `${matched} of ${skillNames.length} skills covered` }));
+      card.append(el("p", { class: "career-card-count", text: `${matched} of ${skillNames.length} ${skillNames.length === 1 ? "skill" : "skills"} covered` }));
       card.append(
         el("button", {
           class: "btn btn-accent",

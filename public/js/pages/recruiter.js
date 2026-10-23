@@ -31,7 +31,7 @@ function initials(name) {
 
 async function renderCompany() {
   const c = await API.getRecruiterCompany();
-  document.getElementById("company-sub").textContent = `${c.name} · ${c.tagline}`;
+  document.getElementById("company-sub").textContent = [c.name, c.tagline].filter(Boolean).join(" · ");
 }
 
 async function renderStats() {
@@ -107,10 +107,10 @@ async function renderTeam() {
             el("span", { class: "rec-row-name-sub", text: m.email }),
           ]),
         ]),
-        el("div", { class: "rec-row-role" }, [
+        el("div", { class: "rec-row-role", "data-label": "Peran" }, [
           el("span", { class: "rec-role-text", text: m.role_label }),
         ]),
-        el("div", { class: "rec-row-status" }, [
+        el("div", { class: "rec-row-status", "data-label": "Status Akses" }, [
           el("span", { class: `rec-badge ${STATUS_BADGE[m.status] || "rec-badge--gray"}`, text: STATUS_LABEL[m.status] || m.status }),
         ]),
         el("div", { class: "rec-row-actions" }, [action]),
@@ -125,12 +125,15 @@ async function renderRoles() {
 
   const body = document.getElementById("rec-roles-body");
   clear(body);
+  if (!roles.length) {
+    body.appendChild(el("p", { class: "rec-empty", text: "Belum ada target role." }));
+  }
   for (const r of roles) {
     body.appendChild(
       el("div", { class: "rec-role-row" }, [
         el("div", { class: "rec-role-identity" }, [
           el("span", { class: "rec-role-name", text: r.name }),
-          el("span", { class: "rec-role-sub", text: `${r.category} · ${r.positions} posisi` }),
+          el("span", { class: "rec-role-sub", text: [r.category, `${r.positions} posisi`].filter(Boolean).join(" · ") }),
         ]),
         el(
           "div",

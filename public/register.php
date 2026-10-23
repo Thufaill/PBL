@@ -90,11 +90,11 @@ require_once __DIR__ . '/../includes/layouts/head.php';
     <main class="auth-main">
       <article class="auth-card card">
         <div class="auth-logo">
-          <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--primary); color: #fff; display: grid; place-items: center; font-size: 18px; font-weight: 800">S</div>
+          <div style="width: 30px; height: 30px; border-radius: 8px; background: var(--primary); color: #fff; display: grid; place-items: center; font-size: 16px; font-weight: 800">S</div>
           <span>SkillBridge</span>
         </div>
 
-        <h1 style="font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 8px">Create account</h1>
+        <h1 style="font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 8px">Create account</h1>
         <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 24px">Start tracking your skills and building evidence.</p>
 
         <?php if (!empty($error)): ?>

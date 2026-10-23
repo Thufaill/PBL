@@ -41,9 +41,9 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
         <section class="rec-card">
           <div class="rec-card-head">
             <h2 class="rec-card-title">Ringkasan Lowongan</h2>
-            <span class="rec-card-count" id="roles-summary">—</span>
+            <span class="rec-card-count" id="roles-summary"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 120px"></span></span>
           </div>
-          <div class="rec-role-cards" id="rec-role-cards">
+          <div class="rec-role-cards" id="rec-role-cards" data-loading="cards" data-loading-count="2">
             <!-- diisi js/pages/recruiter-roles.js -->
           </div>
         </section>
@@ -52,7 +52,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
         <section>
           <h2 class="rec-section-title">Mapping Skill ke Target Role</h2>
           <p class="rec-section-sub">Pilih target role di atas, lalu tentukan skill yang menjadi kebutuhan role tersebut.</p>
-          <div class="rec-mapping-grid" id="rec-mapping-panel" style="margin-top: 16px">
+          <div class="rec-mapping-grid" id="rec-mapping-panel" style="margin-top: 16px" data-loading="cards" data-loading-count="2">
             <!-- diisi js/pages/recruiter-roles.js -->
           </div>
         </section>

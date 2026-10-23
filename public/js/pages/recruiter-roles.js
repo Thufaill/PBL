@@ -60,6 +60,8 @@ function selectRole(id) {
   const role = allRoles.find((r) => r.id === id);
   connectedIds = new Set(role ? role.skill_ids || [] : []);
   mappingDirty = false;
+  saveBtn.disabled = !role;
+  cancelBtn.disabled = !role;
   renderCards();
   renderMapping(role);
 }
@@ -170,6 +172,7 @@ async function load() {
 }
 
 const saveBtn = document.getElementById("btn-save-mapping");
+const cancelBtn = document.getElementById("btn-cancel-mapping");
 
 saveBtn.addEventListener("click", async () => {
   if (selectedRoleId == null) {
@@ -193,7 +196,7 @@ saveBtn.addEventListener("click", async () => {
   }
 });
 
-document.getElementById("btn-cancel-mapping").addEventListener("click", () => {
+cancelBtn.addEventListener("click", () => {
   selectRole(selectedRoleId);
   UI.toast(mappingDirty ? "Perubahan dibatalkan." : "Tidak ada perubahan.");
 });

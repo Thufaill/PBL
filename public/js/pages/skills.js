@@ -18,11 +18,11 @@
   // Ikon kategori sebagai SVG inline string.
   function categoryIconSvg(category) {
     const path = CATEGORY_ICONS[category] || CATEGORY_ICON_FALLBACK;
-    return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
   }
 
   // Tile ikon skill: biru di daftar utama, pink saat terpilih di picker.
-  function skillAvatar(skill, { size = 44, variant = "primary" } = {}) {
+  function skillAvatar(skill, { size = 40, variant = "primary" } = {}) {
     return el("div", {
       class: `skill-avatar-tile skill-avatar-tile-${variant}`,
       style: `width: ${size}px; height: ${size}px`,
@@ -46,13 +46,13 @@
   const targetCard = document.getElementById("card-target");
   if (target) {
     targetCard.append(
-      el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
-      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
+      el("h2", { style: "font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
+      el("p", { style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
     );
   } else {
     targetCard.append(
-      el("h2", { style: "font-size: 24px; font-weight: 700; color: var(--text-primary)", text: "No target career set" }),
-      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Choose your target career to view required skills." })
+      el("h2", { style: "font-size: 20px; font-weight: 700; color: var(--text-primary)", text: "No target career set" }),
+      el("p", { style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Choose your target career to view required skills." })
     );
   }
 
@@ -63,7 +63,7 @@
   // Skills List
   const listEl = document.getElementById("skills-list");
   if (mine.length === 0) {
-    listEl.append(el("p", { style: "color: var(--text-muted); font-size: 15px", text: "No skills added yet. Use the Add skill button to start building your profile." }));
+    listEl.append(el("p", { style: "color: var(--text-muted); font-size: 14px", text: "No skills added yet. Use the Add skill button to start building your profile." }));
   } else {
     const skillRows = mine.map((s) => {
       const skill = catalog.find((c) => c.id === s.skill_id) || {
@@ -74,18 +74,20 @@
       return renderSkillRow(skill, s.evidence_count, s.label);
     });
 
-    listEl.append(el("div", { style: "display: grid; gap: 16px" }, skillRows));
+    listEl.append(el("div", { style: "display: grid; gap: 12px" }, skillRows));
   }
 
   // Card: Evidence Summary
   const backedCount = mine.filter((s) => s.evidence_count > 0).length;
   document.getElementById("card-evidence").append(
-    el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${evidence.length} evidence items` }),
+    el("h2", { style: "font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${evidence.length} evidence ${evidence.length === 1 ? "item" : "items"}` }),
     el("p", {
-      style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px",
+      style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px",
       text: evidence.length === 0
         ? "Add your first work example to start backing up these skills."
-        : `${backedCount} of your ${mine.length} skills already have at least one item attached.`,
+        : mine.length === 0
+          ? "Add a skill to connect this evidence to your profile."
+          : `${backedCount} of your ${mine.length} ${mine.length === 1 ? "skill has" : "skills have"} at least one item attached.`,
     })
   );
 
@@ -139,7 +141,7 @@
             }
           },
         }, [
-          skillAvatar(s, { size: 40 }),
+          skillAvatar(s, { size: 36 }),
           el("div", { class: "skill-option-text" }, [
             el("p", { class: "skill-option-name", text: s.name }),
             el("p", { class: "skill-option-category", text: s.category || "—" }),
@@ -206,8 +208,8 @@
       title: "Add skill",
       body: [
         el("div", { style: "display: flex; gap: 20px; margin-bottom: 8px" }, [
-          el("label", { style: "display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 600" }, [modeExisting, "From catalog"]),
-          el("label", { style: "display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 600" }, [modeNew, "New skill"]),
+          el("label", { style: "display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600" }, [modeExisting, "From catalog"]),
+          el("label", { style: "display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600" }, [modeNew, "New skill"]),
         ]),
         selectField,
         newFields,
@@ -285,13 +287,13 @@
   function renderSkillRow(skill, evidenceCount, label) {
     const badgeClass = label === "Strong" ? "badge-strong" : "badge-growing";
 
-    return el("div", { style: "display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm)" }, [
-      skillAvatar(skill, { size: 44 }),
+    return el("div", { style: "display: flex; align-items: center; gap: 11px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm)" }, [
+      skillAvatar(skill, { size: 40 }),
       el("div", { style: "flex: 1; min-width: 0" }, [
-        el("p", { style: "font-size: 16px; font-weight: 700; color: var(--text-primary)", text: skill.name }),
-        el("p", { style: "font-size: 13px; color: var(--text-muted); margin-top: 2px", text: `${evidenceCount} evidence ${evidenceCount === 1 ? "item" : "items"}` }),
+        el("p", { style: "font-size: 15px; font-weight: 700; color: var(--text-primary)", text: skill.name }),
+        el("p", { style: "font-size: 12.5px; color: var(--text-muted); margin-top: 2px", text: `${evidenceCount} evidence ${evidenceCount === 1 ? "item" : "items"}` }),
       ]),
-      el("span", { class: `badge ${badgeClass}`, style: "font-size: 12px; padding: 5px 10px", text: label }),
+      el("span", { class: `badge ${badgeClass}`, style: "font-size: 11px; padding: 4px 9px", text: label }),
     ]);
   }
 })();

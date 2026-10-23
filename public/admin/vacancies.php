@@ -57,7 +57,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
                 <th class="admin-text-end">Aksi</th>
               </tr>
             </thead>
-            <tbody id="vacancies-table-body"></tbody>
+            <tbody id="vacancies-table-body" data-loading="table" data-loading-colspan="8" data-loading-count="5"></tbody>
           </table>
         </div>
       </div>

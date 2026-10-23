@@ -21,13 +21,13 @@
   const targetCard = document.getElementById("card-target");
   if (target) {
     targetCard.append(
-      el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
-      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
+      el("p", { style: "font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
+      el("p", { style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
     );
   } else {
     targetCard.append(
-      el("p", { style: "font-size: 24px; font-weight: 700; color: var(--text-primary)", text: "No target career set" }),
-      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Choose your target career to view details." })
+      el("p", { style: "font-size: 20px; font-weight: 700; color: var(--text-primary)", text: "No target career set" }),
+      el("p", { style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Choose your target career to view details." })
     );
   }
 
@@ -40,9 +40,9 @@
 
   const growingCount = mine.length - strongCount;
   document.getElementById("card-skills").append(
-    el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${mine.length} skills` }),
+    el("p", { style: "font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${mine.length} ${mine.length === 1 ? "skill" : "skills"}` }),
     el("p", {
-      style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px",
+      style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px",
       text: mine.length
         ? `${strongCount} ${strongCount === 1 ? "skill is" : "skills are"} backed by two or more evidence items, ${growingCount} still growing.`
         : "Add the skills you are learning to start tracking your portfolio.",
@@ -50,7 +50,7 @@
     mySkillNames.length > 0
       ? el("div", { style: "display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px" },
           mySkillNames.map((name) => {
-            const chip = el("div", { class: "tag-chip", style: "display: inline-flex; align-items: center; gap: 7px; background: var(--tint-gray); border: 1px solid var(--border); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; color: var(--primary-dark)" });
+            const chip = el("div", { class: "tag-chip", style: "display: inline-flex; align-items: center; gap: 6px; background: var(--tint-gray); border: 1px solid var(--border); padding: 6px 10px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700; color: var(--primary-dark)" });
             // Nama skill bisa berasal dari input pengguna: jangan lewat innerHTML (XSS).
             chip.append(
               el("span", { style: "display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--primary)" }),
@@ -65,8 +65,8 @@
   const recent = evidence.slice(-3).reverse();
   const evCardEl = document.getElementById("card-evidence");
   evCardEl.append(
-    el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${evidence.length} items` }),
-    el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Projects, certificates, and links are all in one place so you can review them quickly." })
+    el("p", { style: "font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${evidence.length} ${evidence.length === 1 ? "item" : "items"}` }),
+    el("p", { style: "font-size: 14px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Projects, certificates, and links are all in one place so you can review them quickly." })
   );
 
   if (recent.length > 0) {
@@ -86,13 +86,13 @@
     };
     const icon = iconMap[ev.source_type] || iconMap.other;
 
-    return el("div", { style: "display: flex; gap: 13px; padding: 11px 0; border-bottom: 1px solid var(--border); opacity: 0.9; align-items: center" }, [
-      el("div", { style: "width: 38px; height: 38px; border-radius: 10px; background: var(--tint-gray); display: grid; place-items: center; flex-shrink: 0", innerHTML: icon }),
+    return el("div", { style: "display: flex; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--border); opacity: 0.9; align-items: center" }, [
+      el("div", { style: "width: 34px; height: 34px; border-radius: 9px; background: var(--tint-gray); display: grid; place-items: center; flex-shrink: 0", innerHTML: icon }),
       el("div", { style: "flex: 1; min-width: 0" }, [
-        el("p", { style: "font-size: 14px; font-weight: 700; color: var(--text-primary)", text: ev.title }),
-        el("p", { style: "font-size: 11px; color: var(--text-muted)", text: `${ev.source_type} · ${UI.formatDate(ev.metadata?.date)}` }),
+        el("p", { style: "font-size: 13.5px; font-weight: 700; color: var(--text-primary)", text: ev.title }),
+        el("p", { style: "font-size: 10.5px; color: var(--text-muted)", text: [ev.source_type, UI.formatDate(ev.metadata?.date)].filter(Boolean).join(" · ") }),
       ]),
-      el("span", { style: "background: var(--tint-pink); color: var(--accent); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: var(--radius-round); opacity: 0.9", text: "Added" }),
+      el("span", { style: "background: var(--tint-pink); color: var(--accent); font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: var(--radius-round); opacity: 0.9", text: "Added" }),
     ]);
   }
 })();

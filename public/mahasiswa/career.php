@@ -29,10 +29,10 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
           <circle cx="9" cy="9" r="7.5" />
           <path d="M9 5.25v5.25M9 12.75h.008" stroke-linecap="round" />
         </svg>
-        <span id="banner-text"></span>
+        <span id="banner-text"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: min(560px, 70vw)"></span></span>
       </div>
 
-      <div class="career-grid" id="career-grid"></div>
+      <div class="career-grid" id="career-grid" data-loading="cards" data-loading-count="3"></div>
     </main>
 
     

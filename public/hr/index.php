@@ -47,13 +47,13 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
               <span class="rec-company-title" id="company-title">Profil Perusahaan Aktif.</span>
               <span class="rec-badge-verified" id="company-badge">Terverifikasi</span>
             </div>
-            <p class="rec-company-sub" id="company-sub">PT Tech Indonesia · Mitra Resmi SkillBridge</p>
+            <p class="rec-company-sub" id="company-sub"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 280px; max-width: 60vw"></span></p>
           </div>
           <button type="button" class="btn btn-accent btn-44" id="btn-add-recruiter">Tambah Recruiter</button>
         </section>
 
         <!-- Metrics -->
-        <section class="rec-stats-grid" id="rec-stats-grid" aria-label="Metrik perusahaan">
+        <section class="rec-stats-grid" id="rec-stats-grid" data-loading="cards" data-loading-count="5" aria-label="Metrik perusahaan">
           <!-- diisi js/pages/recruiter.js -->
         </section>
 
@@ -64,7 +64,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
             <div class="rec-card-head">
               <div>
                 <h2 class="rec-card-title">Anggota Tim Recruiter</h2>
-                <p class="rec-card-sub" id="team-summary">—</p>
+                <p class="rec-card-sub" id="team-summary"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 220px; max-width: 50vw"></span></p>
               </div>
               <a href="team.php" class="rec-pager-link">Kelola Tim &rarr;</a>
             </div>
@@ -75,7 +75,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
                 <span class="rec-col-status">Status Akses</span>
                 <span class="rec-col-actions">Aksi</span>
               </div>
-              <div class="rec-table-body" id="rec-team-body">
+              <div class="rec-table-body" id="rec-team-body" data-loading="rows" data-loading-count="4">
                 <!-- diisi js/pages/recruiter.js -->
               </div>
             </div>
@@ -85,7 +85,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
             <div class="rec-card-head">
               <div>
                 <h2 class="rec-card-title">Target Role &amp; Skill Mapping Perusahaan</h2>
-                <p class="rec-card-sub" id="roles-summary">—</p>
+                <p class="rec-card-sub" id="roles-summary"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 200px; max-width: 50vw"></span></p>
               </div>
               <a href="roles.php" class="rec-pager-link">Kelola Role &rarr;</a>
             </div>
@@ -94,10 +94,10 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
               <span class="rec-col-skill">Kebutuhan Skill</span>
               <span class="rec-col-match">Kandidat</span>
             </div>
-            <div class="rec-role-body" id="rec-roles-body">
+            <div class="rec-role-body" id="rec-roles-body" data-loading="rows" data-loading-count="3">
               <!-- diisi js/pages/recruiter.js -->
             </div>
-            <p class="rec-card-footer" id="roles-footer">—</p>
+            <p class="rec-card-footer" id="roles-footer"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 260px; max-width: 60vw"></span></p>
           </section>
 
         </div>
@@ -108,7 +108,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
             <h2 class="rec-card-title">Aktivitas Recruiter Terbaru</h2>
             <a href="activity.php" class="rec-pager-link">Lihat semua &rarr;</a>
           </div>
-          <div class="rec-activity-body" id="rec-activity-body">
+          <div class="rec-activity-body" id="rec-activity-body" data-loading="rows" data-loading-count="3">
             <!-- diisi js/pages/recruiter.js -->
           </div>
         </section>

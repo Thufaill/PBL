@@ -36,7 +36,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
         <section class="rec-card">
           <div class="rec-card-head">
             <h2 class="rec-card-title">Aktivitas Terbaru</h2>
-            <span class="rec-card-sub" id="rec-act-count">—</span>
+            <span class="rec-card-sub" id="rec-act-count"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 120px"></span></span>
           </div>
           <div class="rec-toolbar">
             <label class="rec-search">
@@ -50,7 +50,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
               <option value="review">Review</option>
             </select>
           </div>
-          <div class="rec-activity-body" id="rec-act-body">
+          <div class="rec-activity-body" id="rec-act-body" data-loading="rows" data-loading-count="5">
             <!-- diisi js/pages/recruiter-activity.js -->
           </div>
         </section>

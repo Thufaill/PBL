@@ -20,7 +20,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
         <div class="page-head-left" style="max-width: 760px">
           <p class="eyebrow">Your profile</p>
           <h1>My Skills</h1>
-          <p style="margin-top: 8px; font-size: 15px; line-height: 1.45; color: var(--text-muted)">
+          <p style="margin-top: 8px; font-size: 14px; line-height: 1.45; color: var(--text-muted)">
             A simple, reassuring view of your target career, strongest skills, and the evidence you already have.
           </p>
         </div>
@@ -32,11 +32,11 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
         </button>
       </div>
 
-      <div class="skills-layout-grid" style="display: grid; grid-template-columns: 1fr 360px; gap: 24px">
+      <div class="skills-layout-grid" style="display: grid; grid-template-columns: 1fr 360px; gap: 20px">
         <!-- Left Column -->
-        <div style="display: grid; gap: 20px; align-content: start">
+        <div style="display: grid; gap: 16px; align-content: start">
           <!-- Target Career -->
-          <article class="card-lg" style="display: grid; gap: 18px">
+          <article class="card-lg" style="display: grid; gap: 16px">
             <div style="display: flex; justify-content: space-between; align-items: flex-start">
               <h3>Target career</h3>
               <div class="card-icon-box" style="background: var(--primary-subtle); color: var(--primary); border-color: #bfdbfe">
@@ -45,11 +45,11 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                 </svg>
               </div>
             </div>
-            <div id="card-target"></div>
+            <div id="card-target" data-loading="text"></div>
           </article>
 
           <!-- Skills Summary -->
-          <article class="card-lg" style="display: grid; gap: 18px">
+          <article class="card-lg" style="display: grid; gap: 16px">
             <div style="display: flex; justify-content: space-between; align-items: flex-start">
               <div>
                 <h3>Skills summary</h3>
@@ -57,19 +57,19 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                   Focus on the skills you can explain clearly and connect to real work examples.
                 </p>
               </div>
-              <span class="badge" id="badge-strong" style="font-size: 12px; padding: 5px 10px">0 strong</span>
+              <span class="badge" id="badge-strong" style="font-size: 11px; padding: 4px 9px"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 52px"></span></span>
             </div>
             <div>
-              <h2 style="font-size: 24px; margin-bottom: 12px">Your strongest skills</h2>
-              <div id="skills-list"></div>
+              <h2 style="font-size: 20px; margin-bottom: 10px">Your strongest skills</h2>
+              <div id="skills-list" data-loading="rows" data-loading-count="3"></div>
             </div>
           </article>
         </div>
 
         <!-- Right Column -->
-        <div style="display: grid; gap: 20px; align-content: start">
+        <div style="display: grid; gap: 16px; align-content: start">
           <!-- Evidence Summary -->
-          <article class="card-lg" style="display: grid; gap: 18px">
+          <article class="card-lg" style="display: grid; gap: 16px">
             <div style="display: flex; justify-content: space-between; align-items: flex-start">
               <h3>Evidence summary</h3>
               <div class="card-icon-box" style="background: var(--tint-pink); color: var(--accent); border-color: var(--pink-border)">
@@ -78,7 +78,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                 </svg>
               </div>
             </div>
-            <div id="card-evidence"></div>
+            <div id="card-evidence" data-loading="text"></div>
           </article>
         </div>
       </div>

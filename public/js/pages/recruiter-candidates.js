@@ -124,12 +124,16 @@ function render() {
           ]),
         ]),
         el("td", { class: "rec-cand-skills" }, [
-          el("div", { class: "rec-cell rec-cell--wrap" }, (c.matched_skills || []).map((s) => chip(s))),
+          el("div", { class: "rec-cell rec-cell--wrap" }, (c.matched_skills || []).length
+            ? (c.matched_skills || []).map((s) => chip(s))
+            : [el("span", { class: "rec-cell-empty", text: "Tidak ada" })]),
         ]),
         el("td", { class: "rec-cand-gaps" }, [
-          el("div", { class: "rec-cell rec-cell--wrap" }, (c.gap_skills || []).map((s) => chip(s, "rec-chip--gap"))),
+          el("div", { class: "rec-cell rec-cell--wrap" }, (c.gap_skills || []).length
+            ? (c.gap_skills || []).map((s) => chip(s, "rec-chip--gap"))
+            : [el("span", { class: "rec-cell-empty", text: "Tidak ada" })]),
         ]),
-        el("td", { class: "rec-cand-evidence", text: `${c.evidence_count} Items` }),
+        el("td", { class: "rec-cand-evidence", text: `${c.evidence_count} item` }),
         el("td", { class: "rec-cand-actions" }, [
           el("div", { class: "table-actions rec-cell" }, [
             el("button", { type: "button", class: "rec-cand-btn", text: "Tinjau", onClick: () => openReview(c) }),

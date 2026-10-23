@@ -20,7 +20,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
       <div class="page-head">
         <div class="page-head-left">
           <p class="eyebrow">Your Account</p>
-          <h1 style="font-size: 34px; letter-spacing: -0.34px; line-height: 40px">My Profile</h1>
+          <h1>My Profile</h1>
           <p>Manage your personal information and portfolio details.</p>
         </div>
         <button class="btn btn-accent btn-44" type="button" id="btn-edit-profile">Edit Profile</button>
@@ -29,8 +29,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
       <!-- Profile Information: 2 columns -->
       <div class="profile-info-grid">
         <!-- Left: Personal Information -->
-        <article class="card" style="padding: 24px; display: grid; gap: 20px">
-          <h3 style="font-size: 18px; font-weight: 700">Personal Information</h3>
+        <article class="card" style="padding: 20px; display: grid; gap: 16px">
+          <h3 style="font-size: 16px; font-weight: 700">Personal Information</h3>
           <div class="profile-student-row">
             <!-- Avatar + identity -->
             <div class="profile-identity">
@@ -41,7 +41,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                 </svg>
               </div>
               <div class="profile-identity-text">
-                <p class="profile-name" id="profile-display-name">Memuat...</p>
+                <p class="profile-name" id="profile-display-name"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 58%; height: 18px"></span></p>
                 <p class="profile-role">Student</p>
                 <button class="btn btn-sm profile-change-photo" type="button" id="btn-change-photo">Change Photo</button>
               </div>
@@ -51,31 +51,31 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               <div class="profile-detail-row">
                 <div class="profile-detail">
                   <p class="profile-detail-label">Full Name</p>
-                  <p class="profile-detail-value" id="detail-fullname">Memuat...</p>
+                  <p class="profile-detail-value" id="detail-fullname"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 72%"></span></p>
                 </div>
                 <div class="profile-detail">
                   <p class="profile-detail-label">Email Address</p>
-                  <p class="profile-detail-value" id="detail-email">Memuat...</p>
+                  <p class="profile-detail-value" id="detail-email"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 64%"></span></p>
                 </div>
               </div>
               <div class="profile-detail-row">
                 <div class="profile-detail">
                   <p class="profile-detail-label">Institution</p>
-                  <p class="profile-detail-value" id="detail-institution">Memuat...</p>
+                  <p class="profile-detail-value" id="detail-institution"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 68%"></span></p>
                 </div>
                 <div class="profile-detail">
                   <p class="profile-detail-label">Study Program</p>
-                  <p class="profile-detail-value" id="detail-program">Memuat...</p>
+                  <p class="profile-detail-value" id="detail-program"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 56%"></span></p>
                 </div>
               </div>
               <div class="profile-detail-row">
                 <div class="profile-detail">
                   <p class="profile-detail-label">Semester</p>
-                  <p class="profile-detail-value" id="detail-semester">Memuat...</p>
+                  <p class="profile-detail-value" id="detail-semester"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 40%"></span></p>
                 </div>
                 <div class="profile-detail">
                   <p class="profile-detail-label">Location</p>
-                  <p class="profile-detail-value" id="detail-location">Memuat...</p>
+                  <p class="profile-detail-value" id="detail-location"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 52%"></span></p>
                 </div>
               </div>
             </div>
@@ -84,8 +84,8 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
 
         <!-- Right: Account Details -->
         <div class="profile-sidebar">
-          <article class="card" style="padding: 24px; display: grid; gap: 16px">
-            <h3 style="font-size: 18px; font-weight: 700">Account Details</h3>
+          <article class="card" style="padding: 20px; display: grid; gap: 12px">
+            <h3 style="font-size: 16px; font-weight: 700">Account Details</h3>
             <div class="account-detail-row">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -93,7 +93,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
               <div class="account-detail-copy">
                 <p class="profile-detail-label">Account Status</p>
-                <span class="badge badge-growing" style="font-size: 11px; padding: 5px 10px; opacity: 0.9">Active</span>
+                <span class="badge badge-growing" style="font-size: 10.5px; padding: 4px 9px; opacity: 0.9">Active</span>
               </div>
             </div>
             <div class="account-detail-row">
@@ -103,7 +103,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
               <div class="account-detail-copy">
                 <p class="profile-detail-label">Member Since</p>
-                <p class="profile-detail-value" id="detail-member-since">Memuat...</p>
+                <p class="profile-detail-value" id="detail-member-since"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 54%"></span></p>
               </div>
             </div>
             <div class="account-detail-row">
@@ -113,7 +113,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
               <div class="account-detail-copy">
                 <p class="profile-detail-label">Portfolio Visibility</p>
-                <p class="profile-detail-value" id="detail-visibility">Memuat...</p>
+                <p class="profile-detail-value" id="detail-visibility"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 42%"></span></p>
               </div>
             </div>
           </article>
@@ -122,26 +122,26 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
 
       <!-- Portfolio Overview -->
       <section class="profile-overview">
-        <h3 style="font-size: 18px; font-weight: 700">Portfolio Overview</h3>
+        <h3 style="font-size: 16px; font-weight: 700">Portfolio Overview</h3>
         <div class="profile-summary-row">
           <div class="profile-summary-card">
             <p class="profile-summary-label">Total Skills</p>
-            <p class="profile-summary-value" id="summary-skills">0</p>
+            <p class="profile-summary-value" id="summary-skills"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 32%; height: 24px"></span></p>
           </div>
           <div class="profile-summary-card">
             <p class="profile-summary-label">Total Evidence</p>
-            <p class="profile-summary-value" id="summary-evidence">0 items</p>
+            <p class="profile-summary-value" id="summary-evidence"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 58%; height: 24px"></span></p>
           </div>
           <div class="profile-summary-card">
             <p class="profile-summary-label">Career Target</p>
-            <p class="profile-summary-value" id="summary-career">—</p>
+            <p class="profile-summary-value" id="summary-career"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 52%; height: 24px"></span></p>
           </div>
         </div>
       </section>
 
       <!-- Account Settings -->
       <article class="card profile-settings">
-        <h3 style="font-size: 18px; font-weight: 700">Account Settings</h3>
+        <h3 style="font-size: 16px; font-weight: 700">Account Settings</h3>
         <div class="settings-list">
           <button class="settings-row" type="button" id="btn-edit-personal">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

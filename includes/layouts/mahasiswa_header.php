@@ -40,15 +40,15 @@ $nav_items = [
     <?php endforeach; ?>
   </div>
 
-  <div class="navbar-profile" style="position: relative; display: flex; align-items: center; gap: 12px;">
-    <a href="<?= e(base_url('mahasiswa/profile.php')) ?>" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+  <div class="navbar-profile">
+    <a class="navbar-profile-link" href="<?= e(base_url('mahasiswa/profile.php')) ?>">
       <div class="navbar-profile-text">
         <div class="navbar-profile-name"><?= htmlspecialchars($user['name'] ?? 'Anda') ?></div>
         <div class="navbar-profile-email"><?= htmlspecialchars($user['email'] ?? '') ?></div>
       </div>
       <div class="navbar-avatar"><?= htmlspecialchars($user['initials'] ?? 'S') ?></div>
     </a>
-    <a href="<?= e(base_url('logout.php')) ?>" title="Keluar / Logout" style="color: var(--text-muted); display: grid; place-items: center; padding: 4px; border-radius: 6px; transition: color 0.15s ease;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">
+    <a class="navbar-logout" href="<?= e(base_url('logout.php')) ?>" title="Keluar / Logout" aria-label="Keluar">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6.75 15.75H3.375A1.125 1.125 0 012.25 14.625V3.375A1.125 1.125 0 013.375 2.25h3.375M12.375 12.375L15.75 9l-3.375-3.375M15.75 9H6.75"/>
       </svg>

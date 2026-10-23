@@ -36,7 +36,7 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
         <section class="rec-card">
           <div class="rec-card-head">
             <h2 class="rec-card-title">Candidate Pool</h2>
-            <span class="rec-card-sub" id="rec-cand-count">—</span>
+            <span class="rec-card-sub" id="rec-cand-count"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 150px"></span></span>
           </div>
 
           <div class="rec-toolbar">
@@ -66,12 +66,12 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
                   <th class="rec-cand-actions">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="rec-cand-body"></tbody>
+              <tbody id="rec-cand-body" data-loading="table" data-loading-colspan="6" data-loading-count="5"></tbody>
             </table>
           </div>
 
           <div class="rec-pager">
-            <span id="rec-cand-shown">—</span>
+            <span id="rec-cand-shown"><span class="sb-skeleton-line" data-sb-skeleton aria-hidden="true" style="width: 130px"></span></span>
             <button type="button" class="rec-pager-link" id="rec-cand-prev" disabled>Sebelumnya</button>
             <span class="rec-pager-page" id="rec-cand-page">1</span>
             <button type="button" class="rec-pager-link" id="rec-cand-next">Berikutnya</button>

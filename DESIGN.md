@@ -36,8 +36,8 @@ Dokumen ini adalah spesifikasi desain (*Single Source of Truth*) untuk sistem an
 - `--primary-hover`: `#1d4ed8` (Cobalt 700)
 - `--primary-dark`: `#0f172a` (Slate 900)
 - `--primary-subtle`: `#eff6ff` (Cobalt 50)
-- `--accent`: `#f43f5e` (Rose Coral 500 — aksen aksi sekunder)
-- `--accent-hover`: `#e11d48`
+- `--accent`: `#e11d48` (Rose 600 — aksen aksi sekunder; kontras teks putih ±4,9:1, lolos WCAG AA)
+- `--accent-hover`: `#be123c` (Rose 700)
 - `--accent-sparkle`: `#f59e0b` (Warm Amber 500 — indikator progress & milestone)
 
 ### 2.4 Semantic Badges
@@ -63,13 +63,15 @@ Dokumen ini adalah spesifikasi desain (*Single Source of Truth*) untuk sistem an
 ## 3. Tipografi & Skala Hirarki
 
 - **Font Family**: `"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;`
-- **Typographic Scale**:
-  - **Hero Display / H1**: `38px` (`2.375rem`), `font-weight: 800`, `letter-spacing: -0.035em`, `line-height: 1.15`
-  - **Section Title / H2**: `28px` (`1.75rem`), `font-weight: 700`, `letter-spacing: -0.025em`, `line-height: 1.2`
-  - **Card Heading / H3**: `18px` (`1.125rem`), `font-weight: 600`, `letter-spacing: -0.015em`, `line-height: 1.3`
-  - **Body Text**: `15px` (`0.9375rem`), `font-weight: 400 / 500`, `line-height: 1.6`
-  - **Eyebrow / Category Label**: `11px`, `font-weight: 700`, `letter-spacing: 0.1em`, `text-transform: uppercase`, `color: var(--primary)`
-  - **Metadata / Tabular Figures**: `font-variant-numeric: tabular-nums;`, `font-size: 13px`
+- **Typographic Scale** (direvisi 24 Okt 2026 — dikencangkan ±15–20% agar sesuai kepadatan konsol):
+  - **Hero Display / H1**: `32px` (ponsel `28px`), `font-weight: 800`, `letter-spacing: -0.03em`, `line-height: 1.15`; landing memakai hero sendiri `46px` desktop / `30px` ponsel
+  - **Section Title / H2**: `24px` (ponsel `22px`), `font-weight: 700`, `letter-spacing: -0.025em`, `line-height: 1.2`
+  - **Card Heading / H3**: `16px`, `font-weight: 600`, `letter-spacing: -0.015em`, `line-height: 1.3`
+  - **Body Text**: `14px` (`--font-base`), `font-weight: 400 / 500`, `line-height: 1.55`
+  - **Eyebrow / Category Label**: `10.5px`, `font-weight: 700`, `letter-spacing: 0.1em`, `text-transform: uppercase`, `color: var(--primary)`
+  - **Metadata / Tabular Figures**: `font-variant-numeric: tabular-nums;`, `font-size: 12.5px`
+  - **Data Value**: `26–28px`, `font-weight: 800`, `letter-spacing: -0.02em`
+  - Kontrol form: `38px` tinggi di desktop, `44px` di ponsel; input ponsel `16px` agar iOS tidak melakukan zoom otomatis.
 
 ---
 
@@ -94,3 +96,66 @@ Dokumen ini adalah spesifikasi desain (*Single Source of Truth*) untuk sistem an
 ### 4.3 Transitions & Dynamics
 - `--ease-spring`: `cubic-bezier(0.4, 0, 0.2, 1)`
 - Interactive buttons & cards: Hover terangkat `-2px` hingga `-3px`, active depression `scale(0.98)`
+
+---
+
+## 5. Perilaku Responsif
+
+Satu sistem, dua wajah: desktop menampilkan kepadatan data, ponsel menampilkan keterbacaan.
+
+### 5.1 Breakpoint
+- **≥ 1400px (desktop lebar)**: tabel data native, sidebar tetap, topbar penuh.
+- **1024–1399px (laptop/tablet lanskap)**: sidebar tetap, tetapi tabel data berubah menjadi kartu karena ruang konten di samping sidebar belum cukup untuk enam kolom.
+- **768–1023px (tablet)**: sidebar menjadi off-canvas, tabel tetap kartu, toolbar masih satu baris.
+- **< 768px (ponsel)**: seluruh konsol mobile — toolbar dan aksi memenuhi lebar, grid statistik dua kolom.
+- Tabel data tidak pernah memaksa geser horizontal pada lebar < 1400px.
+- `html` dan `body` memakai `overflow-x: clip` sebagai jaminan keras: pada rentang `320–1440px` tidak ada halaman yang boleh menggulir horizontal. `clip` dipilih (bukan `hidden`) agar tidak membuat scroll container baru sehingga header sticky tetap bekerja.
+
+### 5.2 Navigasi & Topbar
+- Header publik dan mahasiswa memakai navigasi satu baris pada `≥1024px`; pada `1024–1279px` padding bar, jarak antar item, dan gap aksi dirapatkan agar CTA tidak menempel tepi viewport.
+- Di bawah `1024px`, seluruh tautan navigasi, aksi akun, dan profil masuk ke drawer yang dibuka tombol menu `44×44` di kanan; tidak ada menu yang terpotong atau perlu digeser horizontal.
+- Header admin/HR: tinggi `64px`, judul workspace dipotong dengan ellipsis, pill role disembunyikan agar judul dan avatar tidak berdesakan.
+- Header mahasiswa: logo + nama platform di kiri, tombol menu `44×44` di kanan.
+- Profil mahasiswa di drawer: nama + avatar menjadi satu tautan `44px`; logout dipisah sebagai ikon `44×44`, bukan teks yang menempel pada nama.
+- Semua tautan/aksi navigasi memakai target sentuh minimal `44×44px`.
+
+### 5.3 Tabel Data → Kartu Bertumpuk
+- Di bawah `1400px`, setiap `<tr>` menjadi kartu bertumpuk: latar putih, border `1px`, radius `--radius-lg`, padding `16px`. Isi kartu memakai grid dua kolom; sel identitas dan aksi melebar penuh.
+- `<thead>` disembunyikan secara visual (tetap ada untuk pembaca layar). Label kolom ditempel ke setiap sel melalui `data-label` dan `td::before`; label dihasilkan otomatis oleh `labelTable()` di `public/js/ui.js` dari teks `<th>`, termasuk untuk baris yang dirender ulang lewat `MutationObserver`.
+- Sel identitas menjadi header kartu (lebar penuh, hairline bawah); sel aksi menjadi footer kartu (lebar penuh, hairline atas, tombol minimal `44px`).
+- Baris kosong (`colspan`) melebar penuh tanpa label.
+- Wadah kartu luar (`.admin-card` / `.rec-card`) diratakan di ponsel agar tidak terjadi kartu di dalam kartu.
+- Tabel kandidat HR memakai grid khusus: identitas → role + evidence → skill matched → skill gap → aksi.
+- Tabel `<div>` dasbor (tim recruiter, aktivitas admin) mengikuti pola yang sama: header kolom disembunyikan, nilai diberi label statis (`Peran`, `Status Akses`, `Aksi`) atau baris meta dua kolom.
+- **Tidak boleh ada geser horizontal** untuk membaca data di ponsel.
+
+### 5.4 Grid, Toolbar, dan Pager
+- Grid statistik admin/HR: dua kolom di ponsel; kartu terakhir yang jumlahnya ganjil melebar penuh agar tidak menjadi kartu yatim.
+- Toolbar: input pencarian dan select memenuhi lebar; tinggi kontrol `44px`; tombol aksi memenuhi lebar.
+- Pager kandidat: ringkasan jumlah mendapat baris sendiri, kontrol halaman di bawahnya dengan target sentuh `44px`.
+
+### 5.5 Empty State & Isi Sel
+- Daftar kosong selalu punya pesan eksplisit (mis. "Belum ada target role."), bukan ruang kosong.
+- Sel skill yang tidak punya isi menampilkan "Tidak ada" dengan warna `--text-muted`, bukan area kosong tanpa keterangan.
+
+---
+
+## 6. Aksesibilitas & Kualitas
+
+- **Kontras**: teks putih di atas `--accent` wajib memakai Rose 600 ke atas; Rose 500 gagal AA (3,67:1) dan tidak dipakai untuk tombol berteks putih.
+- **Tombol nonaktif**: memakai latar `--surface-subtle`, border `--border`, teks `--text-light`, tanpa shadow dan tanpa opacity ganda — tetap terbaca, jelas tidak dapat ditekan.
+- **Target sentuh**: minimal `44×44px` untuk seluruh tombol, tautan navigasi, dan kontrol pager di ponsel.
+- **Fokus**: outline `2px` `--primary` dengan offset `2px` pada elemen interaktif.
+- **Label tabel**: label seluler berasal dari `<th>` asli, sehingga struktur tabel tetap tersedia bagi pembaca layar (thead hanya di-clip, tidak dihapus).
+- **Ikon**: `favicon.svg` memakai mark "S" putih di kotak cobalt `--primary`; seluruh halaman memuatnya lewat `head.php` sehingga tidak ada permintaan favicon 404.
+
+---
+
+## 7. Aturan Copy
+
+- **Bahasa**: konsol mahasiswa berbahasa Inggris; halaman publik, admin, dan HR berbahasa Indonesia.
+- **Pluralisasi bahasa Inggris**: hitungan `1` selalu tunggal — `1 skill`, `1 item`, `1 evidence item`; bukan `1 skills` / `1 items`.
+- **Bahasa Indonesia**: tidak memakai bentuk jamak berimbuhan; `1 item`, `2 item`, `1 kandidat`, `3 kandidat`.
+- **Tanpa nilai kosong**: jangan pernah menampilkan `null`, `undefined`, atau pemisah menggantung (` · `). Gabungkan bagian dengan filter nilai kosong lebih dulu, mis. `[name, tagline].filter(Boolean).join(" · ")`.
+- **Hitungan dan tata bahasa harus sepakat**: `1 of your 1 skill has…`, `2 of your 3 skills have…`.
+- **Aksi nonaktif**: tombol yang belum bisa dipakai (mis. "Simpan Mapping" tanpa role terpilih) dinonaktifkan, bukan hanya menampilkan pesan setelah diklik.

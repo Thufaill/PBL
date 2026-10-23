@@ -51,6 +51,17 @@ const API = (() => {
     return meta ? meta.content : "";
   }
 
+  // ---- Indikator loading global ----
+  // ui.js mendengarkan dua event ini untuk menampilkan progress bar. Jumlah
+  // request dihitung di sini supaya halaman tidak perlu memberi tahu kapan
+  // data mulai/selesai dimuat.
+  let activeRequests = 0;
+
+  function announce(name, detail) {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(new CustomEvent(name, { detail }));
+  }
+
   // PATCH/DELETE dikirim sebagai POST + X-HTTP-Method-Override karena
   // sebagian shared hosting memblokir method tersebut di level web server.
   async function request(method, path, payload, options = {}) {
@@ -71,26 +82,33 @@ const API = (() => {
       }
     }
 
-    let res;
+    activeRequests += 1;
+    announce("sb:api:start", { method, path, activeRequests });
     try {
-      res = await fetch(BASE + path, init);
-    } catch (networkError) {
-      throw new ApiError("Koneksi ke server gagal. Periksa jaringan Anda.", 0, String(networkError));
-    }
+      let res;
+      try {
+        res = await fetch(BASE + path, init);
+      } catch (networkError) {
+        throw new ApiError("Koneksi ke server gagal. Periksa jaringan Anda.", 0, String(networkError));
+      }
 
-    const text = await res.text();
-    let data;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      // PHP warning yang tercetak di depan JSON: jangan dianggap data kosong.
-      throw new ApiError(`Respons server tidak dapat dibaca (HTTP ${res.status}).`, res.status, text.slice(0, 200));
+      const text = await res.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        // PHP warning yang tercetak di depan JSON: jangan dianggap data kosong.
+        throw new ApiError(`Respons server tidak dapat dibaca (HTTP ${res.status}).`, res.status, text.slice(0, 200));
+      }
+      if (!res.ok || data.ok === false) {
+        throw new ApiError(data.error || `Permintaan gagal (HTTP ${res.status}).`, res.status, data);
+      }
+      if (isWrite && !options.keepSnapshot) applyWriteSnapshot(data);
+      return data;
+    } finally {
+      activeRequests = Math.max(0, activeRequests - 1);
+      announce("sb:api:end", { method, path, activeRequests });
     }
-    if (!res.ok || data.ok === false) {
-      throw new ApiError(data.error || `Permintaan gagal (HTTP ${res.status}).`, res.status, data);
-    }
-    if (isWrite && !options.keepSnapshot) applyWriteSnapshot(data);
-    return data;
   }
 
   // ---- Snapshot sesi: alasan getter mahasiswa tetap sinkron ----

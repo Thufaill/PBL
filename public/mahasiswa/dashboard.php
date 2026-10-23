@@ -47,7 +47,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                   </svg>
                 </div>
               </div>
-              <div id="card-target"></div>
+              <div id="card-target" data-loading="text"></div>
               <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M6 12l4-4-4-4"/>
               </svg>
@@ -65,7 +65,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                   </svg>
                 </div>
               </div>
-              <div id="card-skills"></div>
+              <div id="card-skills" data-loading="text"></div>
               <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M6 12l4-4-4-4"/>
               </svg>
@@ -83,7 +83,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
             </div>
           </div>
-          <div id="card-evidence"></div>
+          <div id="card-evidence" data-loading="text"></div>
         </article>
       </div>
     </main>
