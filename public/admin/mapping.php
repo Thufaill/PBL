@@ -9,7 +9,7 @@ $role = 'admin';
 $path_prefix = '../';
 $admin_page = 'mapping';
 $body_class = 'admin-body';
-$body_attrs = 'data-admin-page="mapping" data-nav="mapping"';
+$body_attrs = 'data-admin-page="mapping"';
 $page_script = 'admin-mapping.js';
 
 require_once __DIR__ . '/../../includes/layouts/head.php';

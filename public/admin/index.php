@@ -9,7 +9,7 @@ $role = 'admin';
 $path_prefix = '../';
 $admin_page = 'dashboard';
 $body_class = 'admin-body';
-$body_attrs = 'data-admin-page="dashboard" data-nav="dashboard"';
+$body_attrs = 'data-admin-page="dashboard"';
 $page_script = 'admin.js';
 
 require_once __DIR__ . '/../../includes/layouts/head.php';
@@ -56,7 +56,7 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
             <div class="admin-card-head">
               <div>
                 <p class="admin-card-title">Aktivitas sistem</p>
-                <p class="admin-card-sub">Pencatatan data terbaru · 18 Oktober 2026</p>
+                <p class="admin-card-sub">Pencatatan data terbaru dari database</p>
               </div>
               <span class="admin-badge-pill">Hari ini</span>
             </div>

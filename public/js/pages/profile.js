@@ -1,60 +1,36 @@
-// profile.js - My Profile page
+// profile.js - My Profile page.
+// Profil, visibilitas, password, dan foto kini disimpan di PostgreSQL lewat
+// public/api/profile.php dan public/api/profile-photo.php. Kunci localStorage
+// "sb.profile" dan "sb.portfolioVisibility" sudah tidak dipakai lagi, jadi
+// identitas default palsu ("Jhon Doe") hilang dan perubahan berlaku di semua
+// browser untuk akun yang sama.
 
 (async () => {
   const { el } = UI;
-
-  // ---- Profile data (localStorage dummy; backend replaces via api.js) ----
-  const LS_PROFILE = "sb.profile";
-  const LS_VISIBILITY = "sb.portfolioVisibility";
-
-  function readProfile() {
-    const raw = localStorage.getItem(LS_PROFILE);
-    if (raw) return JSON.parse(raw);
-    // Backend: defaults mirror mockup; upgrade path = GET api/profile.php
-    return {
-      name: "Jhon Doe",
-      email: "jhondoe@gmail.com",
-      institution: "Politeknik Negeri Malang",
-      program: "Information Technology",
-      semester: "3",
-      location: "Malang, Indonesia",
-      memberSince: "January 2026",
-      photo: null,
-    };
-  }
-
-  function saveProfile(p) {
-    localStorage.setItem(LS_PROFILE, JSON.stringify(p));
-  }
-
-  function readVisibility() {
-    return localStorage.getItem(LS_VISIBILITY) || "Public";
-  }
-
-  function saveVisibility(v) {
-    localStorage.setItem(LS_VISIBILITY, v);
-  }
-
-  let profile = readProfile();
-
-  // ---- Load dynamic counts ----
-  const [careers] = await Promise.all([API.getCareers()]);
-  const mine = API.getMySkills();
-  const evidence = API.getEvidence();
-  const targetId = API.getTargetId();
-  const target = careers.find((c) => c.id === targetId) || null;
-
-  // ---- Render static fields ----
   const $ = (id) => document.getElementById(id);
 
-  // Mockup shows a user-round icon in the blue avatar circle; a chosen photo replaces it.
+  const [careers] = await Promise.all([API.getCareers(), API.ensureSession()]);
+  let profile = await API.getProfile();
+
+  const EMPTY = "Belum diisi";
+  // Foto served dari satu URL tetap; angka ini ditambah setelah unggah agar
+  // browser tidak menampilkan salinan lama dari cache.
+  let photoStamp = Date.now();
+
+  function photoSrc() {
+    if (!profile.photo) return null;
+    return profile.photo + (profile.photo.includes("?") ? "&" : "?") + "v=" + photoStamp;
+  }
+
+  // Mockup memakai ikon user di lingkaran avatar; foto menggantikannya.
   const USER_ICON = `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>`;
 
   function renderAvatar() {
     const box = $("profile-avatar");
     UI.clear(box);
-    if (profile.photo) {
-      box.append(el("img", { src: profile.photo, alt: profile.name }));
+    const src = photoSrc();
+    if (src) {
+      box.append(el("img", { src, alt: profile.name || "Foto profil" }));
     } else {
       box.innerHTML = USER_ICON;
     }
@@ -62,25 +38,30 @@
 
   function render() {
     renderAvatar();
-    $("profile-display-name").textContent = profile.name;
-    $("detail-fullname").textContent = profile.name;
-    $("detail-email").textContent = profile.email;
-    $("detail-institution").textContent = profile.institution;
-    $("detail-program").textContent = profile.program;
-    $("detail-semester").textContent = profile.semester;
-    $("detail-location").textContent = profile.location;
-    $("detail-member-since").textContent = profile.memberSince;
-    $("detail-visibility").textContent = readVisibility();
+    const name = profile.name || "Tanpa nama";
+    $("profile-display-name").textContent = name;
+    $("detail-fullname").textContent = name;
+    $("detail-email").textContent = profile.email || EMPTY;
+    $("detail-institution").textContent = profile.institution || EMPTY;
+    $("detail-program").textContent = profile.program || EMPTY;
+    $("detail-semester").textContent = profile.semester || EMPTY;
+    $("detail-location").textContent = profile.location || EMPTY;
+    $("detail-member-since").textContent = profile.member_since ? UI.formatDate(profile.member_since) : EMPTY;
+    $("detail-visibility").textContent = profile.visibility || "Private";
 
-    // Portfolio overview counts (real data, not mockup numbers)
+    // Ringkasan portofolio: angka dari database, bukan dari mockup.
+    const mine = API.getMySkills();
+    const evidence = API.getEvidence();
+    const targetCareer = careers.find((c) => c.id === API.getTargetId()) || null;
+
     $("summary-skills").textContent = String(mine.length);
     $("summary-evidence").textContent = `${evidence.length} ${evidence.length === 1 ? "item" : "items"}`;
-    $("summary-career").textContent = target ? target.name : "Not set";
+    $("summary-career").textContent = targetCareer ? targetCareer.name : "Not set";
   }
 
   render();
 
-  // ---- Edit Profile (top button) -> opens personal info modal ----
+  // ---- Tombol ----
   $("btn-edit-profile").addEventListener("click", openEditPersonal);
   $("btn-edit-personal").addEventListener("click", openEditPersonal);
   $("btn-change-password").addEventListener("click", openChangePassword);
@@ -90,12 +71,12 @@
   // ---- Modal: Edit Personal Information ----
   function openEditPersonal() {
     const fields = [
-      ["Full name", "edit-name", "text", profile.name],
-      ["Email address", "edit-email", "email", profile.email],
-      ["Institution", "edit-institution", "text", profile.institution],
-      ["Study program", "edit-program", "text", profile.program],
-      ["Semester", "edit-semester", "text", profile.semester],
-      ["Location", "edit-location", "text", profile.location],
+      ["Full name", "edit-name", "text", profile.name || ""],
+      ["Email address", "edit-email", "email", profile.email || ""],
+      ["Institution", "edit-institution", "text", profile.institution || ""],
+      ["Study program", "edit-program", "text", profile.program || ""],
+      ["Semester", "edit-semester", "text", profile.semester || ""],
+      ["Location", "edit-location", "text", profile.location || ""],
     ];
 
     const inputs = {};
@@ -112,7 +93,8 @@
       title: "Edit Personal Information",
       body,
       submitLabel: "Save changes",
-      onSubmit: (close) => {
+      onSubmit: async () => {
+        errorEl.style.display = "none";
         const name = inputs["edit-name"].value.trim();
         const email = inputs["edit-email"].value.trim();
         if (!name || !email) {
@@ -125,19 +107,24 @@
           errorEl.style.display = "block";
           return false;
         }
-        profile = {
-          ...profile,
-          name,
-          email,
-          institution: inputs["edit-institution"].value.trim(),
-          program: inputs["edit-program"].value.trim(),
-          semester: inputs["edit-semester"].value.trim(),
-          location: inputs["edit-location"].value.trim(),
-        };
-        saveProfile(profile);
-        // Backend: POST api/profile.php when backend ready
+
+        try {
+          profile = await API.saveProfile({
+            name,
+            email,
+            institution: inputs["edit-institution"].value.trim(),
+            program: inputs["edit-program"].value.trim(),
+            semester: inputs["edit-semester"].value.trim(),
+            location: inputs["edit-location"].value.trim(),
+          });
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.style.display = "block";
+          return false;
+        }
+
         render();
-        UI.toast("Profile updated");
+        UI.toast("Profil tersimpan di server.");
         return true;
       },
     });
@@ -154,20 +141,20 @@
       title: "Change Password",
       body: [
         el("div", { class: "field" }, [el("label", { for: "pw-current", text: "Current password" }), cur]),
-        el("div", { class: "field" }, [el("label", { for: "pw-new", text: "New password" }), next]),
+        el("div", { class: "field" }, [el("label", { for: "pw-new", text: "New password (min. 8 characters)" }), next]),
         el("div", { class: "field" }, [el("label", { for: "pw-confirm", text: "Confirm new password" }), confirm]),
         errorEl,
       ],
       submitLabel: "Update password",
-      onSubmit: (close) => {
+      onSubmit: async () => {
         errorEl.style.display = "none";
         if (!cur.value || !next.value) {
           errorEl.textContent = "Fill in all password fields.";
           errorEl.style.display = "block";
           return false;
         }
-        if (next.value.length < 6) {
-          errorEl.textContent = "New password must be at least 6 characters.";
+        if (next.value.length < 8) {
+          errorEl.textContent = "New password must be at least 8 characters.";
           errorEl.style.display = "block";
           return false;
         }
@@ -176,8 +163,14 @@
           errorEl.style.display = "block";
           return false;
         }
-        // Backend: POST api/auth/password.php with CSRF; dummy mode just acknowledges
-        UI.toast("Password updated");
+        try {
+          await API.changePassword(cur.value, next.value);
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.style.display = "block";
+          return false;
+        }
+        UI.toast("Password diganti.");
         return true;
       },
     });
@@ -185,9 +178,9 @@
 
   // ---- Modal: Portfolio Visibility ----
   function openVisibility() {
-    const current = readVisibility();
+    const current = profile.visibility || "Private";
     const options = [
-      ["Public", "Anyone can view your student portfolio."],
+      ["Public", "HR can find you in the candidate list and view your portfolio."],
       ["Private", "Only you can view your portfolio."],
     ];
     const radios = {};
@@ -211,25 +204,32 @@
         ]),
       ]);
     });
+    const errorEl = el("p", { class: "field-error", style: "display: none" });
+    body.push(errorEl);
 
     UI.modal({
       title: "Portfolio Visibility",
       body,
       submitLabel: "Save",
-      onSubmit: () => {
+      onSubmit: async () => {
+        errorEl.style.display = "none";
         const chosen = Object.entries(radios).find(([, r]) => r.checked);
-        if (chosen) {
-          saveVisibility(chosen[0]);
-          // Backend: PATCH api/profile.php { visibility }
-          render();
-          UI.toast(`Visibility set to ${chosen[0]}`);
+        if (!chosen) return false;
+        try {
+          profile = await API.saveProfile({ visibility: chosen[0] });
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.style.display = "block";
+          return false;
         }
+        render();
+        UI.toast(`Visibilitas: ${chosen[0]}`);
         return true;
       },
     });
   }
 
-  // ---- Change Photo (file input -> data URL preview, local only) ----
+  // ---- Modal: Change Photo (unggah sungguhan ke storage/ di server) ----
   function openChangePhoto() {
     const input = el("input", { type: "file", id: "photo-file", accept: "image/png,image/jpeg,image/webp" });
     const preview = el("div", {
@@ -252,7 +252,6 @@
       reader.onload = () => {
         UI.clear(preview);
         preview.append(el("img", { src: reader.result, alt: "Preview", style: "width: 100%; height: 100%; object-fit: cover" }));
-        preview.dataset.dataurl = reader.result;
       };
       reader.readAsDataURL(file);
     });
@@ -260,18 +259,35 @@
     UI.modal({
       title: "Change Photo",
       body: [
-        el("div", { style: "display: flex; gap: 16px; align-items: center" }, [preview, el("div", {}, [el("p", { style: "font-size: 13px; color: var(--text-muted)", text: "PNG, JPG or WEBP, max 2 MB." })])]),
+        el("div", { style: "display: flex; gap: 16px; align-items: center" }, [preview, el("div", {}, [el("p", { style: "font-size: 13px; color: var(--text-muted)", text: "PNG, JPG or WEBP, max 2 MB. Saved on the server, not in this browser." })])]),
         el("div", { class: "field" }, [el("label", { for: "photo-file", text: "Choose image" }), input]),
         errorEl,
       ],
       submitLabel: "Save photo",
-      onSubmit: () => {
-        const dataurl = preview.dataset.dataurl || null;
-        profile = { ...profile, photo: dataurl };
-        saveProfile(profile);
-        // Backend: POST multipart api/profile/photo.php; data URL is local-only placeholder
+      onSubmit: async () => {
+        errorEl.style.display = "none";
+        const file = input.files && input.files[0];
+        try {
+          if (file) {
+            const res = await API.uploadPhoto(file);
+            profile = { ...profile, photo: res.photo };
+            photoStamp = Date.now();
+            UI.toast("Foto tersimpan di server.");
+          } else if (profile.photo) {
+            await API.removePhoto();
+            profile = { ...profile, photo: null };
+            UI.toast("Foto dihapus.");
+          } else {
+            errorEl.textContent = "Pilih gambar dulu.";
+            errorEl.style.display = "block";
+            return false;
+          }
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.style.display = "block";
+          return false;
+        }
         render();
-        UI.toast(dataurl ? "Photo updated" : "No photo selected");
         return true;
       },
     });

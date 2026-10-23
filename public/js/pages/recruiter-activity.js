@@ -61,8 +61,9 @@ async function load() {
   renderDate();
   try {
     allActivity = await API.getRecruiterActivity();
-  } catch {
+  } catch (err) {
     allActivity = [];
+    UI.toast(err.message, "error");
   }
   render();
 }

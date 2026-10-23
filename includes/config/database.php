@@ -63,3 +63,30 @@ function get_db_connection() {
         return null;
     }
 }
+
+/**
+ * Nilai pengaturan platform dari tabel system_settings, dibaca dari konfigurasi
+ * yang diketik "Konfigurasi Platform" di Admin Console.
+ *
+ * Dipakai oleh halaman PHP (bukan hanya API) supaya pengaturan admin benar-benar
+ * mengubah perilaku aplikasi. Nilai di-cache sekali per request; ketika database
+ * belum siap atau kunci belum pernah disimpan, $default yang dipakai sehingga
+ * halaman publik tetap bisa tampil.
+ */
+function app_setting(string $key, $default = null) {
+    static $cache = null;
+    if ($cache === null) {
+        $cache = [];
+        $pdo = get_db_connection();
+        if ($pdo) {
+            try {
+                foreach ($pdo->query('SELECT key, value FROM system_settings') as $row) {
+                    $cache[$row['key']] = json_decode((string) $row['value'], true);
+                }
+            } catch (PDOException $e) {
+                error_log('app_setting: ' . $e->getMessage());
+            }
+        }
+    }
+    return array_key_exists($key, $cache) ? $cache[$key] : $default;
+}

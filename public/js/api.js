@@ -1,392 +1,528 @@
 // api.js - SATU-SATUNYA tempat pengambilan data untuk seluruh halaman.
-// Mode dummy: baca data/*.json + localStorage. Saat backend siap, ganti isi file ini
-// dengan fetch ke endpoint asli (public/api/*.php); halaman tidak perlu berubah.
-// Jalankan dari root repo agar ../data/*.json dapat dilayani:
-//   php -S localhost:8000        lalu buka  http://localhost:8000/public/dashboard.html
+//
+// Semua baca/tulis domain lewat endpoint PHP di public/api/ yang berbicara ke
+// PostgreSQL. Tidak ada lagi data domain di localStorage dan tidak ada lagi
+// berkas data/*.json: satu sumber kebenaran adalah database, sehingga dua
+// browser yang login dengan akun yang sama melihat data yang sama.
+//
+// Kontrak untuk halaman tetap sama seperti mode dummy dulu, dengan satu
+// tambahan: fungsi tulis kini async dan mengembalikan data terbaru.
+//   await API.addEvidence(payload)
+//   API.getEvidence()          // sinkron, dibaca dari snapshot sesi
 
 const API = (() => {
-  const LS = {
-    skills: "sb.mySkills",
-    evidence: "sb.myEvidence",
-    target: "sb.targetCareer",
-    customSkills: "sb.customSkills",
-  };
-
-  function resolveUrl(path) {
+  const BASE = (() => {
     if (typeof window !== "undefined" && window.APP_BASE_URL !== undefined) {
-      const base = window.APP_BASE_URL === "/" ? "" : window.APP_BASE_URL.replace(/\/+$/, "");
-      const clean = path.replace(/^(\.\.\/)+/, "").replace(/^\/+/, "");
-      return (base ? base : "") + "/" + clean;
+      return window.APP_BASE_URL === "/" ? "" : window.APP_BASE_URL.replace(/\/+$/, "");
     }
-    return path;
-  }
+    return "";
+  })();
 
-  // GET api/careers.php
-  async function getCareers() {
-    const res = await fetch(resolveUrl("../data/careers.json"));
-    return res.json();
-  }
+  // Kunci localStorage peninggalan mode dummy. Domain TIDAK dibaca dari sini
+  // lagi; daftar ini hanya untuk membersihkan sisa data lama satu kali.
+  const LEGACY_KEYS = [
+    "sb.mySkills", "sb.myEvidence", "sb.targetCareer", "sb.customSkills",
+    "sb.profile", "sb.portfolioVisibility",
+    "sb.admin.users", "sb.admin.jobs", "sb.admin.vacancies", "sb.admin.content",
+    "sb.admin.config", "sb.admin.profile",
+    "sb.rec.company", "sb.rec.team", "sb.rec.roles", "sb.rec.activity",
+    "sb.rec.candidates", "sb.rec.company.edit",
+  ];
 
-  // GET api/skills.php  -> katalog bawaan + skill baru buatan pengguna
-  async function getSkillCatalog() {
-    const res = await fetch(resolveUrl("../data/skills.json"));
-    const seeded = await res.json();
-    return [...seeded, ...readCustomSkills()];
-  }
-
-  // POST api/skills.php  { name, category }  -> skill baru, id dibuat di server
-  async function addCustomSkill(name, category) {
-    const custom = readCustomSkills();
-    const existing = custom.find((s) => s.name.toLowerCase() === name.toLowerCase());
-    if (existing) return existing;
-
-    // id lanjutan dari katalog bawaan agar tidak bentrok
-    const seeded = await fetch(resolveUrl("../data/skills.json")).then((res) => res.json());
-    const maxId = [...seeded, ...custom].reduce((max, s) => Math.max(max, s.id), 0);
-
-    const skill = { id: maxId + 1, name, category };
-    custom.push(skill);
-    localStorage.setItem(LS.customSkills, JSON.stringify(custom));
-    return skill;
-  }
-
-  // POST api/target.php  { career_id }
-  function setTarget(id) {
-    localStorage.setItem(LS.target, String(id));
-  }
-
-  // GET api/target.php
-  function getTargetId() {
-    const raw = localStorage.getItem(LS.target);
-    return raw === null ? null : Number(raw);
-  }
-
-  // GET api/skills.php?mine=1
-  // Mengembalikan skill pengguna + evidence_count + label (Strong jika >= 2 evidence).
-  function getMySkills() {
-    const ids = readIds(LS.skills);
-    const counts = evidenceCountBySkill(ids);
-    return ids.map((id) => {
-      const count = counts.get(id) || 0;
-      return { skill_id: id, evidence_count: count, label: count >= 2 ? "Strong" : "Growing" };
-    });
-  }
-
-  // POST api/skills.php  { skill_id }
-  function addSkill(id) {
-    const ids = readIds(LS.skills);
-    if (ids.includes(id)) return ids;
-    ids.push(id);
-    localStorage.setItem(LS.skills, JSON.stringify(ids));
-    return ids;
-  }
-
-  // DELETE api/skills.php  { skill_id }
-  function removeSkill(id) {
-    const ids = readIds(LS.skills).filter((x) => x !== id);
-    localStorage.setItem(LS.skills, JSON.stringify(ids));
-    return ids;
-  }
-
-  // GET api/evidence.php
-  function getEvidence() {
-    const raw = localStorage.getItem(LS.evidence);
-    return raw === null ? seedEvidence() : JSON.parse(raw);
-  }
-
-  // POST api/evidence.php  { source_type, title, description, file_url, skill_ids[] }
-  function addEvidence(data) {
-    const list = getEvidence();
-    const id = list.reduce((max, e) => Math.max(max, e.id), 0) + 1;
-    list.push({ id, ...data });
-    localStorage.setItem(LS.evidence, JSON.stringify(list));
-    return list;
-  }
-
-  // DELETE api/evidence.php  { id }
-  function removeEvidence(id) {
-    const list = getEvidence().filter((e) => e.id !== id);
-    localStorage.setItem(LS.evidence, JSON.stringify(list));
-    return list;
-  }
-
-  // GET api/gap.php  -> dua daftar: dimiliki vs perlu dikembangkan
-  async function getSkillGap() {
-    const [careers, catalog] = await Promise.all([getCareers(), getSkillCatalog()]);
-    const career = careers.find((c) => c.id === getTargetId()) || null;
-    if (!career) return { career: null, have: [], explore: [] };
-
-    const mine = new Set(readIds(LS.skills));
-    const byName = new Map(catalog.map((s) => [s.name, s]));
-    const counts = evidenceCountBySkill([...mine]);
-    const required = career.skills.map((n) => byName.get(n)).filter(Boolean);
-
-    return {
-      career,
-      have: required
-        .filter((s) => mine.has(s.id))
-        .map((s) => ({ ...s, evidence_count: counts.get(s.id) || 0 })),
-      explore: required.filter((s) => !mine.has(s.id)),
-    };
-  }
-
-  // ============ Admin SkillBridge ============
-  // Semua fungsi admin di bawah ini memakai data dummy di data/admin-*.json.
-  // Saat backend siap, ganti tiap isi fungsi dengan fetch ke endpoint asli.
-
-  const ADMIN_LS = {
-    users: "sb.admin.users",
-    jobs: "sb.admin.jobs",
-    vacancies: "sb.admin.vacancies",
-    content: "sb.admin.content",
-  };
-
-  // GET api/admin/users.php
-  async function getAdminUsers() {
-    return readAdminCollection("users", "../data/admin-users.json");
-  }
-
-  // GET api/admin/jobs.php  -> daftar akun Admin Job
-  async function getJobAdmins() {
-    return readAdminCollection("jobs", "../data/admin-jobs.json");
-  }
-
-  // GET api/admin/vacancies.php
-  async function getVacancies() {
-    return readAdminCollection("vacancies", "../data/admin-vacancies.json");
-  }
-
-  // GET api/admin/content.php
-  async function getAdminContent() {
-    return readAdminCollection("content", "../data/admin-content.json");
-  }
-
-  // GET api/skills.php?admin=1 -> katalog skill master (sumber: skills.json)
-  async function getMasterSkills() {
-    const res = await fetch(resolveUrl("../data/skills.json"));
-    return res.json();
-  }
-
-    // GET api/careers.php?admin=1 -> daftar target karier master
-  async function getMasterCareers() {
-    return getCareers();
-  }
-
-  // GET api/admin/mapping.php -> relasi career <-> skill
-  async function getCareerSkillMapping() {
-    const [careers, skills] = await Promise.all([getMasterCareers(), getMasterSkills()]);
-    const byName = new Map(skills.map((s) => [s.name, s]));
-    const rows = [];
-    let id = 1;
-    for (const career of careers) {
-      for (const name of career.skills || []) {
-        const skill = byName.get(name);
-        rows.push({
-          id: id++,
-          career_id: career.id,
-          career_name: career.name,
-          skill_id: skill ? skill.id : null,
-          skill_name: name,
-          skill_category: skill ? skill.category : "—",
-        });
+  function purgeLegacy() {
+    for (const key of Object.keys(localStorage)) {
+      if (LEGACY_KEYS.includes(key) || key.startsWith("sb.rec.mapping.")) {
+        localStorage.removeItem(key);
       }
     }
-    return rows;
   }
 
-  // PATCH api/admin/users.php  { id, status }
-  async function setAdminRecordStatus(collection, id, status) {
-    const key = ADMIN_LS[collection];
-    const list = await readAdminCollection(collection, `../data/admin-${collection}.json`);
-    const item = list.find((row) => row.id === id);
-    if (!item) return list;
-    item.status = status;
-    localStorage.setItem(key, JSON.stringify(list));
-    return list;
-  }
-
-  // DELETE api/admin/<collection>.php  { id }
-  async function removeAdminRecord(collection, id) {
-    const key = ADMIN_LS[collection];
-    const list = (await readAdminCollection(collection, `../data/admin-${collection}.json`)).filter(
-      (row) => row.id !== id
-    );
-    localStorage.setItem(key, JSON.stringify(list));
-    return list;
-  }
-
-  // GET api/admin/stats.php  -> angka ringkasan dashboard
-  async function getAdminStats() {
-    const [users, jobs, vacancies, content] = await Promise.all([
-      getAdminUsers(),
-      getJobAdmins(),
-      getVacancies(),
-      getAdminContent(),
-    ]);
-    return {
-      users: users.length,
-      jobAdmins: jobs.length,
-      openVacancies: vacancies.filter((v) => v.status === "open").length,
-      publishedContent: content.filter((c) => c.status === "published").length,
-    };
-  }
-
-  // ============ Recruiter / Perusahaan ============
-
-  const REC_LS = {
-    company: "sb.rec.company",
-    team: "sb.rec.team",
-    roles: "sb.rec.roles",
-    activity: "sb.rec.activity",
-    candidates: "sb.rec.candidates",
-  };
-
-  // GET api/recruiter/company.php
-  async function getRecruiterCompany() {
-    return readRecCollection("company", "../data/recruiter-company.json");
-  }
-
-  // GET api/recruiter/team.php
-  async function getRecruiterTeam() {
-    return readRecCollection("team", "../data/recruiter-team.json");
-  }
-
-  // GET api/recruiter/roles.php
-  async function getRecruiterRoles() {
-    return readRecCollection("roles", "../data/recruiter-roles.json");
-  }
-
-  // GET api/recruiter/activity.php
-  async function getRecruiterActivity() {
-    return readRecCollection("activity", "../data/recruiter-activity.json");
-  }
-
-  // GET api/recruiter/candidates.php
-  async function getRecruiterCandidates() {
-    return readRecCollection("candidates", "../data/recruiter-candidates.json");
-  }
-
-  // PATCH api/recruiter/team.php  { id, status }
-  async function setRecruiterStatus(id, status) {
-    const list = await getRecruiterTeam();
-    const item = list.find((r) => r.id === id);
-    if (!item) return list;
-    item.status = status;
-    localStorage.setItem(REC_LS.team, JSON.stringify(list));
-    return list;
-  }
-
-  // DELETE api/recruiter/team.php  { id }
-  async function removeRecruiterRecord(id) {
-    const list = (await getRecruiterTeam()).filter((r) => r.id !== id);
-    localStorage.setItem(REC_LS.team, JSON.stringify(list));
-    return list;
-  }
-
-  // GET api/recruiter/stats.php
-  async function getRecruiterStats() {
-    const [team, roles, candidates] = await Promise.all([
-      getRecruiterTeam(),
-      getRecruiterRoles(),
-      getRecruiterCandidates(),
-    ]);
-    return {
-      teamSize: team.length,
-      activeRecruiters: team.filter((t) => t.status === "active").length,
-      openRoles: roles.length,
-      totalPositions: roles.reduce((s, r) => s + (r.positions || 0), 0),
-      pipelineCandidates: candidates.length,
-    };
-  }
-
-  // ---- helper internal recruiter ----
-
-  async function readRecCollection(name, url) {
-    const raw = localStorage.getItem(REC_LS[name]);
-    if (raw !== null) return JSON.parse(raw);
-    const res = await fetch(resolveUrl(url));
-    const seeded = await res.json();
-    localStorage.setItem(REC_LS[name], JSON.stringify(seeded));
-    return seeded;
-  }
-
-  // ---- helper internal admin ----
-
-  // Ambil koleksi admin: localStorage kalau sudah pernah diubah, jika belum dari JSON seed.
-  async function readAdminCollection(name, url) {
-    const raw = localStorage.getItem(ADMIN_LS[name]);
-    if (raw !== null) return JSON.parse(raw);
-    const res = await fetch(resolveUrl(url));
-    const seeded = await res.json();
-    localStorage.setItem(ADMIN_LS[name], JSON.stringify(seeded));
-    return seeded;
-  }
-
-  // ---- helper internal ----
-
-  function readIds(key) {
-    const raw = localStorage.getItem(key);
-    return raw === null ? [] : JSON.parse(raw);
-  }
-
-  function readCustomSkills() {
-    return readIds(LS.customSkills);
-  }
-
-  function seedEvidence() {
-    localStorage.setItem(LS.evidence, JSON.stringify([]));
-    return [];
-  }
-
-  function evidenceCountBySkill(skillIds) {
-    const counts = new Map();
-    for (const ev of getEvidence()) {
-      for (const sid of ev.skill_ids || []) {
-        if (skillIds.includes(sid)) counts.set(sid, (counts.get(sid) || 0) + 1);
-      }
+  class ApiError extends Error {
+    constructor(message, status, detail) {
+      super(message);
+      this.name = "ApiError";
+      this.status = status;
+      this.detail = detail;
     }
-    return counts;
   }
 
-  // Nilai CSRF dari <meta name="csrf-token"> (dipakai di mode asli).
   function csrfToken() {
     const meta = document.querySelector('meta[name="csrf-token"]');
     return meta ? meta.content : "";
   }
 
+  // PATCH/DELETE dikirim sebagai POST + X-HTTP-Method-Override karena
+  // sebagian shared hosting memblokir method tersebut di level web server.
+  async function request(method, path, payload, options = {}) {
+    const isWrite = method !== "GET";
+    const init = {
+      method: isWrite ? "POST" : "GET",
+      credentials: "same-origin",
+      headers: {},
+    };
+    if (isWrite) {
+      if (method !== "POST") init.headers["X-HTTP-Method-Override"] = method;
+      init.headers["X-CSRF-Token"] = csrfToken();
+      if (payload instanceof FormData) {
+        init.body = payload;
+      } else {
+        init.headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(payload ?? {});
+      }
+    }
+
+    let res;
+    try {
+      res = await fetch(BASE + path, init);
+    } catch (networkError) {
+      throw new ApiError("Koneksi ke server gagal. Periksa jaringan Anda.", 0, String(networkError));
+    }
+
+    const text = await res.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      // PHP warning yang tercetak di depan JSON: jangan dianggap data kosong.
+      throw new ApiError(`Respons server tidak dapat dibaca (HTTP ${res.status}).`, res.status, text.slice(0, 200));
+    }
+    if (!res.ok || data.ok === false) {
+      throw new ApiError(data.error || `Permintaan gagal (HTTP ${res.status}).`, res.status, data);
+    }
+    if (isWrite && !options.keepSnapshot) applyWriteSnapshot(data);
+    return data;
+  }
+
+  // ---- Snapshot sesi: alasan getter mahasiswa tetap sinkron ----
+  let snapshot = null;
+  let sessionPromise = null;
+
+  function applyWriteSnapshot(data) {
+    if (!snapshot) return;
+    if (Array.isArray(data.skills)) snapshot.skills = data.skills;
+    if (Array.isArray(data.evidence)) snapshot.evidence = data.evidence;
+    if ("target_career_id" in data) snapshot.target_career_id = data.target_career_id;
+  }
+
+  async function loadSession() {
+    const data = await request("GET", "/api/session.php");
+    snapshot = {
+      user: data.user || null,
+      target_career_id: data.target_career_id ?? null,
+      skills: data.skills || [],
+      evidence: data.evidence || [],
+      profile: data.profile || {},
+    };
+    return snapshot;
+  }
+
+  function ensureSession() {
+    if (snapshot) return Promise.resolve(snapshot);
+    if (!sessionPromise) {
+      sessionPromise = loadSession().finally(() => { sessionPromise = null; });
+    }
+    return sessionPromise;
+  }
+
+  async function refreshSession() {
+    snapshot = null;
+    return loadSession();
+  }
+
+  // ---- Katalog (careers + skills + categories), sekali per halaman ----
+  let catalog = null;
+  let catalogPromise = null;
+
+  async function loadCatalog() {
+    catalog = await request("GET", "/api/catalog.php");
+    return catalog;
+  }
+
+  function ensureCatalog() {
+    if (catalog) return Promise.resolve(catalog);
+    if (!catalogPromise) {
+      catalogPromise = loadCatalog().finally(() => { catalogPromise = null; });
+    }
+    return catalogPromise;
+  }
+
+  // ---- Mahasiswa ----
+
+  async function getCareers() {
+    return (await ensureCatalog()).careers;
+  }
+
+  async function getSkillCatalog() {
+    return (await ensureCatalog()).skills;
+  }
+
+  async function getSkillCategories() {
+    return (await ensureCatalog()).categories;
+  }
+
+  // GET api/session.php -> { user, skills, evidence, profile, target_career_id }
+  function getSession() {
+    return snapshot;
+  }
+
+  function getTargetId() {
+    return snapshot ? snapshot.target_career_id : null;
+  }
+
+  function getMySkills() {
+    return snapshot ? snapshot.skills : [];
+  }
+
+  function getEvidence() {
+    return snapshot ? snapshot.evidence : [];
+  }
+
+  // POST api/skills.php { name, category } -> skill master dibuat/dipakai ulang
+  async function addCustomSkill(name, category) {
+    await ensureSession();
+    const data = await request("POST", "/api/skills.php", { name, category });
+    return data.skill;
+  }
+
+  // POST api/skills.php { skill_id }
+  async function addSkill(id) {
+    await ensureSession();
+    const data = await request("POST", "/api/skills.php", { skill_id: id });
+    return data.skills;
+  }
+
+  // DELETE api/skills.php { skill_id }
+  async function removeSkill(id) {
+    await ensureSession();
+    const data = await request("DELETE", "/api/skills.php", { skill_id: id });
+    return data.skills;
+  }
+
+  // PATCH api/skills.php { skill_id, status } untuk skill hasil ekstraksi CV
+  async function setSkillStatus(id, status) {
+    await ensureSession();
+    const data = await request("PATCH", "/api/skills.php", { skill_id: id, status });
+    return data.skills;
+  }
+
+  // POST api/target.php { career_id }
+  async function setTarget(careerId) {
+    await ensureSession();
+    return request("POST", "/api/target.php", { career_id: careerId });
+  }
+
+  async function getTarget() {
+    await ensureSession();
+    return request("GET", "/api/target.php");
+  }
+
+  // POST api/evidence.php { source_type, title, description, file_url, skill_ids[] }
+  async function addEvidence(payload) {
+    await ensureSession();
+    return request("POST", "/api/evidence.php", payload);
+  }
+
+  // Nama lama yang dipakai halaman evidence.js; keduanya endpoint yang sama.
+  const createEvidence = addEvidence;
+
+  async function removeEvidence(id) {
+    await ensureSession();
+    return request("DELETE", "/api/evidence.php", { id });
+  }
+
+  // GET api/gap.php -> { career, have[], explore[] }
+  async function getSkillGap() {
+    await ensureSession();
+    return request("GET", "/api/gap.php");
+  }
+
+  // ---- Profil ----
+  async function getProfile() {
+    await ensureSession();
+    return request("GET", "/api/profile.php");
+  }
+
+  async function saveProfile(patch) {
+    await ensureSession();
+    return request("PATCH", "/api/profile.php", patch);
+  }
+
+  async function changePassword(currentPassword, newPassword) {
+    return request("POST", "/api/password.php", {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+  }
+
+  async function uploadPhoto(file) {
+    const form = new FormData();
+    form.append("photo", file);
+    snapshot = null;
+    return request("POST", "/api/profile-photo.php", form);
+  }
+
+  async function removePhoto() {
+    snapshot = null;
+    return request("DELETE", "/api/profile-photo.php", {});
+  }
+
+  // Identitas akun untuk layar pengaturan admin/HR.
+  async function getAccount() {
+    return request("GET", "/api/account.php");
+  }
+
+  async function saveAccount(patch) {
+    return request("PATCH", "/api/account.php", patch);
+  }
+
+  // ---- Admin SkillBridge ----
+
+  async function getAdminStats() {
+    return request("GET", "/api/admin/stats.php");
+  }
+
+  async function getAdminUsers() {
+    return (await request("GET", "/api/admin/users.php")).users;
+  }
+
+  async function getJobAdmins() {
+    return (await request("GET", "/api/admin/admins.php")).admins;
+  }
+
+  async function getVacancies() {
+    return (await request("GET", "/api/admin/vacancies.php")).vacancies;
+  }
+
+  async function getAdminContent() {
+    return (await request("GET", "/api/admin/content.php")).content;
+  }
+
+  async function getMasterSkills() {
+    return (await request("GET", "/api/admin/skills.php")).skills;
+  }
+
+  // Kategori resmi yang diterima server (samakan dengan validasi POST/PATCH).
+  async function getAdminSkillCategories() {
+    return (await request("GET", "/api/admin/skills.php")).categories;
+  }
+
+  async function getMasterCareers() {
+    return (await request("GET", "/api/admin/careers.php")).careers;
+  }
+
+  async function getCareerSkillMapping() {
+    return (await request("GET", "/api/admin/mapping.php")).mapping;
+  }
+
+  async function addMasterSkill(payload) {
+    return request("POST", "/api/admin/skills.php", payload);
+  }
+
+  async function updateMasterSkill(payload) {
+    return request("PATCH", "/api/admin/skills.php", payload);
+  }
+
+  async function addMasterCareer(payload) {
+    return request("POST", "/api/admin/careers.php", payload);
+  }
+
+  async function updateMasterCareer(payload) {
+    return request("PATCH", "/api/admin/careers.php", payload);
+  }
+
+  async function addMapping(payload) {
+    return request("POST", "/api/admin/mapping.php", payload);
+  }
+
+  async function updateMapping(payload) {
+    return request("PATCH", "/api/admin/mapping.php", payload);
+  }
+
+  async function removeMapping(payload) {
+    return request("DELETE", "/api/admin/mapping.php", payload);
+  }
+
+  async function addVacancy(payload) {
+    return request("POST", "/api/admin/vacancies.php", payload);
+  }
+
+  async function addContent(payload) {
+    return request("POST", "/api/admin/content.php", payload);
+  }
+
+  async function updateContent(payload) {
+    return request("PATCH", "/api/admin/content.php", payload);
+  }
+
+  async function getSettings() {
+    return (await request("GET", "/api/admin/settings.php")).settings;
+  }
+
+  async function saveSettings(settings) {
+    return request("PATCH", "/api/admin/settings.php", { settings });
+  }
+
+  // Pemetaan collection lama -> endpoint, supaya pemanggil lama
+  // (setAdminRecordStatus / removeAdminRecord) tidak perlu diubah.
+  const ADMIN_ENDPOINT = {
+    users: "/api/admin/users.php",
+    jobs: "/api/admin/admins.php",
+    admins: "/api/admin/admins.php",
+    vacancies: "/api/admin/vacancies.php",
+    skills: "/api/admin/skills.php",
+    careers: "/api/admin/careers.php",
+    content: "/api/admin/content.php",
+    mapping: "/api/admin/mapping.php",
+  };
+
+  function adminEndpoint(collection) {
+    const path = ADMIN_ENDPOINT[collection];
+    if (!path) throw new ApiError(`Koleksi admin '${collection}' tidak dikenal.`, 400);
+    return path;
+  }
+
+  async function setAdminRecordStatus(collection, id, status) {
+    return request("PATCH", adminEndpoint(collection), { id, status });
+  }
+
+  async function removeAdminRecord(collection, id) {
+    return request("DELETE", adminEndpoint(collection), { id });
+  }
+
+  // ---- Recruiter / Perusahaan ----
+
+  async function getRecruiterCompany() {
+    return request("GET", "/api/hr/company.php");
+  }
+
+  async function saveRecruiterCompany(patch) {
+    return request("PATCH", "/api/hr/company.php", patch);
+  }
+
+  async function getRecruiterTeam() {
+    return (await request("GET", "/api/hr/team.php")).team;
+  }
+
+  async function addRecruiter(payload) {
+    return request("POST", "/api/hr/team.php", payload);
+  }
+
+  async function setRecruiterStatus(id, status) {
+    return request("PATCH", "/api/hr/team.php", { id, status });
+  }
+
+  async function removeRecruiterRecord(id) {
+    return request("DELETE", "/api/hr/team.php", { id });
+  }
+
+  async function getRecruiterRoles() {
+    return (await request("GET", "/api/hr/roles.php")).roles;
+  }
+
+  async function addRecruiterRole(payload) {
+    return request("POST", "/api/hr/roles.php", payload);
+  }
+
+  // Mapping skill sebuah role: seluruh daftar diganti di server.
+  async function saveRoleMapping(roleId, skillIds) {
+    return request("PATCH", "/api/hr/roles.php", { id: roleId, skill_ids: skillIds });
+  }
+
+  async function removeRecruiterRole(roleId) {
+    return request("DELETE", "/api/hr/roles.php", { id: roleId });
+  }
+
+  async function getRecruiterCandidates(roleId) {
+    const query = roleId ? `?role=${encodeURIComponent(roleId)}` : "";
+    return (await request("GET", `/api/hr/candidates.php${query}`)).candidates;
+  }
+
+  async function setCandidateStatus(payload) {
+    return request("PATCH", "/api/hr/candidates.php", payload);
+  }
+
+  async function getRecruiterActivity() {
+    return (await request("GET", "/api/hr/activity.php")).activity;
+  }
+
+  async function getRecruiterStats() {
+    const { ok, ...stats } = await request("GET", "/api/hr/stats.php");
+    return stats;
+  }
+
+  purgeLegacy();
+
   return {
+    ApiError,
+    csrfToken,
+    // sesi & katalog
+    ensureSession,
+    refreshSession,
+    ensureCatalog,
+    getSession,
     getCareers,
     getSkillCatalog,
-    addCustomSkill,
-    setTarget,
+    getSkillCategories,
+    // mahasiswa
     getTargetId,
+    getTarget,
+    setTarget,
     getMySkills,
     addSkill,
     removeSkill,
+    setSkillStatus,
+    addCustomSkill,
     getEvidence,
     addEvidence,
+    createEvidence,
     removeEvidence,
     getSkillGap,
-    csrfToken,
+    // profil & akun
+    getProfile,
+    saveProfile,
+    changePassword,
+    uploadPhoto,
+    removePhoto,
+    getAccount,
+    saveAccount,
     // admin
+    getAdminStats,
     getAdminUsers,
     getJobAdmins,
     getVacancies,
     getAdminContent,
-    getAdminStats,
     getMasterSkills,
+    getAdminSkillCategories,
     getMasterCareers,
     getCareerSkillMapping,
+    addMasterSkill,
+    updateMasterSkill,
+    addMasterCareer,
+    updateMasterCareer,
+    addMapping,
+    updateMapping,
+    removeMapping,
+    addVacancy,
+    addContent,
+    updateContent,
+    getSettings,
+    saveSettings,
     setAdminRecordStatus,
     removeAdminRecord,
     // recruiter
     getRecruiterCompany,
+    saveRecruiterCompany,
     getRecruiterTeam,
-    getRecruiterRoles,
-    getRecruiterActivity,
-    getRecruiterCandidates,
+    addRecruiter,
     setRecruiterStatus,
     removeRecruiterRecord,
+    getRecruiterRoles,
+    addRecruiterRole,
+    saveRoleMapping,
+    removeRecruiterRole,
+    getRecruiterCandidates,
+    setCandidateStatus,
+    getRecruiterActivity,
     getRecruiterStats,
   };
 })();

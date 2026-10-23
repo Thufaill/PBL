@@ -5,6 +5,7 @@ let allRoles = [];
 let selectedRoleId = null;
 let catalogSkills = [];
 let connectedIds = new Set();
+let mappingDirty = false;
 
 function renderDate() {
   const months = [
@@ -51,21 +52,14 @@ function renderCards() {
   }
 }
 
+// Mapping disimpan di PostgreSQL (vacancy_skills) lewat API.saveRoleMapping().
+// `connectedIds` adalah draf di memori; server tetap sumber kebenaran sampai
+// tombol Simpan diklik, dan Batal menarik ulang isi server.
 function selectRole(id) {
   selectedRoleId = id;
   const role = allRoles.find((r) => r.id === id);
-  connectedIds = new Set();
-  // ponytail: mapping disimpan di localStorage per-role; upgrade ke API saat backend siap.
-  const saved = localStorage.getItem(`sb.rec.mapping.${id}`);
-  if (saved) {
-    try { connectedIds = new Set(JSON.parse(saved)); } catch { /* ignore */ }
-  } else if (role) {
-    // seed awal dari skill role
-    for (const name of role.skills || []) {
-      const s = catalogSkills.find((c) => c.name === name);
-      if (s) connectedIds.add(s.id);
-    }
-  }
+  connectedIds = new Set(role ? role.skill_ids || [] : []);
+  mappingDirty = false;
   renderCards();
   renderMapping(role);
 }
@@ -99,7 +93,7 @@ function renderMapping(role) {
           type: "button",
           class: "rec-pager-link rec-pager-link--danger",
           text: "Hapus",
-          onClick: () => { connectedIds.delete(sid); renderMapping(role); },
+          onClick: () => { connectedIds.delete(sid); mappingDirty = true; renderMapping(role); },
         }),
       ]));
     }
@@ -139,6 +133,7 @@ function renderMapping(role) {
           onChange: (e) => {
             if (e.target.checked) connectedIds.add(s.id);
             else connectedIds.delete(s.id);
+            mappingDirty = true;
             renderMapping(role);
           },
         }),
@@ -164,24 +159,43 @@ async function load() {
       API.getRecruiterRoles(),
       API.getSkillCatalog(),
     ]);
-  } catch {
+  } catch (err) {
     allRoles = [];
     catalogSkills = [];
+    UI.toast(err.message, "error");
   }
   selectedRoleId = allRoles[0]?.id ?? null;
   renderCards();
   selectRole(selectedRoleId);
 }
 
-document.getElementById("btn-save-mapping").addEventListener("click", () => {
-  if (selectedRoleId != null) {
-    localStorage.setItem(`sb.rec.mapping.${selectedRoleId}`, JSON.stringify([...connectedIds]));
+const saveBtn = document.getElementById("btn-save-mapping");
+
+saveBtn.addEventListener("click", async () => {
+  if (selectedRoleId == null) {
+    UI.toast("Pilih target role terlebih dahulu.", "error");
+    return;
   }
-  UI.toast("Mapping skill tersimpan.");
+  saveBtn.disabled = true;
+  try {
+    await API.saveRoleMapping(selectedRoleId, [...connectedIds]);
+    mappingDirty = false;
+    UI.toast("Mapping skill tersimpan.");
+    // Muat ulang supaya kartu role menampilkan jumlah kandidat yang cocok terbaru.
+    allRoles = await API.getRecruiterRoles();
+    const active = selectedRoleId;
+    renderCards();
+    selectRole(active);
+  } catch (err) {
+    UI.toast(err.message, "error");
+  } finally {
+    saveBtn.disabled = false;
+  }
 });
+
 document.getElementById("btn-cancel-mapping").addEventListener("click", () => {
   selectRole(selectedRoleId);
-  UI.toast("Perubahan dibatalkan.");
+  UI.toast(mappingDirty ? "Perubahan dibatalkan." : "Tidak ada perubahan.");
 });
 
 load();

@@ -9,7 +9,7 @@ $role = 'admin';
 $path_prefix = '../';
 $admin_page = 'settings';
 $body_class = 'admin-body';
-$body_attrs = 'data-admin-page="settings" data-nav="settings"';
+$body_attrs = 'data-admin-page="settings"';
 $page_script = 'admin-settings.js';
 
 require_once __DIR__ . '/../../includes/layouts/head.php';
@@ -40,15 +40,19 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
         <form id="form-admin-profile">
           <div class="field">
             <label for="set-name">Nama lengkap</label>
-            <input type="text" id="set-name" name="name" value="Aditya Pratama" />
+            <input type="text" id="set-name" name="name" autocomplete="name" />
           </div>
           <div class="field">
             <label for="set-email">Email</label>
-            <input type="email" id="set-email" name="email" value="aditya@skillbridge.id" />
+            <input type="email" id="set-email" name="email" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="set-current-password">Password saat ini</label>
+            <input type="password" id="set-current-password" name="current_password" autocomplete="current-password" placeholder="Hanya perlu saat mengganti password" />
           </div>
           <div class="field">
             <label for="set-password">Password baru</label>
-            <input type="password" id="set-password" name="password" placeholder="Biarkan kosong jika tidak diubah" />
+            <input type="password" id="set-password" name="password" autocomplete="new-password" placeholder="Biarkan kosong jika tidak diubah" />
           </div>
         </form>
         <div class="row-end" style="display:flex;justify-content:flex-end">
@@ -67,21 +71,21 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
         <form id="form-platform-config">
           <div class="field">
             <label for="set-sitename">Nama platform</label>
-            <input type="text" id="set-sitename" name="site_name" value="SkillBridge" />
+            <input type="text" id="set-sitename" name="site_name" autocomplete="off" />
           </div>
           <div class="field">
             <label for="set-maxevidence">Batas maksimum evidence per pengguna</label>
-            <input type="number" id="set-maxevidence" name="max_evidence" value="50" min="1" max="500" />
+            <input type="number" id="set-maxevidence" name="max_evidence" min="1" max="100" />
           </div>
           <div class="field">
             <label for="set-visibility">Visibilitas portofolio default</label>
             <select id="set-visibility" name="default_visibility">
-              <option value="private">Private</option>
-              <option value="public">Public</option>
+              <option value="Public">Public</option>
+              <option value="Private">Private</option>
             </select>
           </div>
           <div class="field" style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-            <input type="checkbox" id="set-registration" name="registration_open" checked style="width:auto" />
+            <input type="checkbox" id="set-registration" name="registration_open" style="width:auto" />
             <label for="set-registration" style="margin:0">Buka pendaftaran pengguna baru</label>
           </div>
         </form>

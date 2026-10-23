@@ -9,7 +9,7 @@ $role = 'admin';
 $path_prefix = '../';
 $admin_page = 'users';
 $body_class = 'admin-body';
-$body_attrs = 'data-admin-page="users" data-nav="users"';
+$body_attrs = 'data-admin-page="users"';
 $page_script = 'admin-users.js';
 
 require_once __DIR__ . '/../../includes/layouts/head.php';
@@ -40,13 +40,6 @@ require_once __DIR__ . '/../../includes/layouts/admin_sidebar.php';
           <option value="inactive">Non-aktif</option>
           <option value="suspended">Suspended</option>
         </select>
-        <button type="button" class="btn btn-accent btn-44" id="btn-add-user">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round">
-            <path d="M3.333 8h9.334M8 3.333v9.334" />
-          </svg>
-          Tambah Pengguna
-        </button>
       </div>
 
       <div class="admin-card">

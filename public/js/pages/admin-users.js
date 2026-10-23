@@ -1,4 +1,7 @@
 // admin-users.js - manajemen pengguna (Admin Console)
+// Baca/tulis lewat api/admin/users.php: GET daftar, PATCH status, DELETE akun.
+// Pendaftaran akun mahasiswa tetap lewat form publik, jadi konsol tidak
+// punya endpoint "buat pengguna".
 
 document.addEventListener("DOMContentLoaded", () => {
   const { el, clear } = UI;
@@ -18,8 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
   async function load() {
     try {
       allUsers = await API.getAdminUsers();
-    } catch {
+    } catch (err) {
       allUsers = [];
+      UI.toast(err.message, "error");
     }
     applyFilter();
   }
@@ -72,11 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
               el("button", {
                 type: "button",
                 class: "admin-icon-btn",
-                "data-action": "edit", "data-id": String(u.id), "aria-label": `Edit ${u.name}`,
-                title: "Edit",
+                "data-action": "status", "data-id": String(u.id), "aria-label": `Ubah status ${u.name}`,
+                title: u.status === "active" ? "Nonaktifkan" : "Aktifkan",
                 innerHTML:
-                  '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2.5l3 3L4 13H1v-3L8.5 2.5z"/></svg>',
-                onClick: () => UI.toast(`Edit ${u.name} (dummy)`),
+                  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0111.2-3M14 8a6 6 0 01-11.2 3"/><path d="M13.5 2v3h-3M2.5 14v-3h3"/></svg>',
               }),
               el("button", {
                 type: "button",
@@ -85,12 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 title: "Hapus",
                 innerHTML:
                   '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5h10M5 3.5V2a1 1 0 011-1h2a1 1 0 011 1v1.5M3 3.5l.5 8.5h7l.5-8.5"/></svg>',
-                onClick: async () => {
-                  if (!confirm(`Hapus akun ${u.name}?`)) return;
-                  await API.removeAdminRecord("users", u.id);
-                  UI.toast("Pengguna dihapus");
-                  load(); document.getElementById("users-table-body")?.addEventListener("click", async (e) => { const btn = e.target.closest("button[data-action]"); if (!btn) return; const action = btn.dataset.action; const id = Number(btn.dataset.id); const u = allUsers.find(x => x.id === id); if (!u) return; if (action === "edit") { UI.toast(`Edit ${u.name} (dummy)`); } else if (action === "delete") { if (!confirm(`Hapus akun ${u.name}?`)) return; await API.removeAdminRecord("users", u.id); UI.toast("Pengguna dihapus"); load(); } });
-                },
               }),
             ]),
           ]),
@@ -99,33 +96,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  load(); document.getElementById("users-table-body")?.addEventListener("click", async (e) => { const btn = e.target.closest("button[data-action]"); if (!btn) return; const action = btn.dataset.action; const id = Number(btn.dataset.id); const u = allUsers.find(x => x.id === id); if (!u) return; if (action === "edit") { UI.toast(`Edit ${u.name} (dummy)`); } else if (action === "delete") { if (!confirm(`Hapus akun ${u.name}?`)) return; await API.removeAdminRecord("users", u.id); UI.toast("Pengguna dihapus"); load(); } });
+  // Satu delegated handler, dipasang sekali: render() ulang baris tidak
+  // menambah listener baru, jadi aksi tidak berjalan berkali-kali.
+  document.getElementById("users-table-body")?.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const u = allUsers.find((x) => x.id === Number(btn.dataset.id));
+    if (!u) return;
+    try {
+      if (btn.dataset.action === "status") {
+        const next = u.status === "active" ? "inactive" : "active";
+        await API.setAdminRecordStatus("users", u.id, next);
+        UI.toast(`Status ${u.name} diubah`);
+      } else if (btn.dataset.action === "delete") {
+        if (!confirm(`Hapus akun ${u.name}?`)) return;
+        await API.removeAdminRecord("users", u.id);
+        UI.toast("Pengguna dihapus");
+      } else {
+        return;
+      }
+      await load();
+    } catch (err) {
+      UI.toast(err.message, "error");
+    }
+  });
+
   document.getElementById("user-search").addEventListener("input", applyFilter);
   document.getElementById("user-status-filter").addEventListener("change", applyFilter);
 
-  document.getElementById("btn-add-user").addEventListener("click", () => {
-    UI.modal({
-      title: "Tambah Pengguna",
-      body: [
-        el("div", { class: "field" }, [
-          el("label", { for: "f-name", text: "Nama lengkap" }),
-          el("input", { type: "text", id: "f-name", name: "name", placeholder: "Nama pengguna" }),
-        ]),
-        el("div", { class: "field" }, [
-          el("label", { for: "f-email", text: "Email" }),
-          el("input", {
-            type: "email",
-            id: "f-email",
-            name: "email",
-            placeholder: "email@example.com",
-          }),
-        ]),
-      ],
-      submitLabel: "Simpan",
-      onSubmit: (close) => {
-        UI.toast("Pengguna ditambahkan (dummy)");
-        close();
-      },
-    });
-  });
+  load();
 });

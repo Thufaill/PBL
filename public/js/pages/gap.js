@@ -33,7 +33,7 @@
   );
 
   // Stat tiles
-  const evidence = await API.getEvidence();
+  const evidence = API.getEvidence();
   const tilesEl = document.getElementById("stat-tiles");
   tilesEl.append(
     el("div", { class: "stat-tile" }, [
@@ -76,7 +76,18 @@
       el("button", {
         class: "btn btn-accent",
         style: "width: fit-content; margin-top: 8px; gap: 7px",
-        onClick: () => UI.toast("Feature coming soon"),
+        onClick: async (event) => {
+          const button = event.currentTarget;
+          button.disabled = true;
+          try {
+            await API.addSkill(first.id);
+            UI.toast(`${first.name} ditambahkan ke My Skills.`);
+            location.reload();
+          } catch (err) {
+            button.disabled = false;
+            UI.toast(err.message);
+          }
+        },
       }, [
         el("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", "stroke-width": "2", innerHTML: `<path d="M3.333 8h9.334M8 3.333v9.334" stroke-linecap="round"/>` }),
         document.createTextNode(`Add ${first.name}`),
@@ -103,7 +114,7 @@
       avatarContent,
       el("div", { style: "flex: 1; min-width: 0" }, [
         el("p", { style: "font-size: 15px; font-weight: 700; line-height: 1.2; color: var(--text-primary)", text: skill.name }),
-        el("p", { style: "font-size: 12px; color: var(--text-muted); margin-top: 4px; opacity: 0.85", text: skill.category || (type === "have" ? "Programming language" : "Backend web framework") }),
+        el("p", { style: "font-size: 12px; color: var(--text-muted); margin-top: 4px; opacity: 0.85", text: skill.category || "Kategori belum diisi" }),
       ]),
       badge,
     ]);

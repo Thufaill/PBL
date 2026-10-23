@@ -1,4 +1,5 @@
 // Manajemen Recruiter / Tim — tabel anggota tim + filter + pagination.
+// Sumber data: api/hr/team.php (tabel company_recruiters).
 const { el, clear } = UI;
 
 const STATUS_BADGE = {
@@ -33,14 +34,14 @@ function renderDate() {
     `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
 
-async function renderStats() {
+function renderStats() {
   const team = allTeam;
   const grid = document.getElementById("rec-team-stats");
   clear(grid);
   const cards = [
     { label: "Total Recruiter", value: team.length, context: `${team.filter((t) => t.status === "active").length} aktif · ${team.filter((t) => t.status === "inactive").length} nonaktif` },
     { label: "Lead & Manager", value: team.filter((t) => t.role !== "recruiter").length, context: "Akses penuh ke pipeline" },
-    { label: "Undangan Pending", value: team.filter((t) => t.status === "pending").length, context: "Menunggu konfirmasi email" },
+    { label: "Undangan Pending", value: team.filter((t) => t.status === "pending").length, context: "Belum menerima keputusan" },
   ];
   for (const c of cards) {
     grid.appendChild(
@@ -63,7 +64,17 @@ function applyFilter() {
   });
 }
 
-function renderActions(m, reload) {
+async function run(action, okMessage) {
+  try {
+    await action();
+    if (okMessage) UI.toast(okMessage);
+    await load();
+  } catch (err) {
+    UI.toast(err.message, "error");
+  }
+}
+
+function renderActions(m) {
   const buttons = [];
 
   if (m.status === "pending") {
@@ -71,8 +82,8 @@ function renderActions(m, reload) {
       el("button", {
         type: "button",
         class: "rec-pager-link",
-        text: "Kirim Ulang",
-        onClick: () => UI.toast(`Undangan untuk ${m.name} dikirim ulang.`),
+        text: "Aktifkan",
+        onClick: () => run(() => API.setRecruiterStatus(m.id, "active"), `${m.name} diaktifkan.`),
       })
     );
   } else if (m.status === "inactive") {
@@ -81,11 +92,7 @@ function renderActions(m, reload) {
         type: "button",
         class: "rec-pager-link",
         text: "Aktifkan",
-        onClick: async () => {
-          await API.setRecruiterStatus(m.id, "active");
-          UI.toast(`${m.name} diaktifkan.`);
-          reload();
-        },
+        onClick: () => run(() => API.setRecruiterStatus(m.id, "active"), `${m.name} diaktifkan.`),
       })
     );
   } else {
@@ -94,15 +101,13 @@ function renderActions(m, reload) {
         type: "button",
         class: "rec-pager-link",
         text: "Nonaktifkan",
-        onClick: async () => {
-          await API.setRecruiterStatus(m.id, "inactive");
-          UI.toast(`${m.name} dinonaktifkan.`);
-          reload();
-        },
+        onClick: () => run(() => API.setRecruiterStatus(m.id, "inactive"), `${m.name} dinonaktifkan.`),
       })
     );
   }
 
+  // Server menolak mengubah keanggotaan akun sendiri; kegagalan itu muncul
+  // sebagai toast, jadi tombol tetap tampil agar pesannya jelas.
   if (m.role !== "lead") {
     buttons.push(
       el("button", {
@@ -111,10 +116,7 @@ function renderActions(m, reload) {
         text: "Hapus",
         onClick: () => {
           if (!confirm(`Hapus ${m.name} dari tim recruiter?`)) return;
-          API.removeRecruiterRecord(m.id).then(() => {
-            UI.toast(`${m.name} dihapus dari tim.`);
-            reload();
-          });
+          run(() => API.removeRecruiterRecord(m.id), `${m.name} dihapus dari tim.`);
         },
       })
     );
@@ -158,7 +160,7 @@ function render() {
             }),
           ]),
           el("td", { text: UI.formatDate(m.created_at) }),
-          el("td", {}, [renderActions(m, load)]),
+          el("td", {}, [renderActions(m)]),
         ])
       );
     }
@@ -184,6 +186,7 @@ function openInvite() {
       el("select", { id: "invite-role", name: "role" }, [
         el("option", { value: "recruiter", text: "Recruiter" }),
         el("option", { value: "hiring_manager", text: "Hiring Manager" }),
+        el("option", { value: "lead", text: "Lead Recruiter" }),
       ]),
     ]),
   ];
@@ -191,50 +194,43 @@ function openInvite() {
   UI.modal({
     title: "Undang Recruiter Baru",
     body,
-    submitLabel: "Kirim Undangan",
-    onSubmit: (_close, form) => {
-      const name = form.querySelector("#invite-name").value.trim();
-      if (!name) {
-        UI.toast("Nama recruiter wajib diisi.");
+    submitLabel: "Simpan Anggota",
+    onSubmit: async (close, form) => {
+      const name = form.elements.name.value.trim();
+      const email = form.elements.email.value.trim();
+      if (!name || !email) {
+        UI.toast("Nama dan email wajib diisi.", "error");
         return false;
       }
-      UI.toast(`Undangan untuk ${name} dikirim.`);
-      return true;
+      try {
+        await API.addRecruiter({ name, email, role: form.elements.role.value, status: "pending" });
+        UI.toast(`${name} tercatat sebagai undangan.`);
+      } catch (err) {
+        UI.toast(err.message, "error");
+        return false;
+      }
+      await load();
     },
   });
 }
 
 async function load() {
-  renderDate();
   try {
     allTeam = await API.getRecruiterTeam();
-    await renderStats();
-    render(); document.getElementById("rec-team-tbody")?.addEventListener("click", async (e) => { const btn = e.target.closest("button"); if (!btn) return; const row = btn.closest("tr"); if (!row) return; const name = row.querySelector(".rec-col-name strong, .rec-col-name")?.textContent?.trim() || "Anggota"; if (btn.textContent.includes("Kirim Ulang")) { UI.toast(`Undangan untuk ${name} dikirim ulang.`); } });
   } catch (err) {
-    UI.toast("Gagal memuat tim recruiter: " + err.message);
+    allTeam = [];
+    UI.toast("Gagal memuat tim recruiter: " + err.message, "error");
   }
+  renderStats();
+  render();
 }
 
-document.getElementById("rec-team-search").addEventListener("input", () => {
-  page = 1;
-  render(); document.getElementById("rec-team-tbody")?.addEventListener("click", async (e) => { const btn = e.target.closest("button"); if (!btn) return; const row = btn.closest("tr"); if (!row) return; const name = row.querySelector(".rec-col-name strong, .rec-col-name")?.textContent?.trim() || "Anggota"; if (btn.textContent.includes("Kirim Ulang")) { UI.toast(`Undangan untuk ${name} dikirim ulang.`); } });
-});
-document.getElementById("rec-team-role-filter").addEventListener("change", () => {
-  page = 1;
-  render(); document.getElementById("rec-team-tbody")?.addEventListener("click", async (e) => { const btn = e.target.closest("button"); if (!btn) return; const row = btn.closest("tr"); if (!row) return; const name = row.querySelector(".rec-col-name strong, .rec-col-name")?.textContent?.trim() || "Anggota"; if (btn.textContent.includes("Kirim Ulang")) { UI.toast(`Undangan untuk ${name} dikirim ulang.`); } });
-});
-document.getElementById("rec-team-status-filter").addEventListener("change", () => {
-  page = 1;
-  render(); document.getElementById("rec-team-tbody")?.addEventListener("click", async (e) => { const btn = e.target.closest("button"); if (!btn) return; const row = btn.closest("tr"); if (!row) return; const name = row.querySelector(".rec-col-name strong, .rec-col-name")?.textContent?.trim() || "Anggota"; if (btn.textContent.includes("Kirim Ulang")) { UI.toast(`Undangan untuk ${name} dikirim ulang.`); } });
-});
-document.getElementById("rec-team-prev").addEventListener("click", () => {
-  page -= 1;
-  render(); document.getElementById("rec-team-tbody")?.addEventListener("click", async (e) => { const btn = e.target.closest("button"); if (!btn) return; const row = btn.closest("tr"); if (!row) return; const name = row.querySelector(".rec-col-name strong, .rec-col-name")?.textContent?.trim() || "Anggota"; if (btn.textContent.includes("Kirim Ulang")) { UI.toast(`Undangan untuk ${name} dikirim ulang.`); } });
-});
-document.getElementById("rec-team-next").addEventListener("click", () => {
-  page += 1;
-  render(); document.getElementById("rec-team-tbody")?.addEventListener("click", async (e) => { const btn = e.target.closest("button"); if (!btn) return; const row = btn.closest("tr"); if (!row) return; const name = row.querySelector(".rec-col-name strong, .rec-col-name")?.textContent?.trim() || "Anggota"; if (btn.textContent.includes("Kirim Ulang")) { UI.toast(`Undangan untuk ${name} dikirim ulang.`); } });
-});
+renderDate();
+document.getElementById("rec-team-search").addEventListener("input", () => { page = 1; render(); });
+document.getElementById("rec-team-role-filter").addEventListener("change", () => { page = 1; render(); });
+document.getElementById("rec-team-status-filter").addEventListener("change", () => { page = 1; render(); });
+document.getElementById("rec-team-prev").addEventListener("click", () => { page -= 1; render(); });
+document.getElementById("rec-team-next").addEventListener("click", () => { page += 1; render(); });
 document.getElementById("btn-invite-recruiter").addEventListener("click", openInvite);
 
 // Tombol "Tambah Recruiter" dari dashboard mengarah ke sini dengan #invite.

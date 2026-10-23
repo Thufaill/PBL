@@ -43,7 +43,7 @@ async function renderStats() {
     { label: "Role Dibuka", value: s.openRoles, context: "Target role yang dibuka perusahaan" },
     { label: "Kursi Kosong", value: s.totalPositions, context: "Posisi yang menunggu kandidat" },
     { label: "Kandidat Pipeline", value: s.pipelineCandidates, context: "Menunggu peninjauan tim" },
-    { label: "Skill Terpetakan", value: "15", primary: true, context: "Kebutuhan skill dari seluruh role aktif" },
+    { label: "Skill Terpetakan", value: s.mappedSkills, primary: true, context: "Kebutuhan skill dari seluruh role aktif" },
   ];
   for (const c of cards) {
     grid.appendChild(
@@ -74,13 +74,10 @@ async function renderTeam() {
   for (const m of team.slice(0, 4)) {
     let action;
     if (m.status === "pending") {
-      action = el("button", {
-        type: "button",
+      action = el("a", {
         class: "rec-row-action",
-        text: "Kirim Ulang",
-        onClick: () => {
-          UI.toast(`Undangan untuk ${m.name} dikirim ulang.`);
-        },
+        href: "team.php#invite",
+        text: "Kelola",
       });
     } else if (m.status === "inactive") {
       action = el("button", {

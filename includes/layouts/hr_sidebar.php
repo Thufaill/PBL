@@ -2,8 +2,10 @@
 // includes/layouts/hr_sidebar.php
 // Sidebar Navigasi Konsol HR / Recruiter (Desktop & Mobile Drawer)
 require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../config/database.php';
 
 $rec_page = $rec_page ?? 'profile';
+$site_name = app_setting('site_name', 'SkillBridge');
 ?>
 <!-- Backdrop Mobile Drawer -->
 <div class="sidebar-backdrop" data-close-sidebar></div>
@@ -12,9 +14,9 @@ $rec_page = $rec_page ?? 'profile';
 <aside class="rec-sidebar">
   <div class="rec-brand">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <div class="rec-brand-mark">S</div>
+      <div class="rec-brand-mark"><?= e(mb_substr($site_name, 0, 1)) ?></div>
       <div class="rec-brand-copy">
-        <span class="rec-brand-name">SkillBridge</span>
+        <span class="rec-brand-name"><?= e($site_name) ?></span>
         <span class="rec-brand-type">RECRUITER CONSOLE</span>
       </div>
     </div>

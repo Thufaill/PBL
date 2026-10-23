@@ -59,7 +59,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
         <div style="margin-bottom: 32px">
           <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: #5B6B7C; margin-bottom: 8px">BUKTI KOMPETENSI</p>
           <h2 style="font-size: 24px; font-weight: 700; color: #0F172A; margin-bottom: 8px">Ceritakan yang sudah kamu kerjakan</h2>
-          <p style="font-size: 13px; line-height: 1.5; color: #64748B">Gunakan contoh fiktif. Tautan dan lampiran di sini hanya referensi demo; tidak diunggah atau diambil dari layanan lain.</p>
+          <p style="font-size: 13px; line-height: 1.5; color: #64748B">Bukti disimpan ke profil Anda di server. Tautan hanya disimpan sebagai alamat, file tidak diunggah ke aplikasi ini.</p>
         </div>
 
         <form id="form-add-evidence" style="display: grid; gap: 24px">
@@ -110,11 +110,11 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
             <input type="text" id="input-title" name="title" required style="width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 15px; color: #0F172A; background: white" placeholder="Contoh: Proyek dashboard inventaris">
           </div>
 
-          <!-- Nama Lampiran -->
+          <!-- Tautan Bukti -->
           <div>
-            <label for="input-attachment" style="display: block; font-size: 14px; font-weight: 600; color: #0F172A; margin-bottom: 8px">Nama lampiran demo</label>
-            <input type="text" id="input-attachment" name="attachment" style="width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 15px; color: #0F172A; background: white" placeholder="Contoh: Dokumen_Demo.pdf">
-            <p style="margin-top: 6px; font-size: 12px; color: #64748B">Cukup nama atau referensi fiktif; tidak perlu file asli.</p>
+            <label for="input-link" style="display: block; font-size: 14px; font-weight: 600; color: #0F172A; margin-bottom: 8px">Tautan bukti (opsional)</label>
+            <input type="url" id="input-link" name="link" style="width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 15px; color: #0F172A; background: white" placeholder="https://github.com/namaku/proyek">
+            <p style="margin-top: 6px; font-size: 12px; color: #64748B">Alamat http/https ke dokumen, repositori, atau halaman publik.</p>
           </div>
 
           <!-- Ringkasan Kontribusi -->
@@ -127,7 +127,6 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
           <div>
             <label style="display: block; font-size: 14px; font-weight: 600; color: #0F172A; margin-bottom: 4px">Skill yang didukung <span style="font-weight: 400; color: #64748B">· pilih 1–6</span></label>
             <div id="skills-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px"></div>
-            <input type="hidden" id="input-skills" name="skills">
           </div>
 
           <!-- Level Dropdown -->
@@ -140,14 +139,14 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
             </select>
             <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#64748B" stroke-width="1.5"/><path d="M7 4v3M7 9.5v.5" stroke="#64748B" stroke-width="1.5" stroke-linecap="round"/></svg>
-              <p style="font-size: 12px; color: #64748B">Level ditentukan untuk simulasi. Bukti tidak diverifikasi otomatis.</p>
+              <p style="font-size: 12px; color: #64748B">Level Anda nyatakan sendiri; sistem tidak memverifikasi bukti secara otomatis.</p>
             </div>
           </div>
 
           <!-- Footer Actions -->
           <div style="border-top: 1px solid #E2E8F0; padding-top: 24px; display: flex; justify-content: flex-end; gap: 12px">
             <button type="button" id="btn-cancel" style="padding: 10px 24px; border: 1px solid #CBD5E1; background: white; color: #1E293B; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">Batal</button>
-            <button type="submit" style="padding: 10px 24px; border: none; background: #FF007A; color: white; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s" onmouseover="this.style.background='#EC4899'" onmouseout="this.style.background='#FF007A'">Simpan bukti demo</button>
+            <button type="submit" style="padding: 10px 24px; border: none; background: #FF007A; color: white; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s" onmouseover="this.style.background='#EC4899'" onmouseout="this.style.background='#FF007A'">Simpan bukti</button>
           </div>
         </form>
         </div>

@@ -9,7 +9,7 @@ $role = 'admin';
 $path_prefix = '../';
 $admin_page = 'careers';
 $body_class = 'admin-body';
-$body_attrs = 'data-admin-page="careers" data-nav="careers"';
+$body_attrs = 'data-admin-page="careers"';
 $page_script = 'admin-careers.js';
 
 require_once __DIR__ . '/../../includes/layouts/head.php';

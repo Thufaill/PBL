@@ -2,12 +2,15 @@
 
 (async () => {
   const { el } = UI;
-  const [careers, catalog, gap, evidence] = await Promise.all([
+  // ensureSession() memuat snapshot domain (skills/evidence/target) dari DB;
+  // sesudah ini API.getMySkills()/getEvidence()/getTargetId() aman dibaca.
+  const [careers, catalog, gap] = await Promise.all([
     API.getCareers(),
     API.getSkillCatalog(),
     API.getSkillGap(),
-    API.getEvidence(),
+    API.ensureSession(),
   ]);
+  const evidence = API.getEvidence();
 
   const mine = API.getMySkills();
   const targetId = API.getTargetId();
@@ -26,9 +29,15 @@
     .filter(Boolean)
     .slice(0, 5);
 
+  const growingCount = mine.length - strongCount;
   document.getElementById("card-skills").append(
     el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${mine.length} skills` }),
-    el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: `Five of your skills are already strong, and three are ready for your next focus.` }),
+    el("p", {
+      style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px",
+      text: mine.length
+        ? `${strongCount} ${strongCount === 1 ? "skill is" : "skills are"} backed by two or more evidence items, ${growingCount} still growing.`
+        : "Add the skills you are learning to start tracking your portfolio.",
+    }),
     mySkillNames.length > 0
       ? el("div", { style: "display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px" },
           mySkillNames.map((name) => {

@@ -4,9 +4,13 @@
 // Sesuai PRD Bagian 4 & CLAUDE.md Bagian 3
 
 require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../auth/csrf.php';
 
-$page_title = $page_title ?? 'SkillBridge';
+// Nama platform dapat diubah admin di "Konfigurasi Platform". Hanya dibaca
+// ketika halaman tidak menentukan judulnya sendiri, sehingga halaman publik
+// tidak menambah query.
+$page_title = $page_title ?? app_setting('site_name', 'SkillBridge');
 $role = $role ?? 'public';
 $body_class = $body_class ?? '';
 $body_attrs = $body_attrs ?? '';

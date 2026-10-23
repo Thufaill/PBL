@@ -1,1 +1,5 @@
 .env
+
+# Unggahan pengguna (foto profil). Isinya data pribadi, tidak boleh masuk repo.
+storage/*
+!storage/.gitkeep

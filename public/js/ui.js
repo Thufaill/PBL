@@ -1,20 +1,6 @@
 // ui.js - helper DOM bersama. Semua render memakai createElement/textContent
 
 const UI = (() => {
-  const getBaseUrl = () => {
-    return (typeof window !== "undefined" && window.APP_BASE_URL !== undefined)
-      ? (window.APP_BASE_URL === "/" ? "" : window.APP_BASE_URL.replace(/\/+$/, ""))
-      : "";
-  };
-
-  const NAV_ITEMS = [
-    { key: "dashboard", label: "Dashboard", href: "mahasiswa/dashboard.php" },
-    { key: "skills", label: "My Skills", href: "mahasiswa/skills.php" },
-    { key: "evidence", label: "Evidence", href: "mahasiswa/evidence.php" },
-    { key: "career", label: "Career Target", href: "mahasiswa/career.php" },
-    { key: "gap", label: "Skill Gap", href: "mahasiswa/gap.php" },
-    { key: "profile", label: "Profile", href: "mahasiswa/profile.php" },
-  ];
 
   // el("span", { class: "tag" }, ["PHP"]) -> <span class="tag">PHP</span>
   function el(tag, props = {}, children = []) {
@@ -49,8 +35,8 @@ const UI = (() => {
     }
   }
 
-  function toast(message) {
-    const box = el("div", { class: "toast", role: "status", text: message });
+  function toast(message, kind) {
+    const box = el("div", { class: kind === "error" ? "toast toast--error" : "toast", role: "status", text: message });
     document.body.append(box);
     setTimeout(() => box.remove(), 2600);
   }
@@ -107,9 +93,18 @@ const UI = (() => {
       if (event.target === overlay) close();
     });
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (onSubmit && onSubmit(close, form) === false) return;
+      if (onSubmit) {
+        submitBtn.disabled = true;
+        try {
+          // onSubmit async: tunggu sampai selesai supaya kegagalan tulis ke
+          // server bisa menahan modal tetap terbuka (return false).
+          if (await onSubmit(close, form) === false) return;
+        } finally {
+          submitBtn.disabled = false;
+        }
+      }
       close();
     });
 
@@ -119,57 +114,8 @@ const UI = (() => {
     return close;
   }
 
-  function renderNavbar() {
-    // Cegah render ulang jika navbar sudah di-render oleh server (PHP)
-    if (document.querySelector("header.navbar")) return;
-
-    const active = document.body.dataset.nav || "";
-    const base = getBaseUrl();
-
-    const navLinks = el(
-      "div",
-      { class: "navbar-nav" },
-      NAV_ITEMS.map((item) =>
-        el("a", {
-          class: item.key === active ? "nav-item active" : "nav-item",
-          href: `${base}/${item.href}`,
-          text: item.label,
-          ...(item.key === active ? { "aria-current": "page" } : {}),
-        })
-      )
-    );
-
-    const brand = el("a", { class: "navbar-brand", href: `${base}/index.php`, "aria-label": "SkillBridge home" }, [
-      el("div", { class: "navbar-logo", text: "S" }),
-      el("div", { class: "navbar-brand-text" }, [
-        el("div", { class: "navbar-brand-name", text: "SkillBridge" }),
-        el("div", { class: "navbar-brand-subtitle", text: "STUDENT PORTFOLIO" }),
-      ]),
-    ]);
-
-    const profile = el("div", { class: "navbar-profile" }, [
-      el("div", { class: "navbar-profile-text" }, [
-        el("div", { class: "navbar-profile-name", text: "Jhon Doe" }),
-        el("div", { class: "navbar-profile-email", text: "jhondoe@gmail.com" }),
-      ]),
-      el("div", { class: "navbar-avatar", text: "JD" }),
-    ]);
-
-    const toggle = el("button", {
-      type: "button",
-      class: "navbar-toggle",
-      "aria-label": "Buka menu navigasi",
-      "aria-expanded": "false",
-      innerHTML: '<span class="navbar-toggle-bar"></span><span class="navbar-toggle-bar"></span><span class="navbar-toggle-bar"></span>',
-    });
-
-    const bar = el("header", { class: "navbar" }, [brand, toggle, navLinks, profile]);
-    document.body.prepend(bar);
-  }
 
   document.addEventListener("DOMContentLoaded", () => {
-    if (document.body.dataset.nav !== undefined) renderNavbar();
-
     // Event Delegation: Navbar Hamburger Toggle Mobile
     document.addEventListener("click", (e) => {
       const toggle = e.target.closest(".navbar-toggle");

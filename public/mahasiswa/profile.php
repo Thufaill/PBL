@@ -41,7 +41,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
                 </svg>
               </div>
               <div class="profile-identity-text">
-                <p class="profile-name" id="profile-display-name">Jhon Doe</p>
+                <p class="profile-name" id="profile-display-name">Memuat...</p>
                 <p class="profile-role">Student</p>
                 <button class="btn btn-sm profile-change-photo" type="button" id="btn-change-photo">Change Photo</button>
               </div>
@@ -51,31 +51,31 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               <div class="profile-detail-row">
                 <div class="profile-detail">
                   <p class="profile-detail-label">Full Name</p>
-                  <p class="profile-detail-value" id="detail-fullname">Jhon Doe</p>
+                  <p class="profile-detail-value" id="detail-fullname">Memuat...</p>
                 </div>
                 <div class="profile-detail">
                   <p class="profile-detail-label">Email Address</p>
-                  <p class="profile-detail-value" id="detail-email">jhondoe@gmail.com</p>
+                  <p class="profile-detail-value" id="detail-email">Memuat...</p>
                 </div>
               </div>
               <div class="profile-detail-row">
                 <div class="profile-detail">
                   <p class="profile-detail-label">Institution</p>
-                  <p class="profile-detail-value" id="detail-institution">Politeknik Negeri Malang</p>
+                  <p class="profile-detail-value" id="detail-institution">Memuat...</p>
                 </div>
                 <div class="profile-detail">
                   <p class="profile-detail-label">Study Program</p>
-                  <p class="profile-detail-value" id="detail-program">Information Technology</p>
+                  <p class="profile-detail-value" id="detail-program">Memuat...</p>
                 </div>
               </div>
               <div class="profile-detail-row">
                 <div class="profile-detail">
                   <p class="profile-detail-label">Semester</p>
-                  <p class="profile-detail-value" id="detail-semester">3</p>
+                  <p class="profile-detail-value" id="detail-semester">Memuat...</p>
                 </div>
                 <div class="profile-detail">
                   <p class="profile-detail-label">Location</p>
-                  <p class="profile-detail-value" id="detail-location">Malang, Indonesia</p>
+                  <p class="profile-detail-value" id="detail-location">Memuat...</p>
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
               <div class="account-detail-copy">
                 <p class="profile-detail-label">Member Since</p>
-                <p class="profile-detail-value" id="detail-member-since">January 2026</p>
+                <p class="profile-detail-value" id="detail-member-since">Memuat...</p>
               </div>
             </div>
             <div class="account-detail-row">
@@ -113,7 +113,7 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
               <div class="account-detail-copy">
                 <p class="profile-detail-label">Portfolio Visibility</p>
-                <p class="profile-detail-value" id="detail-visibility">Public</p>
+                <p class="profile-detail-value" id="detail-visibility">Memuat...</p>
               </div>
             </div>
           </article>

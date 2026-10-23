@@ -2,7 +2,11 @@
 
 (async () => {
   const { el, clear } = UI;
-  const [careers, catalog] = await Promise.all([API.getCareers(), API.getSkillCatalog()]);
+  const [careers, catalog] = await Promise.all([
+    API.getCareers(),
+    API.getSkillCatalog(),
+    API.ensureSession(),
+  ]);
 
   const mine = new Set(API.getMySkills().map((s) => s.skill_id));
 
@@ -39,9 +43,15 @@
     requestAnimationFrame(() => gridEl.classList.add("career-grid--animated"));
   }
 
-  function selectTarget(career) {
-    API.setTarget(career.id);
-    render();
+  async function selectTarget(career, button) {
+    if (button) button.disabled = true;
+    try {
+      await API.setTarget(career.id);
+      render();
+    } catch (err) {
+      if (button) button.disabled = false;
+      UI.toast(err.message);
+    }
   }
 
   function renderCareerCard(career, isSelected, mine, catalog) {
@@ -108,7 +118,7 @@
           el("p", { class: "career-card-foot-text", text: "Review this path" }),
           el("button", {
             class: "btn btn-primary btn-sm",
-            onClick: () => selectTarget(career),
+            onClick: (event) => selectTarget(career, event.currentTarget),
           }, [
             el("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", stroke: "currentColor", "stroke-width": "1.5", innerHTML: `<circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="1.8"/>` }),
             document.createTextNode("Set as Target"),

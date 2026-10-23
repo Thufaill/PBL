@@ -12,6 +12,9 @@ $role = 'public';
 $path_prefix = '';
 $error = '';
 
+// Pintu pendaftaran dikendalikan admin lewat "Konfigurasi Platform".
+$registration_open = app_setting('registration_open', true) !== false;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $email = strtolower(trim($_POST['email'] ?? ''));
@@ -19,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!csrf_verify()) {
         $error = 'Sesi formulir kedaluwarsa. Muat ulang halaman lalu coba lagi.';
+    } elseif (!$registration_open) {
+        $error = 'Pendaftaran pengguna baru sedang ditutup oleh administrator.';
     } elseif ($name === '' || $email === '' || $password === '') {
         $error = 'Semua field wajib diisi.';
     } elseif (mb_strlen($name) > 100 || strlen($email) > 150) {
@@ -50,8 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user_id = (int) $ins->fetchColumn();
 
                 // Setiap mahasiswa punya satu baris profil (target karier diisi kemudian).
-                $pdo->prepare('INSERT INTO student_profiles (user_id) VALUES (:id)')
-                    ->execute([':id' => $user_id]);
+                // Visibilitas awal mengikuti "Visibilitas portofolio default" milik admin.
+                $public = app_setting('default_visibility', 'Public') === 'Public';
+                $pdo->prepare(
+                    'INSERT INTO student_profiles (user_id, is_public, public_token)
+                     VALUES (:id, CAST(:pub AS boolean),
+                             CASE WHEN CAST(:pub2 AS boolean) THEN gen_random_uuid() END)'
+                )->execute([':id' => $user_id, ':pub' => $public, ':pub2' => $public]);
                 $pdo->commit();
 
                 $result = attempt_login($email, $password);
@@ -93,12 +103,17 @@ require_once __DIR__ . '/../includes/layouts/head.php';
           </div>
         <?php endif; ?>
 
+        <?php if (!$registration_open): ?>
+          <div style="background: #FFF7E7; color: #9A681B; border: 1px solid #F3D9A4; padding: 10px 14px; border-radius: 8px; font-size: 13px">
+            Pendaftaran pengguna baru sedang ditutup oleh administrator. Silakan coba lagi nanti.
+          </div>
+        <?php else: ?>
         <form id="register-form" method="POST" action="<?= e(base_url('register.php')) ?>" style="display: grid; gap: 16px">
           <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>" />
 
           <div class="field">
             <label for="name">Full name</label>
-            <input type="text" id="name" name="name" placeholder="Jhon Doe" required maxlength="100" autocomplete="name" value="<?= e($_POST['name'] ?? '') ?>" />
+            <input type="text" id="name" name="name" placeholder="Nama lengkap Anda" required maxlength="100" autocomplete="name" value="<?= e($_POST['name'] ?? '') ?>" />
           </div>
 
           <div class="field">
@@ -113,6 +128,7 @@ require_once __DIR__ . '/../includes/layouts/head.php';
 
           <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; height: 44px">Create Account</button>
         </form>
+        <?php endif; ?>
 
         <p style="text-align: center; font-size: 14px; color: var(--text-muted); margin-top: 20px">
           Already have an account?

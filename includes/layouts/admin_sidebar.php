@@ -2,8 +2,10 @@
 // includes/layouts/admin_sidebar.php
 // Sidebar Navigasi Konsol Admin Platform (Desktop & Mobile Drawer)
 require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../config/database.php';
 
 $admin_page = $admin_page ?? 'dashboard';
+$site_name = app_setting('site_name', 'SkillBridge');
 ?>
 <!-- Backdrop Mobile Drawer -->
 <div class="sidebar-backdrop" data-close-sidebar></div>
@@ -12,9 +14,9 @@ $admin_page = $admin_page ?? 'dashboard';
 <aside class="admin-sidebar">
   <div class="admin-brand">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <div class="admin-brand-mark">S</div>
+      <div class="admin-brand-mark"><?= e(mb_substr($site_name, 0, 1)) ?></div>
       <div class="admin-brand-copy">
-        <span class="admin-brand-name">SkillBridge</span>
+        <span class="admin-brand-name"><?= e($site_name) ?></span>
         <span class="admin-brand-type">OWNER CONSOLE</span>
       </div>
     </div>

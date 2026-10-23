@@ -1,94 +1,117 @@
-// admin.js - render dashboard admin (Admin Console)
-// Data dari API.getAdminStats / API.getAdminUsers dst. Saat ini memakai JSON dummy.
+// admin.js - Dashboard Admin Console.
+// Semua angka dan baris aktivitas datang dari public/api/admin/stats.php.
+// Lima kartu yang dulu ditulis keras (1248 pengguna, 48 keterampilan, dst.)
+// dan dua feed berisi nama fiktif kini dihitung dari database.
 
 (async () => {
   const { el } = UI;
 
-  // ---- Stat cards ----
+  const CARDS = [
+    {
+      label: "Total pengguna",
+      value: (s) => s.users,
+      context: (s) => `${s.activeUsers} aktif · ${s.suspendedUsers} dinonaktifkan`,
+    },
+    {
+      label: "Administrator",
+      value: (s) => s.platformAdmins + s.jobAdmins,
+      context: (s) => `${s.platformAdmins} Admin SkillBridge · ${s.jobAdmins} Admin Job`,
+    },
+    {
+      label: "Keterampilan",
+      value: (s) => s.skills,
+      context: () => "Record keterampilan master",
+    },
+    {
+      label: "Target karier",
+      value: (s) => s.careers,
+      context: () => "Record target karier master",
+    },
+    {
+      label: "Relasi mapping",
+      value: (s) => s.mappings,
+      context: (s) => `${s.vacancies} lowongan · ${s.publishedContent} konten terbit`,
+    },
+  ];
+
+  const grid = document.getElementById("admin-stats-grid");
+  const sysBody = document.getElementById("system-activity-body");
+  const admBody = document.getElementById("admin-activity-body");
+
+  // Waktu: jam menit untuk hari ini, lalu "Kemarin" / "N hari lalu".
+  function activityTime(raw) {
+    if (!raw) return "—";
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return String(raw).slice(0, 10);
+    const now = new Date();
+    const days = Math.floor((now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0)) / 86400000);
+    if (days <= 0) {
+      return `${String(new Date(raw).getHours()).padStart(2, "0")}.${String(new Date(raw).getMinutes()).padStart(2, "0")}`;
+    }
+    if (days === 1) return "Kemarin";
+    if (days < 7) return `${days} hari lalu`;
+    if (days < 60) return `${Math.floor(days / 7)} minggu lalu`;
+    return new Date(raw).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  }
+
   try {
     const stats = await API.getAdminStats();
-    const grid = document.getElementById("admin-stats-grid");
+
     if (grid) {
       UI.clear(grid);
-      const cards = [
-        { label: "Total pengguna", value: 1248, context: "986 mahasiswa · 262 fresh graduate" },
-        { label: "Administrator", value: 12, context: "1 Admin · 7 SkillBridge · 4 Job" },
-        { label: "Keterampilan", value: 48, context: "Record keterampilan master" },
-        { label: "Target karier", value: 8, context: "Record target karier master" },
-        { label: "Relasi mapping", value: 64, context: "Relasi karier–keterampilan" },
-      ];
-      for (const c of cards) {
+      for (const c of CARDS) {
         grid.append(
           el("div", { class: "admin-stat-card" }, [
             el("div", { class: "admin-stat-card-main" }, [
               el("span", { class: "admin-stat-label", text: c.label }),
-              el("span", { class: "admin-stat-value", text: c.value.toLocaleString("id-ID") }),
+              el("span", { class: "admin-stat-value", text: Number(c.value(stats)).toLocaleString("id-ID") }),
             ]),
-            el("p", { class: "admin-stat-context", text: c.context }),
+            el("p", { class: "admin-stat-context", text: c.context(stats) }),
+          ])
+        );
+      }
+    }
+
+    if (sysBody) {
+      UI.clear(sysBody);
+      if (stats.recent.length === 0) {
+        sysBody.append(el("div", { class: "admin-empty", text: "Belum ada data tercatat." }));
+      }
+      for (const r of stats.recent) {
+        sysBody.append(
+          el("div", { class: "admin-row" }, [
+            el("span", { class: "admin-row-time", text: activityTime(r.time) }),
+            el("span", { class: "admin-row-text col-activity", text: r.text }),
+            el("span", { class: "admin-row-cat" }, [
+              el("span", { class: "admin-badge-pill", text: r.cat }),
+            ]),
+          ])
+        );
+      }
+    }
+
+    if (admBody) {
+      UI.clear(admBody);
+      if (stats.accounts.length === 0) {
+        admBody.append(el("div", { class: "admin-empty", text: "Belum ada akun administrator." }));
+      }
+      for (const r of stats.accounts) {
+        admBody.append(
+          el("div", { class: "admin-admin-row" }, [
+            el("div", { class: "admin-admin-main" }, [
+              el("p", { class: "admin-admin-actor", text: r.actor }),
+              el("p", { class: "admin-admin-detail", text: r.detail }),
+            ]),
+            el("span", { class: "admin-admin-time", text: activityTime(r.time) }),
           ])
         );
       }
     }
   } catch (err) {
-    // mode tanpa API tetap render angka static di HTML
-  }
-
-  // ---- System activity ----
-  const systemRows = [
-    { time: "10.42", text: "Nadia Putri membuat akun", cat: "Pengguna" },
-    { time: "10.30", text: "Python ditambahkan ke Data Analyst", cat: "Mapping" },
-    { time: "09.58", text: "Deskripsi REST APIs diperbarui", cat: "Keterampilan" },
-    { time: "09.15", text: "Target karier Data Engineer dibuat", cat: "Target karier" },
-  ];
-
-  const sysBody = document.getElementById("system-activity-body");
-  if (sysBody) {
-    UI.clear(sysBody);
-    for (const r of systemRows) {
-      sysBody.append(
-        el("div", { class: "admin-row" }, [
-          el("span", { class: "admin-row-time", text: r.time }),
-          el("span", { class: "admin-row-text col-activity", text: r.text }),
-          el("span", { class: "admin-row-cat" }, [
-            el("span", { class: "admin-badge-pill", text: r.cat }),
-          ]),
-        ])
-      );
-    }
-  }
-
-  // ---- Admin activity ----
-  const adminRows = [
-    {
-      actor: "Aditya Pratama · Admin",
-      detail: "Menambahkan Dimas Saputra · Admin Job",
-      time: "10.12",
-    },
-    {
-      actor: "Rani Wulandari · Admin SkillBridge",
-      detail: "Memperbarui deskripsi keterampilan",
-      time: "09.58",
-    },
-    {
-      actor: "Aditya Pratama · Admin",
-      detail: "Menonaktifkan akun Bima Santoso",
-      time: "Kemarin",
-    },
-  ];
-
-  const admBody = document.getElementById("admin-activity-body");
-  if (admBody) {
-    UI.clear(admBody);
-    for (const r of adminRows) {
-      admBody.append(
-        el("div", { class: "admin-admin-row" }, [
-          el("div", { class: "admin-admin-main" }, [
-            el("p", { class: "admin-admin-actor", text: r.actor }),
-            el("p", { class: "admin-admin-detail", text: r.detail }),
-          ]),
-          el("span", { class: "admin-admin-time", text: r.time }),
-        ])
-      );
+    if (grid) UI.clear(grid);
+    const target = sysBody || grid;
+    if (target) {
+      target.append(el("div", { class: "admin-empty", text: err.message }));
     }
   }
 })();

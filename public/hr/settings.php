@@ -45,41 +45,37 @@ require_once __DIR__ . '/../../includes/layouts/hr_sidebar.php';
             <div class="rec-card-head">
               <div>
                 <h2 class="rec-card-title">Profil Perusahaan</h2>
-                <p class="rec-card-sub">Informasi resmi PT Tech Indonesia untuk mendukung proses rekrutmen.</p>
+                <p class="rec-card-sub" id="company-card-sub">Informasi resmi perusahaan Anda untuk mendukung proses rekrutmen.</p>
               </div>
-              <span class="rec-badge-verified">Terverifikasi</span>
+              <span class="rec-badge-verified" id="company-status-badge">-</span>
             </div>
 
             <div class="rec-logo-row">
               <div class="rec-logo-preview" aria-hidden="true">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1.5"/><path d="M8 8V5a4 4 0 0 1 8 0v3M9 13h.01M15 13h.01"/></svg>
+                <span id="company-logo-initial">-</span>
               </div>
               <div class="rec-logo-controls">
                 <span class="rec-logo-label">Logo Perusahaan</span>
-                <div class="rec-logo-actions">
-                  <button type="button" class="rec-cand-btn" id="btn-upload-logo" aria-label="Unggah logo perusahaan">Unggah Logo</button>
-                  <span class="rec-logo-filename" id="company-logo-name">tech-indonesia.svg</span>
-                </div>
-                <p class="rec-logo-hint">PNG, JPG, atau SVG. Maksimal 2 MB · Disarankan 256 × 256 px.</p>
+                <p class="rec-logo-hint">Inisial dibuat dari nama perusahaan yang tersimpan di database.</p>
               </div>
             </div>
 
             <form id="company-form" class="rec-field-grid">
               <div class="rec-field">
                 <label for="company-name">Nama Perusahaan</label>
-                <input id="company-name" type="text" value="PT Tech Indonesia" />
+                <input id="company-name" type="text" />
               </div>
               <div class="rec-field">
                 <label for="company-email">Domain Email Resmi</label>
-                <input id="company-email" type="text" value="company.com" />
+                <input id="company-email" type="text" />
               </div>
               <div class="rec-field full">
                 <label for="company-location">Alamat &amp; Lokasi</label>
-                <input id="company-location" type="text" value="Jakarta Selatan, Indonesia" />
+                <input id="company-location" type="text" />
               </div>
               <div class="rec-field full">
                 <label for="company-description">Deskripsi Perusahaan</label>
-                <textarea id="company-description" rows="4">PT Tech Indonesia adalah perusahaan teknologi yang mengembangkan solusi digital untuk membantu bisnis bertumbuh. Berbasis di Jakarta Selatan, kami membangun produk web, platform data, dan pengalaman digital yang berpusat pada pengguna. Kami membuka peluang bagi talenta di bidang engineering, desain, dan analisis data untuk berkolaborasi serta berkembang bersama tim kami.</textarea>
+                <textarea id="company-description" rows="4"></textarea>
               </div>
             </form>
           </div>

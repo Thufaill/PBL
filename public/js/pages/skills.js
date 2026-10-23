@@ -29,12 +29,13 @@
       innerHTML: categoryIconSvg(skill.category),
     });
   }
-  const [careers, catalog, gap, evidence] = await Promise.all([
+  const [careers, catalog, gap] = await Promise.all([
     API.getCareers(),
     API.getSkillCatalog(),
     API.getSkillGap(),
-    API.getEvidence(),
+    API.ensureSession(),
   ]);
+  const evidence = API.getEvidence();
 
   const mine = API.getMySkills();
   const targetId = API.getTargetId();
@@ -65,9 +66,15 @@
   }
 
   // Card: Evidence Summary
+  const backedCount = mine.filter((s) => s.evidence_count > 0).length;
   document.getElementById("card-evidence").append(
     el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${evidence.length} evidence items` }),
-    el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "You already have a solid foundation of work examples, case studies, and project outcomes." })
+    el("p", {
+      style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px",
+      text: evidence.length === 0
+        ? "Add your first work example to start backing up these skills."
+        : `${backedCount} of your ${mine.length} skills already have at least one item attached.`,
+    })
   );
 
   // Card: Skill Gap
@@ -96,9 +103,14 @@
   });
 
   async function showAddSkillModal() {
-    const catalog = await API.getSkillCatalog();
+    const [catalog, categories] = await Promise.all([API.getSkillCatalog(), API.getSkillCategories()]);
     const mine = new Set(API.getMySkills().map((s) => s.skill_id));
     const available = catalog.filter((s) => !mine.has(s.id));
+    // Kategori datang dari database; daftar ini hanya jaga-jaga kalau katalog
+    // skill masih kosong sehingga picker tetap bisa dipakai.
+    const categoryOptions = categories.length
+      ? categories
+      : ["Programming", "Database", "Web", "Tools", "Data", "Design"];
 
     const modeExisting = el("input", { type: "radio", id: "mode-existing", name: "mode", value: "existing", checked: true });
     const modeNew = el("input", { type: "radio", id: "mode-new", name: "mode", value: "new" });
@@ -138,7 +150,7 @@
           skillAvatar(s, { size: 40 }),
           el("div", { class: "skill-option-text" }, [
             el("p", { class: "skill-option-name", text: s.name }),
-            el("p", { class: "skill-option-category", text: s.category }),
+            el("p", { class: "skill-option-category", text: s.category || "—" }),
           ]),
           el("div", { class: "skill-option-radio" }),
         ]);
@@ -159,7 +171,7 @@
     searchInput.addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase();
       const filtered = available.filter((s) =>
-        s.name.toLowerCase().includes(query) || s.category.toLowerCase().includes(query)
+        s.name.toLowerCase().includes(query) || (s.category || "").toLowerCase().includes(query)
       );
       renderSkillOptions(filtered);
     });
@@ -179,14 +191,7 @@
       ]),
       el("div", { class: "field" }, [
         el("label", { for: "skill-category", text: "Category" }),
-        el("select", { id: "skill-category" }, [
-          el("option", { value: "Programming", text: "Programming" }),
-          el("option", { value: "Database", text: "Database" }),
-          el("option", { value: "Web", text: "Web" }),
-          el("option", { value: "Tools", text: "Tools" }),
-          el("option", { value: "Data", text: "Data" }),
-          el("option", { value: "Design", text: "Design" }),
-        ]),
+        el("select", { id: "skill-category" }, categoryOptions.map((c) => el("option", { value: c, text: c }))),
       ]),
     ]);
 
@@ -226,28 +231,45 @@
             errorEl.style.display = "block";
             return false;
           }
-          API.addSkill(selectedSkillId);
-        } else {
-          const name = form.querySelector("#skill-name").value.trim();
-          const category = form.querySelector("#skill-category").value;
-          if (!name) {
-            errorEl.textContent = "Skill name required.";
+          try {
+            await API.addSkill(selectedSkillId);
+          } catch (err) {
+            errorEl.textContent = err.message;
             errorEl.style.display = "block";
             return false;
           }
-          const allSkills = await API.getSkillCatalog();
-          const dup = allSkills.find((s) => s.name.toLowerCase() === name.toLowerCase());
-          if (dup) {
-            errorEl.textContent = `"${name}" already exists in catalog.`;
-            errorEl.style.display = "block";
-            return false;
-          }
-          const skill = await API.addCustomSkill(name, category);
-          API.addSkill(skill.id);
+          UI.toast("Skill ditambahkan");
+          setTimeout(() => location.reload(), 300);
+          return true;
         }
 
-        UI.toast("Skill added");
-        setTimeout(() => window.location.reload(), 300);
+        const nameInput = form.querySelector("#skill-name");
+        const name = String(nameInput.value || "").trim();
+        const category = form.querySelector("#skill-category").value;
+        if (!name) {
+          errorEl.textContent = "Skill name required.";
+          errorEl.style.display = "block";
+          return false;
+        }
+        const allSkills = await API.getSkillCatalog();
+        const dup = allSkills.find((s) => s.name.toLowerCase() === name.toLowerCase());
+        if (dup) {
+          errorEl.textContent = `"${name}" sudah ada di katalog.`;
+          errorEl.style.display = "block";
+          return false;
+        }
+
+        try {
+          const skill = await API.addCustomSkill(name, category);
+          await API.addSkill(skill.id);
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.style.display = "block";
+          return false;
+        }
+
+        UI.toast("Skill dibuat dan ditambahkan");
+        setTimeout(() => location.reload(), 300);
         return true;
       },
     });

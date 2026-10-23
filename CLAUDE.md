@@ -33,6 +33,8 @@ SkillBridge/
 │   │   ├── session.php              # Manajemen session PHP
 │   │   ├── csrf.php                 # Generator & validator CSRF token
 │   │   └── middleware.php           # Guard require_login() & require_role($role)
+│   ├── api/
+│   │   └── bootstrap.php            # Guard sesi+CSRF JSON, api_body/api_out, helper domain
 │   └── layouts/                     # Template Header, Sidebar, Footer per Role
 │       ├── head.php                 # <!DOCTYPE html>, <head>, meta CSRF, CSS, window.APP_BASE_URL
 │       ├── scripts.php              # Script global (ui.js, api.js) + $page_js
@@ -56,11 +58,22 @@ SkillBridge/
 │   ├── admin/                       # Role Admin (index, users, admins, skills, careers, mapping, vacancies, settings)
 │   ├── css/                         # style.css, recruiter.css, admin.css
 │   ├── js/                          # ui.js, api.js, landing.js, admin-nav.js, pages/*.js
-│   └── assets/                      # icons/, landing/
-├── db/                              # schema.sql (skema + seed sekaligus)
-└── tools/                           # create_admin.php (CLI)
+│   ├── assets/                      # icons/, landing/
+│   └── api/                         # Endpoint JSON per modul
+│       ├── session.php, catalog.php       # Snapshot sesi + katalog skill/karier
+│       ├── skills.php, target.php         # Skill milik user + target karier
+│       ├── evidence.php, gap.php          # Bukti (evidence) + hitung skill gap
+│       ├── profile.php, profile-photo.php # Profil + foto avatar
+│       ├── account.php, password.php      # Identitas akun + ganti password
+│       ├── admin/                         # stats, users, admins, skills, careers,
+│       │                                  #   mapping, vacancies, content, settings
+│       └── hr/                            # stats, company, team, roles, candidates, activity
+├── db/                              # schema.sql (destruktif) + seed_demo.sql
+│   └── migrations/                  # 000..006 aditif, aman untuk DB yang sudah ada
+├── tools/                           # create_admin.php, create_hr.php, check_schema_parity.php
+└── storage/                         # Foto profil avatar_<id>.<ext>, di LUAR docroot
 
-(Data JSON dummy ada di public/data/. Role DB 'user' dipetakan ke role aplikasi 'mahasiswa'.)
+Semua data domain dibaca dan ditulis lewat PostgreSQL. Role DB 'user' dipetakan ke role aplikasi 'mahasiswa'.
 ```
 
 ## 4. Aturan Modularisasi PHP (WAJIB Dipatuhi AI)
