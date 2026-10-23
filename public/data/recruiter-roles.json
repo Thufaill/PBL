@@ -1,6 +1,0 @@
-[
-  { "id": 1, "name": "Backend Developer", "category": "Engineering", "positions": 3, "skills": ["Node.js", "SQL", "REST APIs", "Git"], "matches": 32 },
-  { "id": 2, "name": "Frontend Developer", "category": "Engineering", "positions": 2, "skills": ["React", "JavaScript", "HTML/CSS"], "matches": 28 },
-  { "id": 3, "name": "UI/UX Designer", "category": "Design", "positions": 2, "skills": ["Figma", "User Research", "Wireframing"], "matches": 19 },
-  { "id": 4, "name": "Data Analyst", "category": "Data", "positions": 1, "skills": ["Excel", "Python", "SQL"], "matches": 14 }
-]
