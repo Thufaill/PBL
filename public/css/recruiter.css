@@ -1191,7 +1191,13 @@ table.rec-native-table tbody tr.rec-cand-row > td {
   padding: 0 12px;
   background: var(--rec-surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 6px);
+  transition: border-color var(--duration-fast, 150ms) var(--ease-spring, ease), box-shadow var(--duration-fast, 150ms) var(--ease-spring, ease);
+}
+
+.rec-search:focus-within {
+  border-color: var(--border-focus, #3b82f6);
+  box-shadow: var(--shadow-focus, 0 0 0 3px rgba(37, 99, 235, 0.25));
 }
 
 .rec-search svg {
@@ -1309,11 +1315,13 @@ table.rec-native-table {
 table.rec-native-table thead th {
   text-align: left;
   padding: 12px 16px;
-  background: var(--rec-gray-bg);
-  font-size: 12px;
+  background: var(--surface-subtle, #f8fafc);
+  font-size: 11px;
   font-weight: 700;
-  color: var(--rec-muted);
-  border-bottom: 2px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light, #64748b);
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
   vertical-align: middle;
 }
@@ -1327,11 +1335,16 @@ table.rec-native-table thead th:last-child {
 }
 
 table.rec-native-table tbody td {
-  padding: 13px 16px;
-  font-size: 13px;
+  padding: 14px 16px;
+  font-size: 13.5px;
   color: var(--rec-ink);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  transition: background-color var(--duration-fast, 150ms) var(--ease-spring, ease);
+}
+
+table.rec-native-table tbody tr:hover td {
+  background-color: var(--row-hover, #f8fafc);
 }
 
 table.rec-native-table tbody tr:last-child td {
