@@ -231,12 +231,6 @@ const API = (() => {
     return request("DELETE", "/api/evidence.php", { id });
   }
 
-  // GET api/gap.php -> { career, have[], explore[] }
-  async function getSkillGap() {
-    await ensureSession();
-    return request("GET", "/api/gap.php");
-  }
-
   // ---- Profil ----
   async function getProfile() {
     await ensureSession();
@@ -479,7 +473,6 @@ const API = (() => {
     addEvidence,
     createEvidence,
     removeEvidence,
-    getSkillGap,
     // profil & akun
     getProfile,
     saveProfile,

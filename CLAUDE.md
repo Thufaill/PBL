@@ -53,7 +53,7 @@ SkillBridge/
 │   ├── login.php                    # Halaman Login
 │   ├── register.php                 # Halaman Registrasi
 │   ├── logout.php                   # Handler Logout
-│   ├── mahasiswa/                   # Role Mahasiswa (dashboard, career, gap, skills, evidence, profile, cv, cv_review)
+│   ├── mahasiswa/                   # Role Mahasiswa (dashboard, career, skills, evidence, profile, cv, cv_review)
 │   ├── hr/                          # Role HR/Recruiter (index, roles, candidates, activity, team, settings)
 │   ├── admin/                       # Role Admin (index, users, admins, skills, careers, mapping, vacancies, settings)
 │   ├── css/                         # style.css, recruiter.css, admin.css
@@ -62,7 +62,7 @@ SkillBridge/
 │   └── api/                         # Endpoint JSON per modul
 │       ├── session.php, catalog.php       # Snapshot sesi + katalog skill/karier
 │       ├── skills.php, target.php         # Skill milik user + target karier
-│       ├── evidence.php, gap.php          # Bukti (evidence) + hitung skill gap
+│       ├── evidence.php                   # Bukti (evidence) mahasiswa
 │       ├── profile.php, profile-photo.php # Profil + foto avatar
 │       ├── account.php, password.php      # Identitas akun + ganti password
 │       ├── admin/                         # stats, users, admins, skills, careers,

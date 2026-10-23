@@ -29,10 +29,9 @@
       innerHTML: categoryIconSvg(skill ? skill.category : null),
     });
   }
-  const [careers, catalog, gap] = await Promise.all([
+  const [careers, catalog] = await Promise.all([
     API.getCareers(),
     API.getSkillCatalog(),
-    API.getSkillGap(),
     API.ensureSession(),
   ]);
   const evidence = API.getEvidence();
@@ -89,26 +88,6 @@
         : `${backedCount} of your ${mine.length} skills already have at least one item attached.`,
     })
   );
-
-  // Card: Skill Gap
-  const gapEl = document.getElementById("card-gap");
-  if (!gap || !gap.explore || gap.explore.length === 0) {
-    gapEl.append(
-      el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: "All covered" }),
-      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "You have all required skills for your target career." })
-    );
-  } else {
-    gapEl.append(
-      el("h2", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${gap.explore.length} areas to grow` }),
-      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Focus on the most important gaps first. These are the easiest next steps to strengthen your profile." })
-    );
-
-    const gapList = el("div", { style: "display: grid; gap: 12px; margin-top: 18px" });
-    for (const skill of gap.explore.slice(0, 3)) {
-      gapList.append(renderGapItem(skill));
-    }
-    gapEl.append(gapList);
-  }
 
   // Add skill button handler
   document.getElementById("btn-add-skill").addEventListener("click", () => {
@@ -313,17 +292,6 @@
         el("p", { style: "font-size: 13px; color: var(--text-muted); margin-top: 2px", text: `${evidenceCount} evidence ${evidenceCount === 1 ? "item" : "items"}` }),
       ]),
       el("span", { class: `badge ${badgeClass}`, style: "font-size: 12px; padding: 5px 10px", text: label }),
-    ]);
-  }
-
-  // Render gap item: icon + skill name + action hint
-  function renderGapItem(skill) {
-    return el("div", { style: "display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm)" }, [
-      skillAvatar(skill, { size: 38, variant: "accent" }),
-      el("div", { style: "flex: 1; min-width: 0" }, [
-        el("p", { style: "font-size: 15px; font-weight: 700; color: var(--text-primary)", text: skill.name }),
-        el("p", { style: "font-size: 12px; color: var(--text-muted); margin-top: 2px", text: "Add 1 case study" }),
-      ]),
     ]);
   }
 })();

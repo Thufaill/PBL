@@ -80,20 +80,6 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
             </div>
             <div id="card-evidence"></div>
           </article>
-
-          <!-- Simple Skill Gap -->
-          <article class="card-lg" style="display: grid; gap: 18px">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start">
-              <h3>Simple skill gap</h3>
-              <div class="card-icon-box" style="background: var(--surface-subtle); color: var(--text-muted); border-color: var(--border)">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <circle cx="8.5" cy="8.5" r="7.084"/>
-                  <path d="M8.5 4.25v4.25l2.833 1.417"/>
-                </svg>
-              </div>
-            </div>
-            <div id="card-gap"></div>
-          </article>
         </div>
       </div>
     </main>

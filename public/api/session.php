@@ -4,7 +4,7 @@
 //
 // Kenapa satu endpoint: gateway klien (public/js/api.js) punya fungsi baca
 // SINCHRON (getMySkills(), getEvidence(), getTargetId()) yang dipakai
-// dashboard.php, skills.php, career.php, gap.php dan profile.php tanpa
+// dashboard.php, skills.php, career.php dan profile.php tanpa
 // await. Snapshot ini diisi oleh panggilan async pertama di tiap halaman,
 // sehingga fungsi sinkron itu tetap sah tanpa menyimpan apa pun di browser.
 //

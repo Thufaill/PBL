@@ -71,24 +71,6 @@ require_once __DIR__ . '/../../includes/layouts/mahasiswa_header.php';
               </svg>
             </article>
           </a>
-
-          <!-- Card 3: Simple Skill Gap -->
-          <a href="gap.php" class="card-interactive">
-            <article class="card-lg" style="gap: 18px">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start">
-                <h3>Simple skill gap</h3>
-                <div class="card-icon-box">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="8.5" cy="8.5" r="7.084"/>
-                  </svg>
-                </div>
-              </div>
-              <div id="card-explore"></div>
-              <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M6 12l4-4-4-4"/>
-              </svg>
-            </article>
-          </a>
         </div>
 
         <!-- Right Column: Evidence Summary -->

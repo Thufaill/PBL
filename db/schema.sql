@@ -301,25 +301,6 @@ CREATE TABLE activity_log (
 CREATE INDEX idx_activity_company ON activity_log (company_id, created_at DESC);
 
 -- ---------- VIEW ----------
--- Skill gap deskriptif: satu baris per skill yang dibutuhkan target karier.
--- has_skill = TRUE  -> sudah dimiliki (confirmed)
--- has_skill = FALSE -> perlu dikembangkan
-CREATE VIEW v_skill_gap AS
-SELECT
-    sp.user_id,
-    sp.target_career_id AS career_id,
-    csr.skill_id,
-    s.name              AS skill_name,
-    csr.is_mandatory,
-    (us.id IS NOT NULL) AS has_skill
-FROM student_profiles sp
-JOIN career_skill_requirements csr ON csr.career_id = sp.target_career_id
-JOIN skills s                      ON s.id = csr.skill_id
-LEFT JOIN user_skills us
-       ON us.user_id  = sp.user_id
-      AND us.skill_id = csr.skill_id
-      AND us.status   = 'confirmed';
-
 -- Jumlah bukti MILIK USER ITU SENDIRI per skill yang dimiliki.
 -- Tidak mengembalikan skor atau persentase.
 CREATE VIEW v_user_skill_evidence AS

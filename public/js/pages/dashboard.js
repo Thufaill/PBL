@@ -4,23 +4,32 @@
   const { el } = UI;
   // ensureSession() memuat snapshot domain (skills/evidence/target) dari DB;
   // sesudah ini API.getMySkills()/getEvidence()/getTargetId() aman dibaca.
-  const [careers, catalog, gap] = await Promise.all([
+  const [careers, catalog] = await Promise.all([
     API.getCareers(),
     API.getSkillCatalog(),
-    API.getSkillGap(),
     API.ensureSession(),
   ]);
   const evidence = API.getEvidence();
 
   const mine = API.getMySkills();
   const targetId = API.getTargetId();
-  const target = careers.find((c) => c.id === targetId) || careers[0];
+  const target = (careers && careers.length > 0)
+    ? (careers.find((c) => c.id === targetId) || careers[0])
+    : null;
 
   // Card: Target Career
-  document.getElementById("card-target").append(
-    el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
-    el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
-  );
+  const targetCard = document.getElementById("card-target");
+  if (target) {
+    targetCard.append(
+      el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: target.name }),
+      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: target.description })
+    );
+  } else {
+    targetCard.append(
+      el("p", { style: "font-size: 24px; font-weight: 700; color: var(--text-primary)", text: "No target career set" }),
+      el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: "Choose your target career to view details." })
+    );
+  }
 
   // Card: Skills Summary
   const strongCount = mine.filter((s) => s.label === "Strong").length;
@@ -50,13 +59,6 @@
             return chip;
           }))
       : null
-  );
-
-  // Card: Skill Gap
-  const exploreNames = gap.explore.map((s) => s.name).slice(0, 3).join(", ");
-  document.getElementById("card-explore").append(
-    el("p", { style: "font-size: 36px; font-weight: 700; line-height: 1.1; color: var(--text-primary)", text: `${gap.explore.length} to develop` }),
-    el("p", { style: "font-size: 15px; line-height: 1.45; color: var(--text-muted); margin-top: 12px", text: `Focus on ${exploreNames || "your next goals"} this semester. You already have ${strongCount} strong skills in place.` })
   );
 
   // Card: Evidence Summary

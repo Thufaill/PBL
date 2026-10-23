@@ -61,11 +61,10 @@ Halaman publik: `public/index.php` (landing), `login.php`, `register.php`, `logo
 
 | Halaman | Page JS | Endpoint yang dipakai |
 | --- | --- | --- |
-| `dashboard.php` | `pages/dashboard.js` | `session`, `catalog`, `gap` |
+| `dashboard.php` | `pages/dashboard.js` | `session`, `catalog` |
 | `skills.php` | `pages/skills.js` | `session`, `catalog`, `target`, `skills` |
 | `evidence.php` | `pages/evidence.js` | `session`, `catalog`, `evidence` |
 | `career.php` | `pages/career.js` | `session`, `catalog`, `target` |
-| `gap.php` | `pages/gap.js` | `gap`, `target`, `skills`, `evidence` |
 | `profile.php` | `pages/profile.js` | `session`, `profile`, `password`, `profile-photo`, `catalog`, `target` |
 
 **Admin** (`$admin_page` → `data-admin-page`, `$page_script` dimuat `admin_footer.php:17`):
@@ -110,7 +109,6 @@ Setiap endpoint hanya `require_once` `includes/api/bootstrap.php`. Guard: **G** 
 | `catalog.php` | GET | G (role apa pun) | `careers`, `career_skill_requirements`, `skills` | `careers, skills, categories` |
 | `skills.php` | GET POST PATCH DELETE | G / WG `mahasiswa` | `user_skills`, `skills`, `evidence_skills` | GET `skills`; POST 201 `skill, skills`; PATCH/DELETE `skills` |
 | `target.php` | GET POST | G / WG `mahasiswa` | `student_profiles`, `careers`, `career_skill_requirements` | `target_career_id, career` |
-| `gap.php` | GET | G `mahasiswa` | `v_skill_gap`, `v_user_skill_evidence`, `careers`, `skills` | `career, have[], explore[]` (tanpa target → arrays kosong, bukan error) |
 | `evidence.php` | GET POST DELETE | G / WG `mahasiswa` | `evidence`, `evidence_skills`, `skills`, `system_settings` (batas `max_evidence`) | GET `evidence`; POST 201 `id, evidence`; DELETE `evidence` |
 | `profile.php` | GET PATCH | G / WG `mahasiswa` | `users`, `student_profiles`, view | `name, email, institution, program, semester, location, bio, photo, member_since, is_public, visibility, public_token, target_career_id` (+`skills, evidence` di GET) |
 | `profile-photo.php` | GET POST DELETE | G (GET, cek id milik sendiri 403) / WG `mahasiswa` | `student_profiles.photo_path` + file di `storage/` | POST 201 `photo`; DELETE `photo:null`; **GET mengembalikan byte gambar, bukan JSON** |
@@ -214,7 +212,6 @@ Konvensi lain yang harus ditiru: `switch (api_method())` dengan `default: api_er
 
 | View | Baris | Kegunaan |
 | --- | --- | --- |
-| `v_skill_gap` | 307 | satu baris per skill yang dibutuhkan karier target user; `has_skill` dari `user_skills` berstatus `confirmed`. Deskriptif, tanpa skor |
 | `v_user_skill_evidence` | 325 | skill milik user + `evidence_count` yang **hanya menghitung evidence milik user itu** |
 | `v_public_candidates` | 346 | mahasiswa `status='active'` dan `is_public=TRUE` — pool kandidat HR muncul hanya karena opt-in |
 
