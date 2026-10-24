@@ -5,7 +5,7 @@ Dokumen ini adalah sumber aturan utama (**AI Rules & Guardrails**) untuk AI Codi
 ## 1. Konteks Proyek
 
 - **Nama Proyek:** SkillBridge (PjBL Mata Kuliah _Desain dan Pemrograman Web_)
-- **Tujuan:** Platform pemetaan keterampilan mahasiswa terhadap target karier, pengelolaan bukti kompetensi (_evidence/portfolio_), konsol rekrutmen perusahaan (HR/Recruiter), dan konsol administrasi platform (Admin).
+- **Tujuan:** Platform pemetaan keterampilan mahasiswa terhadap target karier, pengelolaan bukti kompetensi (_evidence/portfolio_), direktori profil publik, dan konsol administrasi platform (Admin).
 - **Sumber Kebenaran:** `docs/PRD.md` untuk spesifikasi fitur & database; mockup di `docs/design/` untuk acuan visual.
 
 ## 2. Tech Stack & Batasan Library (Hard Constraints)
@@ -19,9 +19,9 @@ Dokumen ini adalah sumber aturan utama (**AI Rules & Guardrails**) untuk AI Codi
   3. Menambahkan CDN font/icon eksternal selain Google Fonts `Inter` (gunakan SVG inline atau file di `public/assets/icons/`).
   4. Menggunakan bundler atau npm package di sisi frontend.
 
-## 3. Arsitektur Direktori (Pemisahan 3 Role & Layout Modular)
+## 3. Arsitektur Direktori (Pemisahan 2 Role & Layout Modular)
 
-Seluruh halaman **WAJIB** dipisahkan berdasarkan role pengguna (`mahasiswa`, `hr`, `admin`) dan menggunakan komponen layout terpusat di `includes/layouts/`:
+Seluruh halaman **WAJIB** dipisahkan berdasarkan role pengguna (`mahasiswa`, `admin`) dan menggunakan komponen layout terpusat di `includes/layouts/`:
 
 ```text
 SkillBridge/
@@ -42,9 +42,6 @@ SkillBridge/
 │       ├── public_footer.php        # Footer halaman publik (<footer class="lp-footer">)
 │       ├── mahasiswa_header.php     # Topbar navigasi khusus Mahasiswa
 │       ├── mahasiswa_footer.php     # Footer konsol Mahasiswa + penutup tag
-│       ├── hr_header.php            # Topbar HR (<header class="rec-header">)
-│       ├── hr_sidebar.php           # Sidebar HR (<aside class="rec-sidebar">)
-│       ├── hr_footer.php            # Footer konsol HR + penutup wrapper
 │       ├── admin_header.php         # Topbar Admin (<header class="admin-header">)
 │       ├── admin_sidebar.php        # Sidebar Admin (<aside class="admin-sidebar">)
 │       └── admin_footer.php         # Footer konsol Admin + penutup wrapper
@@ -53,10 +50,10 @@ SkillBridge/
 │   ├── login.php                    # Halaman Login
 │   ├── register.php                 # Halaman Registrasi
 │   ├── logout.php                   # Handler Logout
-│   ├── mahasiswa/                   # Role Mahasiswa (dashboard, career, skills, evidence, profile, cv, cv_review)
-│   ├── hr/                          # Role HR/Recruiter (index, roles, candidates, activity, team, settings)
-│   ├── admin/                       # Role Admin (index, users, admins, skills, careers, mapping, vacancies, settings)
-│   ├── css/                         # style.css, recruiter.css, admin.css
+│   ├── profile.php                  # Profil publik via token UUID (tanpa login)
+│   ├── mahasiswa/                   # Role Mahasiswa (dashboard, career, skills, evidence, profile, search, cv, cv_review)
+│   ├── admin/                       # Role Admin (index, users, admins, skills, careers, mapping, settings, search)
+│   ├── css/                         # style.css, admin.css
 │   ├── js/                          # ui.js, api.js, landing.js, admin-nav.js, pages/*.js
 │   ├── assets/                      # icons/, landing/
 │   └── api/                         # Endpoint JSON per modul
@@ -65,31 +62,33 @@ SkillBridge/
 │       ├── evidence.php                   # Bukti (evidence) mahasiswa
 │       ├── profile.php, profile-photo.php # Profil + foto avatar
 │       ├── account.php, password.php      # Identitas akun + ganti password
-│       ├── admin/                         # stats, users, admins, skills, careers,
-│       │                                  #   mapping, vacancies, content, settings
-│       └── hr/                            # stats, company, team, roles, candidates, activity
-├── db/                              # schema.sql (destruktif) + seed_demo.sql
-│   └── migrations/                  # 000..006 aditif, aman untuk DB yang sudah ada
-├── tools/                           # create_admin.php, create_hr.php, check_schema_parity.php
+│       ├── search.php                     # Pencarian profil publik (semua role login)
+│       ├── public-profile.php, public-photo.php # Profil publik + foto via token
+│       └── admin/                         # stats, users, admins, skills, careers,
+│                                          #   mapping, content, settings
+├── db/                              # schema.sql (destruktif) + migrate.sql + seed_demo.sql
+├── tools/                           # create_admin.php, check_schema_parity.php
 └── storage/                         # Foto profil avatar_<id>.<ext>, di LUAR docroot
 
 Semua data domain dibaca dan ditulis lewat PostgreSQL. Role DB 'user' dipetakan ke role aplikasi 'mahasiswa'.
+Pencarian profil publik ada di navbar mahasiswa dan header admin; halaman publik memakai
+`/profile.php?token=<uuid>` dan endpoint `/api/search.php`, `/api/public-profile.php`, `/api/public-photo.php`.
 ```
 
 ## 4. Aturan Modularisasi PHP (WAJIB Dipatuhi AI)
 
 1. **Single Source of Truth untuk Layout:**
-   - **DILARANG** menulis tag `<!DOCTYPE html>`, `<head>`, `<header class="navbar">`, `<aside class="rec-sidebar">`, `<header class="rec-header">`, `<aside class="admin-sidebar">`, `<header class="admin-header">`, atau `<footer>` secara langsung di dalam file halaman (`public/mahasiswa/*.php`, `public/hr/*.php`, `public/admin/*.php`).
+   - **DILARANG** menulis tag `<!DOCTYPE html>`, `<head>`, `<header class="navbar">`, `<aside class="admin-sidebar">`, `<header class="admin-header">`, atau `<footer>` secara langsung di dalam file halaman (`public/mahasiswa/*.php`, `public/admin/*.php`).
    - Setiap file halaman hanya boleh berisi:
-     1. Pemanggilan middleware (`require_role('mahasiswa' | 'hr' | 'admin')`).
+     1. Pemanggilan middleware (`require_role('mahasiswa' | 'admin')`).
      2. Pendefinisian variabel halaman (`$page_title`, `$active_nav`, `$role_css`, `$page_js`).
      3. `require_once` untuk `head.php`, `sidebar`/`header` sesuai role, konten `<main>`, dan `footer` sesuai role.
 2. **Preservasi Selector CSS & DOM JavaScript (Zero Visual Regression):**
-   - **DILARANG** mengubah nama class CSS yang sudah ada di `public/css/style.css`, `public/css/recruiter.css`, maupun `public/css/admin.css`.
+   - **DILARANG** mengubah nama class CSS yang sudah ada di `public/css/style.css` maupun `public/css/admin.css`.
    - **DILARANG** mengubah atribut `id`, `data-*` (termasuk `<body data-nav="...">`), atau struktur DOM di dalam `<main>` yang menjadi target selector dari `public/js/pages/*.js`.
    - Saat mengekstrak `<aside>` atau `<header>` ke dalam `includes/layouts/`, markup HTML dan class CSS harus **100% identik** dengan file HTML aslinya; hanya atribut `href` dan class `active` yang dibuat dinamis menggunakan `$active_nav`.
 3. **Aturan Path & URL (`base_url()` & `asset()`):**
-   - **DILARANG** menulis path relatif mentah seperti `href="css/style.css"`, `src="js/ui.js"`, atau `href="admin-users.html"` karena akan menyebabkan error _404 Not Found_ saat halaman diakses dari dalam subfolder `public/mahasiswa/`, `public/hr/`, atau `public/admin/`.
+   - **DILARANG** menulis path relatif mentah seperti `href="css/style.css"`, `src="js/ui.js"`, atau `href="admin-users.html"` karena akan menyebabkan error _404 Not Found_ saat halaman diakses dari dalam subfolder `public/mahasiswa/` atau `public/admin/`.
    - **WAJIB** menggunakan `asset('css/...')`, `asset('js/...')`, dan `base_url('admin/users.php')` di PHP, serta `window.APP_BASE_URL` pada pemanggilan `fetch()` di `public/js/api.js`.
    - Seluruh link navigasi yang sebelumnya menunjuk ke `*.html` wajib diperbarui ke rute `*.php` sesuai tabel pemetaan di `docs/PRD.md`.
 
@@ -112,7 +111,7 @@ Semua data domain dibaca dan ditulis lewat PostgreSQL. Role DB 'user' dipetakan 
 Jika diminta melakukan migrasi dari HTML ke PHP, kerjakan secara bertahap dengan urutan berikut:
 
 1. **Tahap 1:** Buat `includes/config/app.php`, `includes/auth/session.php`, `includes/auth/csrf.php`, dan `includes/auth/middleware.php` (sediakan mode _development fallback_ agar halaman tetap bisa dibuka saat pengujian UI sebelum login DB aktif).
-2. **Tahap 2:** Buat seluruh partial layout di `includes/layouts/` (`head.php`, `scripts.php`, serta header/sidebar/footer untuk Publik, Mahasiswa, HR, dan Admin).
-3. **Tahap 3:** Konversi dan pindahkan 23 file `.html` ke file `.php` di `public/`, `public/mahasiswa/`, `public/hr/`, dan `public/admin/`.
+2. **Tahap 2:** Buat seluruh partial layout di `includes/layouts/` (`head.php`, `scripts.php`, serta header/sidebar/footer untuk Publik, Mahasiswa, dan Admin).
+3. **Tahap 3:** Konversi dan pindahkan 23 file `.html` ke file `.php` di `public/`, `public/mahasiswa/`, dan `public/admin/`.
 4. **Tahap 4:** Perbarui referensi link `.html` dan path `fetch()` di `public/js/ui.js`, `public/js/api.js`, `public/js/admin-nav.js`, dan `public/js/pages/*.js`.
 5. **Tahap 5:** Uji dengan `php -S localhost:8000 -t public`, pastikan tidak ada aset 404, lalu hapus file `.html` lama yang sudah digantikan `.php`.

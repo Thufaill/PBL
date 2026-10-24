@@ -20,6 +20,8 @@ const API = (() => {
 
   // Kunci localStorage peninggalan mode dummy. Domain TIDAK dibaca dari sini
   // lagi; daftar ini hanya untuk membersihkan sisa data lama satu kali.
+  // Kunci sb.rec.* dipertahankan khusus sebagai pembersih konsol HR yang
+  // sudah dihapus dan tidak boleh dipakai fitur baru.
   const LEGACY_KEYS = [
     "sb.mySkills", "sb.myEvidence", "sb.targetCareer", "sb.customSkills",
     "sb.profile", "sb.portfolioVisibility",
@@ -279,7 +281,7 @@ const API = (() => {
     return request("DELETE", "/api/profile-photo.php", {});
   }
 
-  // Identitas akun untuk layar pengaturan admin/HR.
+  // Identitas akun untuk layar pengaturan admin.
   async function getAccount() {
     return request("GET", "/api/account.php");
   }
@@ -298,12 +300,8 @@ const API = (() => {
     return (await request("GET", "/api/admin/users.php")).users;
   }
 
-  async function getJobAdmins() {
+  async function getAdmins() {
     return (await request("GET", "/api/admin/admins.php")).admins;
-  }
-
-  async function getVacancies() {
-    return (await request("GET", "/api/admin/vacancies.php")).vacancies;
   }
 
   async function getAdminContent() {
@@ -357,10 +355,6 @@ const API = (() => {
     return request("DELETE", "/api/admin/mapping.php", payload);
   }
 
-  async function addVacancy(payload) {
-    return request("POST", "/api/admin/vacancies.php", payload);
-  }
-
   async function addContent(payload) {
     return request("POST", "/api/admin/content.php", payload);
   }
@@ -381,9 +375,7 @@ const API = (() => {
   // (setAdminRecordStatus / removeAdminRecord) tidak perlu diubah.
   const ADMIN_ENDPOINT = {
     users: "/api/admin/users.php",
-    jobs: "/api/admin/admins.php",
     admins: "/api/admin/admins.php",
-    vacancies: "/api/admin/vacancies.php",
     skills: "/api/admin/skills.php",
     careers: "/api/admin/careers.php",
     content: "/api/admin/content.php",
@@ -404,65 +396,13 @@ const API = (() => {
     return request("DELETE", adminEndpoint(collection), { id });
   }
 
-  // ---- Recruiter / Perusahaan ----
-
-  async function getRecruiterCompany() {
-    return request("GET", "/api/hr/company.php");
+  // ---- Direktori profil publik ----
+  async function searchProfiles(query) {
+    return request("GET", `/api/search.php?q=${encodeURIComponent(query)}`);
   }
 
-  async function saveRecruiterCompany(patch) {
-    return request("PATCH", "/api/hr/company.php", patch);
-  }
-
-  async function getRecruiterTeam() {
-    return (await request("GET", "/api/hr/team.php")).team;
-  }
-
-  async function addRecruiter(payload) {
-    return request("POST", "/api/hr/team.php", payload);
-  }
-
-  async function setRecruiterStatus(id, status) {
-    return request("PATCH", "/api/hr/team.php", { id, status });
-  }
-
-  async function removeRecruiterRecord(id) {
-    return request("DELETE", "/api/hr/team.php", { id });
-  }
-
-  async function getRecruiterRoles() {
-    return (await request("GET", "/api/hr/roles.php")).roles;
-  }
-
-  async function addRecruiterRole(payload) {
-    return request("POST", "/api/hr/roles.php", payload);
-  }
-
-  // Mapping skill sebuah role: seluruh daftar diganti di server.
-  async function saveRoleMapping(roleId, skillIds) {
-    return request("PATCH", "/api/hr/roles.php", { id: roleId, skill_ids: skillIds });
-  }
-
-  async function removeRecruiterRole(roleId) {
-    return request("DELETE", "/api/hr/roles.php", { id: roleId });
-  }
-
-  async function getRecruiterCandidates(roleId) {
-    const query = roleId ? `?role=${encodeURIComponent(roleId)}` : "";
-    return (await request("GET", `/api/hr/candidates.php${query}`)).candidates;
-  }
-
-  async function setCandidateStatus(payload) {
-    return request("PATCH", "/api/hr/candidates.php", payload);
-  }
-
-  async function getRecruiterActivity() {
-    return (await request("GET", "/api/hr/activity.php")).activity;
-  }
-
-  async function getRecruiterStats() {
-    const { ok, ...stats } = await request("GET", "/api/hr/stats.php");
-    return stats;
+  async function getPublicProfile(token) {
+    return request("GET", `/api/public-profile.php?token=${encodeURIComponent(token)}`);
   }
 
   purgeLegacy();
@@ -499,11 +439,13 @@ const API = (() => {
     removePhoto,
     getAccount,
     saveAccount,
+    // direktori publik
+    searchProfiles,
+    getPublicProfile,
     // admin
     getAdminStats,
     getAdminUsers,
-    getJobAdmins,
-    getVacancies,
+    getAdmins,
     getAdminContent,
     getMasterSkills,
     getAdminSkillCategories,
@@ -516,28 +458,12 @@ const API = (() => {
     addMapping,
     updateMapping,
     removeMapping,
-    addVacancy,
     addContent,
     updateContent,
     getSettings,
     saveSettings,
     setAdminRecordStatus,
     removeAdminRecord,
-    // recruiter
-    getRecruiterCompany,
-    saveRecruiterCompany,
-    getRecruiterTeam,
-    addRecruiter,
-    setRecruiterStatus,
-    removeRecruiterRecord,
-    getRecruiterRoles,
-    addRecruiterRole,
-    saveRoleMapping,
-    removeRecruiterRole,
-    getRecruiterCandidates,
-    setCandidateStatus,
-    getRecruiterActivity,
-    getRecruiterStats,
   };
 })();
 

@@ -30,7 +30,7 @@ require_once __DIR__ . '/../config/app.php';
   <div class="navbar-actions">
     <?php if (is_logged_in()): ?>
       <a class="navbar-login" href="<?= e(base_url('logout.php')) ?>">Logout</a>
-      <a class="btn btn-accent btn-44" href="<?= e(base_url(get_user_role() === 'admin' ? 'admin/index.php' : (get_user_role() === 'hr' ? 'hr/index.php' : 'mahasiswa/dashboard.php'))) ?>">Dashboard</a>
+      <a class="btn btn-accent btn-44" href="<?= e(base_url(get_user_role() === 'admin' ? 'admin/index.php' : 'mahasiswa/dashboard.php')) ?>">Dashboard</a>
     <?php else: ?>
       <a class="navbar-login" href="<?= e(base_url('login.php')) ?>">Login</a>
       <a class="btn btn-accent btn-44" href="<?= e(base_url('register.php')) ?>">Get Started</a>

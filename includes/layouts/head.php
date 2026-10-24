@@ -1,6 +1,6 @@
 <?php
 // includes/layouts/head.php
-// Head HTML bersama untuk seluruh role (Public, Mahasiswa, HR, Admin)
+// Head HTML bersama untuk seluruh role (Public, Mahasiswa, Admin)
 // Sesuai PRD Bagian 4 & CLAUDE.md Bagian 3
 
 require_once __DIR__ . '/../config/app.php';
@@ -31,9 +31,7 @@ $body_attrs = $body_attrs ?? '';
     />
     <!-- Stylesheet Utama & Per Role -->
     <link rel="stylesheet" href="<?= asset('css/style.css') ?>" />
-    <?php if ($role === 'hr'): ?>
-      <link rel="stylesheet" href="<?= asset('css/recruiter.css') ?>" />
-    <?php elseif ($role === 'admin'): ?>
+    <?php if ($role === 'admin'): ?>
       <link rel="stylesheet" href="<?= asset('css/admin.css') ?>" />
     <?php endif; ?>
     <script>

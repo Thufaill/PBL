@@ -49,6 +49,15 @@
     $("detail-member-since").textContent = profile.member_since ? UI.formatDate(profile.member_since) : EMPTY;
     $("detail-visibility").textContent = profile.visibility || "Private";
 
+    // Header dirender server-side dari sesi, jadi sinkronkan setelah edit
+    // tanpa perlu reload.
+    const navName = document.querySelector(".navbar-profile-name");
+    if (navName) navName.textContent = name;
+    const navEmail = document.querySelector(".navbar-profile-email");
+    if (navEmail) navEmail.textContent = profile.email || "";
+    const navAvatar = document.querySelector(".navbar-avatar");
+    if (navAvatar) navAvatar.textContent = profile.initials || "S";
+
     // Ringkasan portofolio: angka dari database, bukan dari mockup.
     const mine = API.getMySkills();
     const evidence = API.getEvidence();
@@ -180,7 +189,7 @@
   function openVisibility() {
     const current = profile.visibility || "Private";
     const options = [
-      ["Public", "HR can find you in the candidate list and view your portfolio."],
+      ["Public", "Public profiles can be found by other SkillBridge users and viewed through a shareable link."],
       ["Private", "Only you can view your portfolio."],
     ];
     const radios = {};

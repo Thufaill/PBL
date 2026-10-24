@@ -17,6 +17,10 @@ $admin_header_title = $admin_header_title ?? 'Admin SkillBridge';
     <span class="admin-header-title"><?= htmlspecialchars($admin_header_title) ?></span>
     <span class="admin-badge-pill">Admin</span>
   </div>
+  <form class="admin-header-search" role="search" action="<?= e(base_url('admin/search.php')) ?>" method="get">
+    <label class="visually-hidden" for="admin-header-search-input">Cari profil publik</label>
+    <input type="search" id="admin-header-search-input" name="q" maxlength="100" autocomplete="off" placeholder="Cari profil publik..." />
+  </form>
   <div class="admin-header-right">
     <div class="admin-header-profile-text">
       <span class="admin-header-name"><?= htmlspecialchars($user['name'] ?? 'Aditya Pratama') ?></span>

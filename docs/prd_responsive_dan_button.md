@@ -1,5 +1,7 @@
 # PRD Addendum: Spesifikasi Desain Responsif & Standarisasi Button SkillBridge
 
+> **Catatan 2026-10-24:** Dokumen ini historis. Role/modul HR sudah dihapus; sumber kebenaran role, endpoint, dan skema ada di `AGENTS.md`, `db/schema.sql`, dan `db/migrate.sql`.
+
 **Dokumen:** Spesifikasi Teknis UI/UX Responsif & Sistem Komponen Tombol (Button System)
 **Target Repositori:** [HaikalMaghsin/SkillBridge](https://www.google.com/search?q=https%3A%2F%2Fgithub.com%2FHaikalMaghsin%2FSkillBridge) (Pasca-Migrasi PHP Multi-Role)
 **Cakupan:** Seluruh 23 Halaman PHP (`public/`, `public/mahasiswa/`, `public/hr/`, `public/admin/`), 12 Layout Partials (`includes/layouts/`), 3 Stylesheet (`style.css`, `recruiter.css`, `admin.css`), dan Script Frontend (`public/js/`).

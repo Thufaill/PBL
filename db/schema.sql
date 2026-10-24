@@ -3,7 +3,8 @@
 -- File tunggal untuk INSTALASI BARU: enum, tabel, index, trigger,
 -- view, dan data master awal.
 --
--- Role: user (mahasiswa), admin, hr.
+-- Role: user (mahasiswa) dan admin.
+-- Termasuk view direktori publik v_public_profiles untuk fitur pencarian.
 -- Hasil instalasi file ini HARUS identik (struktur) dengan database lama yang
 -- diberi db/migrate.sql. Perbandingan strukturnya otomatis
 -- lewat tools/check_schema_parity.php.
@@ -11,7 +12,7 @@
 -- PERINGATAN: file ini menghapus objek lama (DROP ... CASCADE).
 -- Seluruh data SkillBridge di database akan hilang. Hanya dijalankan
 -- pada database kosong. Untuk database berisi data, gunakan
--- db/migrate.sql yang bersifat aditif.
+-- db/migrate.sql.
 --
 -- Pemakaian:
 --   createdb skillbridge
@@ -22,7 +23,7 @@
 BEGIN;
 
 -- ---------- BERSIHKAN OBJEK LAMA ----------
-DROP VIEW IF EXISTS v_skill_gap, v_user_skill_evidence, v_public_candidates;
+DROP VIEW IF EXISTS v_skill_gap, v_user_skill_evidence, v_public_candidates, v_public_profiles;
 DROP TABLE IF EXISTS activity_log, candidate_reviews, vacancy_skills, vacancies,
     company_recruiters, companies, content_items, system_settings,
     evidence_skills, user_skills, evidence,
@@ -31,7 +32,7 @@ DROP FUNCTION IF EXISTS set_updated_at() CASCADE;
 DROP TYPE IF EXISTS user_role, evidence_source_type, skill_source, skill_status CASCADE;
 
 -- ---------- ENUM ----------
-CREATE TYPE user_role AS ENUM ('user', 'admin', 'hr');
+CREATE TYPE user_role AS ENUM ('user', 'admin');
 CREATE TYPE evidence_source_type AS ENUM ('cv', 'github', 'project', 'portfolio', 'certificate', 'assessment');
 CREATE TYPE skill_source AS ENUM ('manual', 'cv_extracted');
 CREATE TYPE skill_status AS ENUM ('candidate', 'confirmed');
@@ -196,110 +197,6 @@ CREATE TRIGGER trg_content_updated_at
     BEFORE UPDATE ON content_items
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
--- ---------- MODUL HR / PERUSAHAAN ----------
-CREATE TABLE companies (
-    id           SERIAL PRIMARY KEY,
-    name         VARCHAR(150) NOT NULL UNIQUE,
-    tagline      VARCHAR(150),
-    email_domain VARCHAR(120),
-    location     VARCHAR(120),
-    description  TEXT,
-    logo_initial VARCHAR(4),
-    status       VARCHAR(20) NOT NULL DEFAULT 'pending'
-                 CONSTRAINT chk_company_status
-                 CHECK (status IN ('verified', 'pending', 'suspended')),
-    created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TRIGGER trg_companies_updated_at
-    BEFORE UPDATE ON companies
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
--- user_id diisi untuk anggota yang punya akun login (role 'hr');
--- NULL untuk anggota catatan saja.
-CREATE TABLE company_recruiters (
-    id         SERIAL PRIMARY KEY,
-    company_id INT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    user_id    INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-    name       VARCHAR(100) NOT NULL,
-    email      VARCHAR(150) NOT NULL,
-    role       VARCHAR(20)  NOT NULL DEFAULT 'recruiter',
-    role_label VARCHAR(60),
-    status     VARCHAR(20)  NOT NULL DEFAULT 'active'
-               CONSTRAINT chk_recruiter_status
-               CHECK (status IN ('active', 'inactive', 'invited')),
-    created_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (company_id, email)
-);
-
-CREATE INDEX idx_recruiters_company ON company_recruiters (company_id);
-
--- Satu tabel melayani layar target role HR dan moderasi lowongan admin.
-CREATE TABLE vacancies (
-    id         SERIAL PRIMARY KEY,
-    company_id INT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    title      VARCHAR(120) NOT NULL,
-    category   VARCHAR(60),
-    location   VARCHAR(120),
-    type       VARCHAR(40)  NOT NULL DEFAULT 'Full-time',
-    status     VARCHAR(20)  NOT NULL DEFAULT 'open'
-               CONSTRAINT chk_vacancy_status
-               CHECK (status IN ('open', 'closed', 'draft', 'pending', 'rejected')),
-    positions  INTEGER NOT NULL DEFAULT 1 CHECK (positions >= 1),
-    created_by INT REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX idx_vacancies_company ON vacancies (company_id);
-CREATE INDEX idx_vacancies_status  ON vacancies (status);
-
-CREATE TRIGGER trg_vacancies_updated_at
-    BEFORE UPDATE ON vacancies
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
-CREATE TABLE vacancy_skills (
-    vacancy_id   INT NOT NULL REFERENCES vacancies(id) ON DELETE CASCADE,
-    skill_id     INT NOT NULL REFERENCES skills(id)    ON DELETE CASCADE,
-    is_mandatory BOOLEAN NOT NULL DEFAULT TRUE,
-    PRIMARY KEY (vacancy_id, skill_id)
-);
-
-CREATE INDEX idx_vacancy_skills_skill ON vacancy_skills (skill_id);
-
-CREATE TABLE candidate_reviews (
-    id         SERIAL PRIMARY KEY,
-    company_id INT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    user_id    INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    vacancy_id INT REFERENCES vacancies(id) ON DELETE CASCADE,
-    status     VARCHAR(20) NOT NULL DEFAULT 'new'
-               CONSTRAINT chk_candidate_status
-               CHECK (status IN ('new', 'reviewing', 'interview', 'offered', 'rejected', 'hired')),
-    note       TEXT,
-    updated_by INT REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE UNIQUE INDEX uq_candidate_review
-    ON candidate_reviews (company_id, user_id, COALESCE(vacancy_id, 0));
-
-CREATE INDEX idx_candidate_reviews_company ON candidate_reviews (company_id);
-
-CREATE TABLE activity_log (
-    id            SERIAL PRIMARY KEY,
-    company_id    INT REFERENCES companies(id) ON DELETE CASCADE,
-    actor_user_id INT REFERENCES users(id) ON DELETE SET NULL,
-    actor         VARCHAR(100) NOT NULL,
-    action        VARCHAR(30)  NOT NULL,
-    text          TEXT NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX idx_activity_company ON activity_log (company_id, created_at DESC);
-
 -- ---------- VIEW ----------
 -- Jumlah bukti MILIK USER ITU SENDIRI per skill yang dimiliki.
 -- Tidak mengembalikan skor atau persentase.
@@ -321,18 +218,23 @@ SELECT
 FROM user_skills us
 JOIN skills s ON s.id = us.skill_id;
 
--- Kandidat yang tampak di konsol HR: hanya profil yang sengaja dibuat
--- publik oleh pemiliknya. Tanpa opt-in, tidak ada nama mahasiswa yang
--- muncul ke perusahaan.
-CREATE VIEW v_public_candidates AS
+-- Direktori profil publik: hanya mahasiswa aktif yang memilih Public.
+-- View ini TIDAK memuat email dan tidak memakai users.id sebagai identitas
+-- publik; endpoint memakai public_token.
+CREATE VIEW v_public_profiles AS
 SELECT
     u.id,
     u.name,
-    u.email,
+    sp.public_token,
     sp.target_career_id,
     c.name AS target_role,
     sp.institution,
-    sp.location
+    sp.program,
+    sp.semester,
+    sp.location,
+    sp.bio,
+    sp.photo_path,
+    u.created_at AS member_since
 FROM users u
 JOIN student_profiles sp ON sp.user_id = u.id
 LEFT JOIN careers c ON c.id = sp.target_career_id
@@ -434,8 +336,9 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 INSERT INTO schema_migrations (version)
 VALUES ('000_migrations'), ('schema.sql'),
        ('001_mahasiswa_domain'), ('002_platform_settings_content'),
-       ('003_hr_module'), ('004_catalog_expansion'),
-       ('005_evidence_source_types'), ('006_master_timestamps')
+       ('004_catalog_expansion'), ('005_evidence_source_types'),
+       ('006_master_timestamps'), ('007_remove_hr_module'),
+       ('008_public_profile_directory')
 ON CONFLICT (version) DO NOTHING;
 
 COMMIT;

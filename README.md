@@ -6,9 +6,9 @@ Platform web pemetaan skill dan skill gap terhadap target karier. PHP 8 native +
 
 ```text
 includes/   config (app, database), auth (session, csrf, middleware), api/bootstrap.php, layouts
-public/     document root: halaman per role (mahasiswa/, hr/, admin/), api/ (endpoint JSON), css/, js/, assets/
-db/         migrate.sql (aditif, aman pada data), schema.sql (destruktif, DB kosong), seed_demo.sql (data demo, opsional)
-tools/      create_admin.php, create_hr.php, check_schema_parity.php
+public/     document root: halaman per role (mahasiswa/, admin/), api/ (endpoint JSON), css/, js/, assets/
+db/         migrate.sql (aditif kecuali 007), schema.sql (destruktif, DB kosong), seed_demo.sql (data demo, opsional)
+tools/      create_admin.php, check_schema_parity.php
 docker/     entrypoint.sh
 storage/    foto profil avatar_<id>.<ext> — di luar document root, tidak boleh publik
 ```
@@ -25,10 +25,12 @@ storage/    foto profil avatar_<id>.<ext> — di luar document root, tidak boleh
    ```
 
    Database yang sudah berisi data (mis. Supabase produksi): jangan jalankan `db/schema.sql` — file itu
-   membuka dengan `DROP TABLE ... CASCADE`. Jalankan satu file `db/migrate.sql` saja; isinya aditif dan
-   idempoten, jadi aman dijalankan ulang dan aman pada database yang sudah sampai migrasi berapa pun.
+   membuka dengan `DROP TABLE ... CASCADE`. Jalankan `db/migrate.sql`; bagian 001–006 dan 008 aditif serta
+   idempoten, tetapi bagian 007 **menghapus permanen** seluruh data modul HR. Cadangkan database
+   (`pg_dump`) ke lokasi di luar repo sebelum menjalankannya.
 
    ```bash
+   pg_dump <database> > backup_sebelum_007.sql
    psql <database> -f db/migrate.sql
    ```
 
@@ -40,7 +42,6 @@ storage/    foto profil avatar_<id>.<ext> — di luar document root, tidak boleh
 
    ```bash
    php tools/create_admin.php admin@contoh.id "Nama Admin"
-   php tools/create_hr.php hr@contoh.id "Nama Recruiter" "PT Tech Indonesia"
    ```
 
 5. Jalankan server (document root = `public/`):
@@ -50,7 +51,7 @@ storage/    foto profil avatar_<id>.<ext> — di luar document root, tidak boleh
    ```
 
 Mahasiswa mendaftar sendiri lewat `/register.php`. Untuk menguji tampilan tanpa database, set `APP_DEMO=1`
-(membuka sesi demo untuk role apa pun; **jangan** diaktifkan pada build yang dinilai atau di produksi).
+(membuka sesi demo mahasiswa/admin; **jangan** diaktifkan pada build yang dinilai atau di produksi).
 
 ## Role
 
@@ -58,19 +59,19 @@ Mahasiswa mendaftar sendiri lewat `/register.php`. Untuk menguji tampilan tanpa 
 |---|---|---|
 | `user`  | `mahasiswa` | `public/mahasiswa/` |
 | `admin` | `admin`     | `public/admin/` |
-| `hr` | `hr` | `public/hr/` |
 
 ## Penyimpanan data
 
 Semua data domain dan konsol disimpan di PostgreSQL dan dibaca/ditulis lewat endpoint JSON di `public/api/*.php`:
 
 - Mahasiswa: skill yang dimiliki, bukti (evidence), target karier, skill gap, profil, visibilitas, foto, password.
-- Admin: statistik, pengguna, administrator, katalog skill, target karier, relasi mapping, lowongan, konten, pengaturan.
-- HR/Recruiter: profil perusahaan, tim recruiter, target role beserta kebutuhan skill, kandidat dan status review, aktivitas.
+- Admin: statistik, pengguna, administrator, katalog skill, target karier, relasi mapping, konten, pengaturan.
+- People search: semua user login dapat mencari profil mahasiswa yang Public dan membuka profil publik lewat
+  token UUID; email tidak pernah ditampilkan.
 
 `public/js/api.js` adalah satu-satunya pemanggil endpoint tersebut. `localStorage` tidak dipakai lagi untuk
 data aplikasi; `api.js` justru membersihkan kunci lama (`sb.*`) sekali saat halaman dimuat.
-Angka pada dashboard mahasiswa, admin, dan HR dihitung lewat query, bukan ditulis di frontend.
+Angka pada dashboard mahasiswa dan admin dihitung lewat query, bukan ditulis di frontend.
 
 Tulis memakai `POST` dengan header `X-HTTP-Method-Override: PATCH|DELETE` dan `X-CSRF-Token`
 (token tersedia di `<meta name="csrf-token">` pada setiap halaman yang butuh login).

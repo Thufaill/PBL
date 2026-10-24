@@ -4,8 +4,8 @@
 // Sengaja berada di luar docroot (public/) supaya tidak pernah terlayani web.
 //
 // Aturan yang berlaku untuk SEMUA endpoint di folder ini:
-//   1. Data domain selalu difilter dengan user_id / company_id dari SESI,
-//      tidak pernah dari body request.
+//   1. Data domain selalu difilter dengan user_id dari SESI, tidak pernah
+//      dari body request.
 //   2. Semua tulis (POST/PATCH/DELETE) wajib lolos csrf_verify().
 //   3. Respons selalu JSON, tidak pernah redirect. Halaman yang sudah login
 //      memanggil endpoint ini lewat fetch(); sesi hilang = 401, bukan
@@ -56,10 +56,14 @@ function api_method(): string {
 
 /**
  * Wajib login (+ role bila diminta). Tidak pernah redirect.
- * Mengembalikan sesi user: ['id' => int, 'role' => 'mahasiswa|admin|hr', ...]
+ * Mengembalikan sesi user: ['id' => int, 'role' => 'mahasiswa|admin', ...]
  */
 function api_guard(?string $role = null): array {
     header('Cache-Control: no-store');
+
+    if ($role !== null && !auth_role_is_valid($role)) {
+        api_error('Akun ini tidak punya hak akses tersebut.', 403);
+    }
 
     if (demo_mode()) {
         if (!is_logged_in() && $role) {
@@ -70,11 +74,19 @@ function api_guard(?string $role = null): array {
         if (!is_logged_in()) {
             login_demo_user('mahasiswa');
         }
+        if (!auth_role_is_valid(get_user_role())) {
+            logout();
+            api_error('Sesi tidak valid. Silakan login ulang.', 401);
+        }
         return current_user();
     }
 
     if (!is_logged_in()) {
         api_error('Sesi tidak ada. Silakan login.', 401);
+    }
+    if (!auth_role_is_valid(get_user_role())) {
+        logout();
+        api_error('Sesi tidak valid. Silakan login ulang.', 401);
     }
     $user = current_user();
     if ($role && (get_user_role() !== $role)) {
@@ -156,10 +168,34 @@ function api_int_list(array $data, string $key): array {
  */
 function api_photo_url(int $userId): string {
     // BASE_URL buatan includes/config/app.php dihitung dari SCRIPT_NAME, jadi
-    // di dalam endpoint nilainya "<basis app>/api[/admin|hr]", sementara klien
+    // di dalam endpoint nilainya "<basis app>/api[/admin]", sementara klien
     // memakai BASE_URL halaman ("<basis app>"). Potong segmen '/api'-nya dulu.
     $base = rtrim(preg_replace('#/api(/.*)?$#', '', BASE_URL), '/');
     return $base . '/api/profile-photo.php?user=' . $userId;
+}
+
+/** Path absolut foto user. Nama file diturunkan dari id, bukan dari input. */
+function api_photo_path(int $userId): string {
+    $dir = dirname(__DIR__, 2) . '/storage';
+    foreach (['png', 'jpg', 'webp'] as $ext) {
+        $candidate = "{$dir}/avatar_{$userId}.{$ext}";
+        if (is_file($candidate)) {
+            return $candidate;
+        }
+    }
+    return '';
+}
+
+/** URL halaman profil publik berbasis token. */
+function api_public_profile_url(string $token): string {
+    $base = rtrim(preg_replace('#/api(/.*)?$#', '', BASE_URL), '/');
+    return $base . '/profile.php?token=' . rawurlencode($token);
+}
+
+/** URL foto profil publik berbasis token. */
+function api_public_photo_url(string $token): string {
+    $base = rtrim(preg_replace('#/api(/.*)?$#', '', BASE_URL), '/');
+    return $base . '/api/public-photo.php?token=' . rawurlencode($token);
 }
 
 /**
@@ -262,49 +298,5 @@ function api_setting($key, $default = null, ?PDO $pdo = null) {
     }
     $decoded = json_decode((string) $raw, true);
     return $decoded === null ? $default : $decoded;
-}
-
-/**
- * Satu baris log aktivitas konsol HR. Nama aktor selalu diambil dari sesi,
- * bukan dari body, supaya log tidak bisa dipalsukan oleh klien.
- */
-function api_log_activity(PDO $pdo, int $companyId, string $action, string $text): void {
-    $actor = (string) (current_user()['name'] ?? 'Recruiter');
-    $stmt = $pdo->prepare(
-        'INSERT INTO activity_log (company_id, actor_user_id, actor, action, text)
-         VALUES (:c, :u, :a, :ac, :t)'
-    );
-    $stmt->execute([
-        ':c'  => $companyId,
-        ':u'  => api_user_id(),
-        ':a'  => $actor,
-        ':ac' => $action,
-        ':t'  => $text,
-    ]);
-}
-
-/**
- * company_id milik akun HR yang sedang login.
- * Tabel company_recruiters adalah satu-satunya sumber keanggotaan, jadi
- * perusahaan tidak pernah diambil dari request.
- */
-function api_hr_company(int $userId): array {
-    $pdo = api_pdo();
-    $stmt = $pdo->prepare(
-        'SELECT cr.company_id, cr.role_label, cr.status, c.name, c.tagline,
-                c.email_domain, c.location, c.description, c.logo_initial, c.status AS company_status
-         FROM company_recruiters cr
-         JOIN companies c ON c.id = cr.company_id
-         WHERE cr.user_id = :u
-         LIMIT 1'
-    );
-    $stmt->execute([':u' => $userId]);
-    $row = $stmt->fetch();
-    if (!$row) {
-        api_error('Akun ini belum ditautkan ke perusahaan mana pun.', 403, [
-            'hint' => 'Jalankan php tools/create_hr.php email@perusahaan "Nama" "Nama Perusahaan"',
-        ]);
-    }
-    return $row;
 }
 

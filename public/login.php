@@ -1,11 +1,15 @@
 <?php
 // public/login.php
-// Halaman Login Multi-Role (Mahasiswa, HR, Admin)
+// Halaman Login (Mahasiswa, Admin)
 require_once __DIR__ . '/../includes/auth/auth.php';
 
 // Sudah login -> langsung ke dashboard role-nya
 if (is_logged_in()) {
-    redirect_to_dashboard(get_user_role());
+    if (!auth_role_is_valid(get_user_role())) {
+        logout();
+    } else {
+        redirect_to_dashboard(get_user_role());
+    }
 }
 
 $page_title = 'Login · SkillBridge';
@@ -81,7 +85,6 @@ require_once __DIR__ . '/../includes/layouts/head.php';
           <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Akses Cepat Demo Role:</p>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
             <button type="button" class="btn btn-secondary btn-sm" onclick="setDemo('jhondoe@gmail.com', 'password123')">Mahasiswa</button>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="setDemo('hr@techindonesia.com', 'password123')">HR / Recruiter</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="setDemo('admin@skillbridge.id', 'password123')">Admin</button>
           </div>
         </div>

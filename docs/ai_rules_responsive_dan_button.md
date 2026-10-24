@@ -1,5 +1,7 @@
 # AI Rules & Guardrails: Perombakan Responsif & Koreksi Button SkillBridge
 
+> **Catatan 2026-10-24:** Dokumen ini historis. Role/modul HR sudah dihapus; sumber kebenaran role, endpoint, dan skema ada di `AGENTS.md`, `db/schema.sql`, dan `db/migrate.sql`.
+
 Dokumen ini adalah panduan instruksi khusus untuk AI Coding Assistant (Claude Code, Cursor, GitHub Copilot, Windsurf) guna memperbaiki **tampilan responsif (Mobile, Tablet, Desktop)** dan **mengkoreksi seluruh komponen tombol (Button System & Link Navigasi)** pada repositori [HaikalMaghsin/SkillBridge](https://www.google.com/search?q=https%3A%2F%2Fgithub.com%2FHaikalMaghsin%2FSkillBridge) pasca-migrasi PHP (`commit 5ebcbd5` & `cf1a061`).
 
 ## 1. Batasan Mutlak (Hard Constraints)

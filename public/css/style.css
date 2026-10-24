@@ -270,6 +270,36 @@ small {
   margin: 0 24px;
 }
 
+.navbar-search {
+  display: flex;
+  align-items: center;
+  flex: 0 1 220px;
+  min-width: 96px;
+  margin-left: auto;
+}
+
+.navbar-search input {
+  width: 100%;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: 13px;
+}
+
+.navbar-search input::placeholder {
+  color: var(--text-light);
+}
+
+.navbar-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--shadow-focus);
+}
+
 .nav-item {
   height: 34px;
   padding: 0 13px;
@@ -1228,9 +1258,12 @@ small {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 100;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   padding: 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: fadeIn 0.2s ease;
 }
 
@@ -1245,6 +1278,8 @@ small {
   width: 100%;
   max-width: 480px;
   padding: 24px;
+  margin: auto;
+  flex-shrink: 0;
   display: grid;
   gap: 20px;
   animation: slideUp 0.2s ease;
@@ -3196,6 +3231,10 @@ body.landing {
     gap: 2px;
   }
 
+  .navbar-search {
+    flex-basis: clamp(96px, 10vw, 140px);
+  }
+
   .nav-item {
     padding: 0 12px;
   }
@@ -3266,6 +3305,18 @@ body.landing {
     padding: 12px 16px;
     border-radius: 8px;
     box-sizing: border-box;
+  }
+
+  .navbar .navbar-search {
+    width: 100%;
+    flex: 0 0 auto;
+    min-width: 0;
+    margin: 4px 0 0;
+  }
+
+  .navbar .navbar-search input {
+    height: 44px;
+    font-size: 16px;
   }
 
   .navbar .navbar-actions {
@@ -3355,58 +3406,37 @@ body.landing {
 
 /* Tombol hamburger dan pager adalah kontrol utama konsol di tablet/ponsel. */
 @media (max-width: 1023px) {
-  .admin-header .sidebar-toggle,
-  .rec-header .sidebar-toggle {
+  .admin-header .sidebar-toggle {
     flex-shrink: 0;
     width: 44px;
     height: 44px;
     min-height: 44px;
   }
-
-  .rec-page-content .rec-pager .rec-pager-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 12px;
-    border-radius: 8px;
-  }
-
-  .rec-page-content .rec-pager .rec-pager-page {
-    width: 36px;
-    height: 36px;
-  }
 }
 
-/* ============ 11b. Tabel data admin & HR sebagai kartu di bawah 1400px ============ */
+/* ============ 11b. Tabel data admin sebagai kartu di bawah 1400px ============ */
 /* Baris tabel berubah menjadi kartu: identitas di kepala kartu, sisa kolom
    berpasangan sebagai label/nilai, aksi di kaki kartu. Label diambil dari
-   <thead> oleh UI.initTableLabels() di ui.js. Tabel kandidat butuh ±1000px
-   ruang konten; dengan sidebar 280px dan padding halaman, ambang aman
-   tabel native adalah 1400px. */
+   <thead> oleh UI.initTableLabels() di ui.js. Dengan sidebar 256px dan
+   padding halaman, ambang aman tabel native adalah 1400px. */
 @media (max-width: 1399px) {
-  .admin-card:has(.admin-table-wrap),
-  .rec-card:has(.rec-table-wrap) {
+  .admin-card:has(.admin-table-wrap) {
     background: transparent;
     border: 0;
     border-radius: 0;
     padding: 0;
   }
 
-  .admin-card:has(.admin-table-wrap) .admin-table-wrap,
-  .rec-card:has(.rec-table-wrap) .rec-table-wrap {
+  .admin-card:has(.admin-table-wrap) .admin-table-wrap {
     overflow: visible;
     margin-bottom: 0;
   }
 
-  .admin-card:has(.admin-table-wrap) .admin-card-head,
-  .rec-card:has(.rec-table-wrap) .rec-card-head,
-  .rec-card:has(.rec-table-wrap) .rec-toolbar,
-  .rec-card:has(.rec-table-wrap) .rec-pager {
+  .admin-card:has(.admin-table-wrap) .admin-card-head {
     padding-inline: 2px;
   }
 
-  .admin-table-wrap > table.admin-table,
-  .rec-table-wrap > table.rec-native-table {
+  .admin-table-wrap > table.admin-table {
     display: block;
     width: 100%;
     min-width: 0;
@@ -3418,8 +3448,7 @@ body.landing {
   }
 
   /* Header kolom hilang secara visual, tetap terbaca pembaca layar. */
-  .admin-table-wrap > table.admin-table > thead,
-  .rec-table-wrap > table.rec-native-table > thead {
+  .admin-table-wrap > table.admin-table > thead {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -3431,14 +3460,12 @@ body.landing {
     border: 0;
   }
 
-  .admin-table-wrap > table.admin-table > tbody,
-  .rec-table-wrap > table.rec-native-table > tbody {
+  .admin-table-wrap > table.admin-table > tbody {
     display: grid;
     gap: 12px;
   }
 
-  .admin-card .admin-table-wrap > table.admin-table > tbody > tr,
-  .rec-card .rec-table-wrap > table.rec-native-table > tbody > tr {
+  .admin-card .admin-table-wrap > table.admin-table > tbody > tr {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px 16px;
@@ -3448,12 +3475,7 @@ body.landing {
     border-radius: var(--radius-lg);
   }
 
-  .rec-card .rec-table-wrap > table.rec-native-table > tbody > tr.rec-cand-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .admin-card .admin-table-wrap > table.admin-table > tbody > tr > td,
-  .rec-card .rec-table-wrap > table.rec-native-table > tbody > tr > td {
+  .admin-card .admin-table-wrap > table.admin-table > tbody > tr > td {
     display: block;
     width: auto;
     height: auto;
@@ -3466,13 +3488,11 @@ body.landing {
     line-height: 1.5;
   }
 
-  .admin-table-wrap > table.admin-table > tbody > tr:hover > td,
-  .rec-table-wrap > table.rec-native-table > tbody > tr:hover > td {
+  .admin-table-wrap > table.admin-table > tbody > tr:hover > td {
     background: transparent;
   }
 
-  .admin-table-wrap > table.admin-table > tbody > tr > td::before,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td::before {
+  .admin-table-wrap > table.admin-table > tbody > tr > td::before {
     content: attr(data-label);
     display: block;
     margin-bottom: 3px;
@@ -3483,29 +3503,25 @@ body.landing {
     color: var(--text-light);
   }
 
-  /* Identitas kandidat/pengguna memimpin kartu tanpa label. */
-  .admin-table-wrap > table.admin-table > tbody > tr > td:first-child,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td:first-child {
+  /* Identitas pengguna memimpin kartu tanpa label. */
+  .admin-table-wrap > table.admin-table > tbody > tr > td:first-child {
     grid-column: 1 / -1;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border-subtle);
   }
 
-  .admin-table-wrap > table.admin-table > tbody > tr > td:first-child::before,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td:first-child::before {
+  .admin-table-wrap > table.admin-table > tbody > tr > td:first-child::before {
     display: none;
   }
 
   /* Aksi jadi kaki kartu. */
-  .admin-table-wrap > table.admin-table > tbody > tr > td:last-child,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td:last-child {
+  .admin-table-wrap > table.admin-table > tbody > tr > td:last-child {
     grid-column: 1 / -1;
     padding-top: 12px;
     border-top: 1px solid var(--border-subtle);
   }
 
-  .admin-table-wrap > table.admin-table > tbody > tr > td:last-child .table-actions,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td:last-child .table-actions {
+  .admin-table-wrap > table.admin-table > tbody > tr > td:last-child .table-actions {
     justify-content: flex-start;
     flex-wrap: wrap;
     width: 100%;
@@ -3517,43 +3533,10 @@ body.landing {
     height: 44px;
   }
 
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td .rec-cand-btn,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td .rec-row-actions .rec-pager-link {
-    min-height: 44px;
-    height: auto;
-    padding: 0 16px;
-  }
-
   /* Kolom berisi daftar chip memakai lebar penuh. */
   .admin-table-wrap:has(#careers-table-body) > table.admin-table > tbody > tr > td:nth-child(2),
-  .admin-table-wrap:has(#users-table-body) > table.admin-table > tbody > tr > td:nth-child(2),
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-skills,
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-gaps {
+  .admin-table-wrap:has(#users-table-body) > table.admin-table > tbody > tr > td:nth-child(2) {
     grid-column: 1 / -1;
-  }
-
-  /* Kandidat: peran dan jumlah evidence satu baris, lalu skill dan gap. */
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-role {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-evidence {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: start;
-  }
-
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-skills {
-    grid-row: 3;
-  }
-
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-gaps {
-    grid-row: 4;
-  }
-
-  .rec-table-wrap:has(#rec-cand-body) > table.rec-native-table > tbody > tr.rec-cand-row > td.rec-cand-actions {
-    grid-row: 5;
   }
 
   /* Tabel skill: ID jadi penanda kecil, nama skill memimpin kartu. */
@@ -3597,8 +3580,7 @@ body.landing {
   }
 
   /* Baris kosong tetap satu blok penuh tanpa label. */
-  .admin-table-wrap > table.admin-table > tbody > tr > td[colspan],
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td[colspan] {
+  .admin-table-wrap > table.admin-table > tbody > tr > td[colspan] {
     grid-column: 1 / -1;
     grid-row: auto;
     padding: 28px 12px;
@@ -3606,23 +3588,20 @@ body.landing {
     text-align: center;
   }
 
-  .admin-table-wrap > table.admin-table > tbody > tr > td[colspan]::before,
-  .rec-table-wrap > table.rec-native-table > tbody > tr > td[colspan]::before {
+  .admin-table-wrap > table.admin-table > tbody > tr > td[colspan]::before {
     display: none;
   }
 }
 
-/* ============ 11c. Kerangka konsol admin & HR di ponsel ============ */
+/* ============ 11c. Kerangka konsol admin di ponsel ============ */
 @media (max-width: 767px) {
   /* Topbar lebih ringkas; pil peran dilepas supaya judul tidak terpotong. */
-  .admin-workspace .admin-header,
-  .rec-workspace .rec-header {
+  .admin-workspace .admin-header {
     height: 64px;
     padding: 0 16px;
   }
 
-  .admin-header-left,
-  .rec-header-left {
+  .admin-header-left {
     flex: 1;
     min-width: 0;
     margin-right: 12px;
@@ -3635,88 +3614,36 @@ body.landing {
     white-space: nowrap;
   }
 
-  .rec-workspace-title {
-    min-width: 0;
-    padding: 7px 10px;
-  }
-
-  .rec-workspace-title span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .admin-header-left .admin-badge-pill,
-  .rec-header-left .rec-role-pill {
+  .admin-header-left .admin-badge-pill {
     display: none;
   }
 
-  .admin-header-right,
-  .rec-header-right {
+  .admin-header-right {
     flex-shrink: 0;
   }
 
   /* Grid statistik: dua kolom, kartu ganjil terakhir melebar penuh. */
-  .admin-stats-grid,
-  .rec-stats-grid {
+  .admin-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  .admin-stats-grid > :last-child:nth-child(odd),
-  .rec-stats-grid > :last-child:nth-child(odd) {
+  .admin-stats-grid > :last-child:nth-child(odd) {
     grid-column: 1 / -1;
-  }
-
-  /* Strip profil perusahaan HR bertumpuk; CTA selebar kartu. */
-  .rec-page-content .rec-company-strip {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    gap: 14px;
-    padding: 18px;
-  }
-
-  .rec-company-emblem {
-    width: 48px;
-    height: 48px;
-  }
-
-  .rec-company-title-row {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .rec-company-title {
-    font-size: 17px;
-    line-height: 1.3;
-  }
-
-  .rec-company-sub {
-    font-size: 13px;
-    overflow-wrap: anywhere;
-  }
-
-  .rec-company-strip > .btn {
-    grid-column: 1 / -1;
-    width: 100%;
-    min-height: 44px;
   }
 
   /* Toolbar: pencarian penuh, filter berbagi baris, aksi penuh. */
-  .admin-page-content .admin-toolbar .admin-search,
-  .rec-page-content .rec-toolbar .rec-search {
+  .admin-page-content .admin-toolbar .admin-search {
     flex: 1 1 100%;
     min-width: 100%;
   }
 
-  .admin-page-content .admin-toolbar select,
-  .rec-page-content .rec-toolbar .rec-select {
+  .admin-page-content .admin-toolbar select {
     flex: 1 1 0;
     min-width: 0;
     height: 44px;
   }
 
-  .admin-page-content .admin-toolbar .btn,
-  .rec-page-content .rec-toolbar .btn {
+  .admin-page-content .admin-toolbar .btn {
     flex: 1 1 100%;
     min-height: 44px;
   }
@@ -3724,145 +3651,6 @@ body.landing {
   .admin-toolbar .admin-search input {
     width: 100%;
     height: 44px;
-  }
-
-  .rec-toolbar .rec-search {
-    height: 44px;
-  }
-
-  /* Konteks halaman HR: tanggal utuh, breadcrumb boleh turun baris. */
-  .rec-page-context {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .rec-date {
-    margin-left: auto;
-    white-space: nowrap;
-  }
-
-  /* Pager: target sentuh 44px, jarak tetap terbaca. */
-  .rec-page-content .rec-pager {
-    justify-content: space-between;
-    gap: 8px;
-    font-size: 12px;
-  }
-
-  /* Ringkasan kandidat dapat satu baris sendiri agar tombol pager
-     tidak berdesakan di 320–390px. */
-  .rec-page-content .rec-pager:has(#rec-cand-shown) {
-    flex-wrap: wrap;
-    row-gap: 4px;
-  }
-
-  .rec-page-content .rec-pager:has(#rec-cand-shown) #rec-cand-shown {
-    flex: 1 1 100%;
-  }
-
-  .rec-page-content .rec-pager:has(#rec-cand-shown) .rec-pager-link:first-of-type {
-    margin-left: auto;
-  }
-
-  .rec-page-content .rec-pager .rec-pager-link:disabled {
-    color: var(--text-light);
-    cursor: not-allowed;
-    text-decoration: none;
-  }
-
-  /* Tabel div dasbor HR: kepala kolom hilang, label menempel pada nilainya. */
-  .rec-card .rec-table-head,
-  .rec-card .rec-role-head {
-    display: none;
-  }
-
-  .rec-card .rec-table .rec-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px 16px;
-    padding: 14px 0;
-  }
-
-  .rec-card .rec-table .rec-row-name {
-    grid-column: 1 / -1;
-  }
-
-  .rec-card .rec-table .rec-row-role,
-  .rec-card .rec-table .rec-row-status {
-    width: auto;
-  }
-
-  .rec-card .rec-table .rec-row-role::before,
-  .rec-card .rec-table .rec-row-status::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 3px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-light);
-  }
-
-  .rec-card .rec-table .rec-row-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    grid-column: 1 / -1;
-    width: auto;
-    gap: 6px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-subtle);
-  }
-
-  .rec-card .rec-table .rec-row-actions::before {
-    content: "Aksi";
-    display: block;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-light);
-  }
-
-  .rec-card .rec-table .rec-row-actions .rec-row-action {
-    min-height: 44px;
-    padding: 0 16px;
-  }
-
-  .rec-card .rec-role-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px 16px;
-    padding: 14px 0;
-  }
-
-  .rec-card .rec-role-identity {
-    grid-column: 1 / -1;
-  }
-
-  .rec-card .rec-role-skills {
-    grid-column: 1;
-    width: auto;
-    align-content: start;
-  }
-
-  .rec-card .rec-role-skills::before {
-    content: "Kebutuhan Skill";
-    display: block;
-    width: 100%;
-    margin-bottom: 2px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-light);
-  }
-
-  .rec-card .rec-role-match {
-    grid-column: 2;
-    align-self: end;
-    width: auto;
-    align-items: flex-end;
   }
 
   /* Tabel div dasbor admin: waktu dan kategori jadi baris metadata. */
@@ -3902,19 +3690,8 @@ body.landing {
 
   /* Target sentuh dasar untuk tombol dan tautan aksi. */
   .btn,
-  .btn-sm,
-  .rec-card .rec-card-head .rec-pager-link,
-  .rec-page-content .rec-save-bar .rec-cand-btn {
+  .btn-sm {
     min-height: 44px;
-  }
-
-  .rec-card .rec-card-head .rec-pager-link {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .rec-page-content .rec-save-bar .rec-cand-btn {
-    padding: 0 18px;
   }
 
   .btn-icon {
@@ -3946,8 +3723,399 @@ body.landing {
   .modal {
     width: 95% !important;
     max-width: 95% !important;
-    margin: 10px auto !important;
+    margin: auto !important;
     padding: 20px 16px !important;
+  }
+}
+
+/* ============ Public people directory ============ */
+.people-search-panel {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.people-search-form {
+  display: flex;
+  gap: 10px;
+}
+
+.people-search-form input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: 14px;
+}
+
+.people-search-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--shadow-focus);
+}
+
+.people-search-status {
+  min-height: 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.person-card {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--duration-fast) var(--ease-spring),
+              box-shadow var(--duration-fast) var(--ease-spring),
+              transform var(--duration-fast) var(--ease-spring);
+}
+
+.person-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.person-card:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.person-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.person-card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-round);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.person-card-avatar--initials {
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.person-card-identity {
+  min-width: 0;
+}
+
+.person-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.person-card-meta,
+.person-card-location,
+.person-card-target,
+.person-card-evidence {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.person-card-target {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.person-card-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.person-skill {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: var(--radius-round);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.person-skill--more {
+  color: var(--text-light);
+}
+
+.people-state {
+  grid-column: 1 / -1;
+  padding: 28px 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  font-size: 13.5px;
+  text-align: center;
+}
+
+.people-state--error {
+  border-color: var(--pink-border);
+  background: var(--tint-pink);
+  color: var(--accent);
+}
+
+.people-search-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-light);
+  font-size: 12.5px;
+}
+
+/* ============ Public profile (token link) ============ */
+.public-profile-main {
+  padding-top: 28px;
+  padding-bottom: 48px;
+}
+
+.public-profile {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.public-profile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.public-profile-back:hover {
+  color: var(--primary);
+}
+
+.public-profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.public-profile-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-round);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.public-profile-avatar--initials {
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.public-profile-name {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.public-profile-role {
+  margin: 6px 0 0;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.public-profile-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  margin-top: 10px;
+  padding: 0 10px;
+  border-radius: var(--radius-round);
+  background: var(--primary-subtle);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.public-profile-card {
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.public-profile-card h2 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+.public-profile-bio {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.public-profile-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px 20px;
+  margin: 0;
+}
+
+.public-profile-detail dt {
+  margin: 0 0 3px;
+  color: var(--text-light);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.public-profile-detail dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.public-profile-skill-group + .public-profile-skill-group {
+  margin-top: 16px;
+}
+
+.public-profile-skill-group h3 {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.public-profile-skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.public-profile-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-round);
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.public-profile-skill-count {
+  color: var(--text-light);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.public-profile-empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+
+.public-profile-error {
+  padding: 32px 24px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: center;
+}
+
+.public-profile-error h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.public-profile-error p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 639px) {
+  .people-search-form {
+    flex-direction: column;
+  }
+
+  .people-search-form .btn {
+    width: 100%;
+  }
+
+  .people-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-profile-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .public-profile-name {
+    font-size: 22px;
+  }
+
+  .public-profile-card {
+    padding: 18px;
   }
 }
 
@@ -4014,16 +4182,14 @@ body.landing {
 }
 
 /* Badge/pil kosong saat isinya masih skeleton. */
-.badge:has(> [data-sb-skeleton]),
-.rec-badge-verified:has(> [data-sb-skeleton]) {
+.badge:has(> [data-sb-skeleton]) {
   padding: 0 !important;
   border: 0;
   background: transparent;
   box-shadow: none;
 }
 
-.badge:has(> [data-sb-skeleton]) .sb-skeleton-line,
-.rec-badge-verified:has(> [data-sb-skeleton]) .sb-skeleton-line {
+.badge:has(> [data-sb-skeleton]) .sb-skeleton-line {
   height: 16px;
   border-radius: 999px;
 }
@@ -4051,21 +4217,12 @@ body.landing {
   min-height: 128px;
 }
 
-.rec-stats-grid .sb-skeleton-card,
-.rec-role-cards .sb-skeleton-card {
-  min-height: 140px;
-}
-
 .career-grid .sb-skeleton-card {
   min-height: 260px;
 }
 
 .evidence-cards-grid .sb-skeleton-card {
   min-height: 220px;
-}
-
-.rec-mapping-grid .sb-skeleton-card {
-  min-height: 300px;
 }
 
 .sb-skeleton-row {

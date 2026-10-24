@@ -1,3 +1,5 @@
+> **Catatan sinkronisasi 2026-10-24:** Role dan modul HR telah dihapus total dari aplikasi dan database. Fitur pengganti adalah pencarian profil publik (navbar mahasiswa/header admin) dan halaman profil publik berbasis token. Narasi historis di bawah dipertahankan sebagai catatan proses, bukan keadaan kode saat ini.
+
 # Pemetaan Project SkillBridge
 
 | Item | Keterangan |

@@ -14,8 +14,8 @@
     },
     {
       label: "Administrator",
-      value: (s) => s.platformAdmins + s.jobAdmins,
-      context: (s) => `${s.platformAdmins} Admin SkillBridge · ${s.jobAdmins} Admin Job`,
+      value: (s) => s.platformAdmins,
+      context: () => "Admin SkillBridge",
     },
     {
       label: "Keterampilan",
@@ -30,7 +30,7 @@
     {
       label: "Relasi mapping",
       value: (s) => s.mappings,
-      context: (s) => `${s.vacancies} lowongan · ${s.publishedContent} konten terbit`,
+      context: (s) => `${s.publishedContent} konten terbit`,
     },
   ];
 

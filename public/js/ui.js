@@ -184,10 +184,10 @@ const UI = (() => {
         if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
       }
 
-      // Sidebar Toggle HR & Admin Drawer Mobile
+      // Sidebar Toggle Admin Drawer Mobile
       const sidebarToggle = e.target.closest("[data-toggle-sidebar], .sidebar-toggle");
       if (sidebarToggle) {
-        const sidebar = document.querySelector(".rec-sidebar, .admin-sidebar");
+        const sidebar = document.querySelector(".admin-sidebar");
         const backdrop = document.querySelector(".sidebar-backdrop");
         if (sidebar) sidebar.classList.toggle("is-open");
         if (backdrop) backdrop.classList.toggle("is-open");
@@ -197,7 +197,7 @@ const UI = (() => {
       // Sidebar Backdrop / Close Drawer Mobile
       const sidebarClose = e.target.closest("[data-close-sidebar], .sidebar-backdrop, .sidebar-close-btn");
       if (sidebarClose) {
-        const sidebar = document.querySelector(".rec-sidebar, .admin-sidebar");
+        const sidebar = document.querySelector(".admin-sidebar");
         const backdrop = document.querySelector(".sidebar-backdrop");
         if (sidebar) sidebar.classList.remove("is-open");
         if (backdrop) backdrop.classList.remove("is-open");
@@ -214,7 +214,7 @@ const UI = (() => {
           const toggle = openNav.querySelector(".navbar-toggle");
           if (toggle) toggle.setAttribute("aria-expanded", "false");
         }
-        const openSidebar = document.querySelector(".rec-sidebar.is-open, .admin-sidebar.is-open");
+        const openSidebar = document.querySelector(".admin-sidebar.is-open");
         if (openSidebar) {
           openSidebar.classList.remove("is-open");
           const backdrop = document.querySelector(".sidebar-backdrop");

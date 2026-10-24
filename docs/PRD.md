@@ -1,5 +1,7 @@
 # Product Requirement Document (PRD) — SkillBridge (PHP Multi-Role Edition)
 
+> **Catatan 2026-10-24:** Dokumen ini historis. Role/modul HR sudah dihapus; sumber kebenaran role, endpoint, dan skema ada di `AGENTS.md`, `db/schema.sql`, dan `db/migrate.sql`.
+
 ## 1. Ringkasan Produk
 
 **SkillBridge** adalah aplikasi web dinamis yang menghubungkan pemetaan keterampilan (_skills_) dan bukti kompetensi (_evidence/portfolio_) mahasiswa dengan kebutuhan industri melalui tiga konsol terintegrasi yang dipisahkan berdasarkan peran (_role_):

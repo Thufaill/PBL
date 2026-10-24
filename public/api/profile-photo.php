@@ -28,18 +28,6 @@ $allowedTypes = [
     'image/webp' => 'webp',
 ];
 
-/** Path absolut foto user. Nama file diturunkan dari id, bukan dari input. */
-function api_photo_path(int $uid): string {
-    $dir = dirname(__DIR__, 2) . '/storage';
-    foreach (['png', 'jpg', 'webp'] as $ext) {
-        $candidate = "{$dir}/avatar_{$uid}.{$ext}";
-        if (is_file($candidate)) {
-            return $candidate;
-        }
-    }
-    return '';
-}
-
 try {
     switch ($method) {
         case 'GET': {

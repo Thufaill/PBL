@@ -1,12 +1,10 @@
-// admin-admins.js - manajemen akun administrator (Admin Job / Admin SkillBridge)
+// admin-admins.js - manajemen akun administrator SkillBridge
 
 (async () => {
   const { el, clear } = UI;
 
   const ROLE_LABEL = {
-    job_admin: "Admin Job",
     skillbridge_admin: "Admin SkillBridge",
-    owner: "Admin",
   };
 
   function initials(name) {
@@ -17,7 +15,7 @@
 
   async function load() {
     try {
-      allAdmins = await API.getJobAdmins();
+      allAdmins = await API.getAdmins();
     } catch {
       allAdmins = [];
     }
@@ -26,16 +24,9 @@
 
   function applyFilter() {
     const q = (document.getElementById("admin-search").value || "").toLowerCase();
-    const role = document.getElementById("admin-role-filter").value;
-    const list = allAdmins.filter((a) => {
-      const matchQ =
-        !q ||
-        a.name.toLowerCase().includes(q) ||
-        a.email.toLowerCase().includes(q) ||
-        (a.company || "").toLowerCase().includes(q);
-      const matchR = role === "all" || a.role === role;
-      return matchQ && matchR;
-    });
+    const list = allAdmins.filter(
+      (a) => !q || a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)
+    );
     render(list);
   }
 
@@ -44,7 +35,7 @@
     clear(body);
 
     if (list.length === 0) {
-      body.append(el("tr", {}, [el("td", { colspan: "7", class: "admin-empty", text: "Tidak ada administrator yang cocok." })]));
+      body.append(el("tr", {}, [el("td", { colspan: "5", class: "admin-empty", text: "Tidak ada administrator yang cocok." })]));
       return;
     }
 
@@ -62,13 +53,8 @@
             ]),
           ]),
           el("td", {}, [el("span", { class: "admin-badge-pill", text: ROLE_LABEL[a.role] || a.role })]),
-          el("td", { text: a.company || "—" }),
-          el("td", { text: String(a.active_vacancies ?? 0) }),
           el("td", {}, [
-            el("span", {
-              class: "admin-badge-pill",
-              text: active ? "Aktif" : "Non-aktif",
-            }),
+            el("span", { class: "admin-badge-pill", text: active ? "Aktif" : "Non-aktif" }),
           ]),
           el("td", { text: UI.formatDate(a.created_at) }),
           el("td", { class: "admin-text-end" }, [
@@ -112,11 +98,11 @@
       try {
         if (btn.dataset.action === "status") {
           const next = a.status === "active" ? "inactive" : "active";
-          await API.setAdminRecordStatus("jobs", a.id, next);
+          await API.setAdminRecordStatus("admins", a.id, next);
           UI.toast(`Status ${a.name} diubah`);
         } else if (btn.dataset.action === "delete") {
           if (!confirm(`Hapus administrator ${a.name}?`)) return;
-          await API.removeAdminRecord("jobs", a.id);
+          await API.removeAdminRecord("admins", a.id);
           UI.toast("Administrator dihapus");
         }
         await load();
@@ -126,6 +112,5 @@
     });
 
     document.getElementById("admin-search").addEventListener("input", applyFilter);
-    document.getElementById("admin-role-filter").addEventListener("change", applyFilter);
   });
 })();

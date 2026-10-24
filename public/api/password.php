@@ -1,6 +1,6 @@
 <?php
 // public/api/password.php
-// Ganti password akun yang sedang login (mahasiswa, admin, maupun HR).
+// Ganti password akun yang sedang login (mahasiswa maupun admin).
 //
 //   POST -> { current_password, new_password }
 //

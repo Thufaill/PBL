@@ -1,9 +1,9 @@
 <?php
 // includes/auth/auth.php
-// Autentikasi, sesi, dan hak akses multi-role (mahasiswa, hr, admin).
+// Autentikasi dan sesi untuk dua role aplikasi (mahasiswa, admin).
 //
-// Role di database (enum user_role): 'user' | 'admin' (| 'hr' bila migrasi opsional dijalankan).
-// Role di aplikasi (folder & sesi):  'mahasiswa' | 'hr' | 'admin'.
+// Role di database (enum user_role): 'user' | 'admin'.
+// Role di aplikasi (folder & sesi):  'mahasiswa' | 'admin'.
 // 'user' (DB) <-> 'mahasiswa' (aplikasi) dipetakan oleh dua fungsi di bawah.
 
 require_once __DIR__ . '/session.php';
@@ -22,6 +22,11 @@ function db_role_to_app_role($role) {
 
 function app_role_to_db_role($role) {
     return $role === 'mahasiswa' ? 'user' : (string) $role;
+}
+
+/** Role aplikasi yang masih dikenal. Dipakai guard dan login. */
+function auth_role_is_valid($role): bool {
+    return in_array($role, ['mahasiswa', 'admin'], true);
 }
 
 function current_user() {
@@ -51,7 +56,6 @@ function make_initials($name) {
 function role_label($role) {
     switch ($role) {
         case 'admin': return 'Administrator';
-        case 'hr':    return 'Recruiter';
         default:      return 'Student';
     }
 }
@@ -66,16 +70,33 @@ function role_label($role) {
 function check_auth($required_role = null, $redirect_on_fail = true) {
     header('Cache-Control: no-store');
 
+    if ($required_role !== null && !auth_role_is_valid($required_role)) {
+        logout();
+        header('Location: ' . base_url('login.php'));
+        exit;
+    }
+
     if (demo_mode()) {
         if (!is_logged_in() && $required_role) {
             login_demo_user($required_role);
         } elseif ($required_role && get_user_role() !== $required_role) {
             login_demo_user($required_role);
         }
+        if (is_logged_in() && !auth_role_is_valid(get_user_role())) {
+            logout();
+            header('Location: ' . base_url('login.php'));
+            exit;
+        }
         return true;
     }
 
     if (!is_logged_in()) {
+        header('Location: ' . base_url('login.php'));
+        exit;
+    }
+
+    if (!auth_role_is_valid(get_user_role())) {
+        logout();
         header('Location: ' . base_url('login.php'));
         exit;
     }
@@ -97,17 +118,15 @@ function login_demo_user($role = 'mahasiswa') {
             'id' => 1, 'name' => 'Jhon Doe', 'email' => 'jhondoe@gmail.com',
             'role' => 'mahasiswa', 'role_label' => 'Student', 'initials' => 'JD',
         ],
-        'hr' => [
-            'id' => 2, 'name' => 'Aditya Pratama', 'email' => 'aditya@techindonesia.com',
-            'role' => 'hr', 'role_label' => 'Company Admin · PT Tech Indonesia',
-            'company_name' => 'PT Tech Indonesia', 'initials' => 'AP',
-        ],
         'admin' => [
             'id' => 3, 'name' => 'Aditya Pratama', 'email' => 'admin@skillbridge.id',
             'role' => 'admin', 'role_label' => 'Admin Utama · Platform Owner', 'initials' => 'AP',
         ],
     ];
-    $_SESSION['user'] = $demo_users[$role] ?? $demo_users['mahasiswa'];
+    if (!isset($demo_users[$role])) {
+        $role = 'mahasiswa';
+    }
+    $_SESSION['user'] = $demo_users[$role];
     return $_SESSION['user'];
 }
 
@@ -136,6 +155,9 @@ function attempt_login($email, $password) {
             if ($user && $valid) {
                 session_regenerate_id(true);
                 $role = db_role_to_app_role($user['role']);
+                if (!auth_role_is_valid($role)) {
+                    return ['success' => false, 'error' => 'invalid'];
+                }
                 $_SESSION['user'] = [
                     'id'         => (int) $user['id'],
                     'name'       => $user['name'],
@@ -157,7 +179,6 @@ function attempt_login($email, $password) {
     if (demo_mode()) {
         $demo_creds = [
             'admin@skillbridge.id'      => 'admin',
-            'hr@techindonesia.com'      => 'hr',
             'jhondoe@gmail.com'         => 'mahasiswa',
             'mahasiswa@skillbridge.id'  => 'mahasiswa',
         ];
@@ -173,16 +194,11 @@ function attempt_login($email, $password) {
 }
 
 function redirect_to_dashboard($role, $path_prefix = '') {
-    switch ($role) {
-        case 'admin':
-            $target = 'admin/index.php';
-            break;
-        case 'hr':
-            $target = 'hr/index.php';
-            break;
-        default:
-            $target = 'mahasiswa/dashboard.php';
+    if (!auth_role_is_valid($role)) {
+        header('Location: ' . base_url('login.php'));
+        exit;
     }
+    $target = $role === 'admin' ? 'admin/index.php' : 'mahasiswa/dashboard.php';
     header('Location: ' . base_url($target));
     exit;
 }

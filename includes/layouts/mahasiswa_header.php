@@ -38,6 +38,10 @@ $nav_items = [
         <?= htmlspecialchars($item['label']) ?>
       </a>
     <?php endforeach; ?>
+    <form class="navbar-search" role="search" action="<?= e(base_url('mahasiswa/search.php')) ?>" method="get">
+      <label class="visually-hidden" for="navbar-search-input">Search public profiles</label>
+      <input type="search" id="navbar-search-input" name="q" maxlength="100" autocomplete="off" placeholder="Search people..." />
+    </form>
   </div>
 
   <div class="navbar-profile">

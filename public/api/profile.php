@@ -37,6 +37,7 @@ function api_profile_row(PDO $pdo, int $uid): array {
         'ok'          => true,
         'name'        => $row['name'],
         'email'       => $row['email'],
+        'initials'    => make_initials($row['name']),
         'institution' => $row['institution'],
         'program'     => $row['program'],
         'semester'    => $row['semester'],
@@ -50,6 +51,22 @@ function api_profile_row(PDO $pdo, int $uid): array {
         'public_token'=> $row['public_token'],
         'target_career_id' => $row['target_career_id'] === null ? null : (int) $row['target_career_id'],
     ];
+}
+
+/**
+ * String profil: null = tidak dikirim, '' = dikirim kosong (hapus nilai).
+ * api_str() tidak dipakai di sini karena mengubah '' menjadi null, sehingga
+ * kolom opsional tidak pernah bisa dikosongkan lewat modal edit.
+ */
+function api_profile_str(array $body, string $key, int $maxLen): ?string {
+    if (!array_key_exists($key, $body) || $body[$key] === null) {
+        return null;
+    }
+    $value = trim((string) $body[$key]);
+    if (mb_strlen($value) > $maxLen) {
+        api_error("Kolom '{$key}' terlalu panjang (maks {$maxLen} karakter).", 422);
+    }
+    return $value;
 }
 
 try {
@@ -68,14 +85,23 @@ try {
             $uid  = api_user_id();
             $body = api_body();
 
-            $name     = array_key_exists('name', $body) ? api_str($body, 'name', 100) : null;
-            $email    = array_key_exists('email', $body) ? api_str($body, 'email', 150) : null;
-            $bio      = array_key_exists('bio', $body) ? api_str($body, 'bio', 2000) : null;
-            $fields   = [
-                'institution' => array_key_exists('institution', $body) ? api_str($body, 'institution', 120) : null,
-                'program'     => array_key_exists('program', $body) ? api_str($body, 'program', 120) : null,
-                'semester'    => array_key_exists('semester', $body) ? api_str($body, 'semester', 20) : null,
-                'location'    => array_key_exists('location', $body) ? api_str($body, 'location', 120) : null,
+            $name  = api_profile_str($body, 'name', 100);
+            $email = api_profile_str($body, 'email', 150);
+            $bio   = api_profile_str($body, 'bio', 2000);
+
+            // Nama dan email wajib; kolom lain boleh dikosongkan.
+            if ($name === '') {
+                api_error('Nama wajib diisi.', 422);
+            }
+            if ($email === '') {
+                api_error('Email wajib diisi.', 422);
+            }
+
+            $fields = [
+                'institution' => api_profile_str($body, 'institution', 120),
+                'program'     => api_profile_str($body, 'program', 120),
+                'semester'    => api_profile_str($body, 'semester', 20),
+                'location'    => api_profile_str($body, 'location', 120),
             ];
             $visibility = api_str($body, 'visibility', 10);
             if ($visibility !== null && !in_array($visibility, ['Public', 'Private'], true)) {
@@ -83,7 +109,7 @@ try {
             }
 
             if ($name === null && $email === null && $bio === null
-                && !array_filter($fields) && $visibility === null) {
+                && !array_filter($fields, fn($v) => $v !== null) && $visibility === null) {
                 api_error('Tidak ada perubahan yang dikirim.', 422);
             }
 
@@ -128,14 +154,25 @@ try {
 
             if ($visibility !== null) {
                 $isPublic = $visibility === 'Public';
-                if ($isPublic) {
-                    // CHECK chk_public_needs_token mewajibkan token; dibuat
-                    // sekali lalu dipertahankan agar tautan lama tidak putus.
+
+                $currentStmt = $pdo->prepare('SELECT is_public FROM student_profiles WHERE user_id = :u');
+                $currentStmt->execute([':u' => $uid]);
+                $wasPublic = (bool) $currentStmt->fetchColumn();
+
+                if ($isPublic && !$wasPublic) {
+                    // Private -> Public: rotasi token agar tautan lama mati.
                     $upd = $pdo->prepare(
-                        "UPDATE student_profiles
+                        'UPDATE student_profiles
+                            SET is_public = TRUE,
+                                public_token = gen_random_uuid()
+                          WHERE user_id = :u'
+                    );
+                } elseif ($isPublic) {
+                    $upd = $pdo->prepare(
+                        'UPDATE student_profiles
                             SET is_public = TRUE,
                                 public_token = COALESCE(public_token, gen_random_uuid())
-                          WHERE user_id = :u"
+                          WHERE user_id = :u'
                     );
                 } else {
                     $upd = $pdo->prepare('UPDATE student_profiles SET is_public = FALSE WHERE user_id = :u');
@@ -150,7 +187,7 @@ try {
             // diperbarui supaya tampilan konsisten tanpa logout.
             $_SESSION['user']['name']  = $row['name'];
             $_SESSION['user']['email'] = $row['email'];
-            $_SESSION['user']['initials'] = make_initials($row['name']);
+            $_SESSION['user']['initials'] = $row['initials'];
             api_out($row);
         }
 

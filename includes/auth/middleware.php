@@ -1,6 +1,6 @@
 <?php
 // includes/auth/middleware.php
-// Middleware pelindung rute & otorisasi role (mahasiswa, hr, admin)
+// Middleware pelindung rute & otorisasi role (mahasiswa, admin)
 
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/session.php';

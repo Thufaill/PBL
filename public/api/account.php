@@ -5,7 +5,7 @@
 //   GET   -> { id, name, email, role, role_label, initials }
 //   PATCH -> { name?, email? }
 //
-// Dipakai layar Pengaturan admin dan HR yang sebelumnya menulis ke
+// Dipakai layar Pengaturan admin yang sebelumnya menulis ke
 // localStorage 'sb.admin.profile' — perubahan di situ tidak pernah sampai
 // ke server, jadi nama di header tetap nama lama setelah "disimpan".
 //

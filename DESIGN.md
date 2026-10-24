@@ -114,7 +114,7 @@ Satu sistem, dua wajah: desktop menampilkan kepadatan data, ponsel menampilkan k
 ### 5.2 Navigasi & Topbar
 - Header publik dan mahasiswa memakai navigasi satu baris pada `≥1024px`; pada `1024–1279px` padding bar, jarak antar item, dan gap aksi dirapatkan agar CTA tidak menempel tepi viewport.
 - Di bawah `1024px`, seluruh tautan navigasi, aksi akun, dan profil masuk ke drawer yang dibuka tombol menu `44×44` di kanan; tidak ada menu yang terpotong atau perlu digeser horizontal.
-- Header admin/HR: tinggi `64px`, judul workspace dipotong dengan ellipsis, pill role disembunyikan agar judul dan avatar tidak berdesakan.
+- Header admin: tinggi `64px`, judul workspace dipotong dengan ellipsis, pill role disembunyikan agar judul dan avatar tidak berdesakan.
 - Header mahasiswa: logo + nama platform di kiri, tombol menu `44×44` di kanan.
 - Profil mahasiswa di drawer: nama + avatar menjadi satu tautan `44px`; logout dipisah sebagai ikon `44×44`, bukan teks yang menempel pada nama.
 - Semua tautan/aksi navigasi memakai target sentuh minimal `44×44px`.
@@ -124,19 +124,25 @@ Satu sistem, dua wajah: desktop menampilkan kepadatan data, ponsel menampilkan k
 - `<thead>` disembunyikan secara visual (tetap ada untuk pembaca layar). Label kolom ditempel ke setiap sel melalui `data-label` dan `td::before`; label dihasilkan otomatis oleh `labelTable()` di `public/js/ui.js` dari teks `<th>`, termasuk untuk baris yang dirender ulang lewat `MutationObserver`.
 - Sel identitas menjadi header kartu (lebar penuh, hairline bawah); sel aksi menjadi footer kartu (lebar penuh, hairline atas, tombol minimal `44px`).
 - Baris kosong (`colspan`) melebar penuh tanpa label.
-- Wadah kartu luar (`.admin-card` / `.rec-card`) diratakan di ponsel agar tidak terjadi kartu di dalam kartu.
-- Tabel kandidat HR memakai grid khusus: identitas → role + evidence → skill matched → skill gap → aksi.
-- Tabel `<div>` dasbor (tim recruiter, aktivitas admin) mengikuti pola yang sama: header kolom disembunyikan, nilai diberi label statis (`Peran`, `Status Akses`, `Aksi`) atau baris meta dua kolom.
+- Wadah kartu luar (`.admin-card`) diratakan di ponsel agar tidak terjadi kartu di dalam kartu.
+- Tabel `<div>` dasbor admin mengikuti pola yang sama: header kolom disembunyikan, nilai diberi label statis atau baris meta dua kolom.
 - **Tidak boleh ada geser horizontal** untuk membaca data di ponsel.
 
 ### 5.4 Grid, Toolbar, dan Pager
-- Grid statistik admin/HR: dua kolom di ponsel; kartu terakhir yang jumlahnya ganjil melebar penuh agar tidak menjadi kartu yatim.
+- Grid statistik admin: dua kolom di ponsel; kartu terakhir yang jumlahnya ganjil melebar penuh agar tidak menjadi kartu yatim.
 - Toolbar: input pencarian dan select memenuhi lebar; tinggi kontrol `44px`; tombol aksi memenuhi lebar.
-- Pager kandidat: ringkasan jumlah mendapat baris sendiri, kontrol halaman di bawahnya dengan target sentuh `44px`.
 
 ### 5.5 Empty State & Isi Sel
 - Daftar kosong selalu punya pesan eksplisit (mis. "Belum ada target role."), bukan ruang kosong.
 - Sel skill yang tidak punya isi menampilkan "Tidak ada" dengan warna `--text-muted`, bukan area kosong tanpa keterangan.
+
+### 5.6 People Search & Public Profile
+- Form pencarian profil publik berada di navbar mahasiswa (drawer di bawah `1024px`) dan header admin (disembunyikan di bawah `1024px`; admin memakai tautan sidebar "Cari Profil").
+- Halaman `/mahasiswa/search.php` dan `/admin/search.php` memakai panel pencarian yang sama: input `44px`, status `aria-live`, dan grid kartu `minmax(260px, 1fr)` yang menjadi satu kolom di ponsel.
+- Hasil dibatasi maksimal 30 profil per pencarian; bila terpotong, tampilkan catatan untuk mempersempit kata kunci.
+- Kartu orang memuat avatar atau inisial, nama, institusi/program/semester, lokasi, target karier, maksimal 4 skill + `+N`, dan jumlah evidence. Seluruh teks dirender dengan `textContent`.
+- Profil publik dibuka lewat `/profile.php?token=<uuid>` tanpa login: hero (avatar, nama, target karier, badge "Profil Publik"), bio, detail, dan skill per kategori. Halaman memakai `noindex, nofollow` serta `referrer: no-referrer`.
+- Token yang tidak valid, profil Private, atau akun nonaktif menghasilkan pesan "Profil tidak tersedia" yang sama (tanpa membocorkan status akun).
 
 ---
 
@@ -153,7 +159,7 @@ Satu sistem, dua wajah: desktop menampilkan kepadatan data, ponsel menampilkan k
 
 ## 7. Aturan Copy
 
-- **Bahasa**: konsol mahasiswa berbahasa Inggris; halaman publik, admin, dan HR berbahasa Indonesia.
+- **Bahasa**: konsol mahasiswa berbahasa Inggris; halaman publik dan admin berbahasa Indonesia.
 - **Pluralisasi bahasa Inggris**: hitungan `1` selalu tunggal — `1 skill`, `1 item`, `1 evidence item`; bukan `1 skills` / `1 items`.
 - **Bahasa Indonesia**: tidak memakai bentuk jamak berimbuhan; `1 item`, `2 item`, `1 kandidat`, `3 kandidat`.
 - **Tanpa nilai kosong**: jangan pernah menampilkan `null`, `undefined`, atau pemisah menggantung (` · `). Gabungkan bagian dengan filter nilai kosong lebih dulu, mis. `[name, tagline].filter(Boolean).join(" · ")`.

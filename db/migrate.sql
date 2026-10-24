@@ -10,12 +10,12 @@
 --   psql <database> -f db/migrate.sql
 --   atau tempel seluruh isinya di SQL Editor Supabase, sekali jalan.
 --
--- SIFAT: ADITIF dan IDEMPOTEN.
---   - Tidak ada DROP TABLE, tidak ada TRUNCATE, tidak ada DELETE FROM.
---   - DROP yang muncul hanyalah DROP ... IF EXISTS pada constraint/trigger
---     yang memang didefinisikan ulang di baris berikutnya, dan ON DELETE
---     CASCADE hanyalah perilaku relasi di tabel yang baru dibuat.
---   - Aman dijalankan ulang, dan aman pada database yang sudah berisi data.
+-- SIFAT:
+--   - Bagian 001–006 dan 008 bersifat ADITIF dan IDEMPOTEN.
+--   - Bagian 007 SENGAJA DESTRUKTIF: menghapus tabel HR, view lama, dan akun
+--     ber-role 'hr'. WAJIB didahului pg_dump ke lokasi di luar repo.
+--     Tidak ada rollback otomatis; rollback = restore backup.
+--   - Setiap bagian punya BEGIN/COMMIT sendiri, kecuali 005.
 --
 -- KAPAN PAKAI FILE INI, KAPAN PAKAI db/schema.sql:
 --   - Database SUDAH dipakai (ada akun, ada bukti, ada profil) -> db/migrate.sql.
@@ -31,8 +31,8 @@
 -- bisa diperiksa database mana sudah sampai bagian mana:
 --   SELECT version, applied_at FROM schema_migrations ORDER BY version;
 --
--- Data contoh konsol admin/HR TIDAK ada di sini. Itu pilihan, bukan
--- kebutuhan skema, jadi dipisah di db/seed_demo.sql.
+-- Data contoh konsol admin dan direktori publik TIDAK ada di sini. Itu pilihan,
+-- bukan kebutuhan skema, jadi dipisah di db/seed_demo.sql.
 -- ============================================================
 
 
@@ -169,177 +169,15 @@ COMMIT;
 
 
 -- ============================================================
--- 003 — Modul HR / perusahaan
--- Menggantikan seluruh localStorage recruiter:
---   sb.rec.company, sb.rec.team, sb.rec.roles, sb.rec.activity,
---   sb.rec.candidates, sb.rec.mapping.{roleId}
--- dan berkas public/data/recruiter-*.json.
--- ============================================================
-
-BEGIN;
-
--- ---------- PERUSAHAAN MITRA ----------
-CREATE TABLE IF NOT EXISTS companies (
-    id           SERIAL PRIMARY KEY,
-    name         VARCHAR(150) NOT NULL UNIQUE,
-    tagline      VARCHAR(150),
-    email_domain VARCHAR(120),
-    location     VARCHAR(120),
-    description  TEXT,
-    logo_initial VARCHAR(4),
-    status       VARCHAR(20) NOT NULL DEFAULT 'pending',
-    created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-ALTER TABLE companies DROP CONSTRAINT IF EXISTS chk_company_status;
-ALTER TABLE companies ADD CONSTRAINT chk_company_status
-    CHECK (status IN ('verified', 'pending', 'suspended'));
-
--- ---------- ANGGOTA TIM REKRUTER ----------
--- user_id diisi untuk anggota yang punya akun login (role 'hr');
--- NULL untuk anggota catatan saja yang belum punya akun.
-CREATE TABLE IF NOT EXISTS company_recruiters (
-    id         SERIAL PRIMARY KEY,
-    company_id INT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    user_id    INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-    name       VARCHAR(100) NOT NULL,
-    email      VARCHAR(150) NOT NULL,
-    role       VARCHAR(20)  NOT NULL DEFAULT 'recruiter',
-    role_label VARCHAR(60),
-    status     VARCHAR(20)  NOT NULL DEFAULT 'active',
-    created_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (company_id, email)
-);
-
-ALTER TABLE company_recruiters DROP CONSTRAINT IF EXISTS chk_recruiter_status;
-ALTER TABLE company_recruiters ADD CONSTRAINT chk_recruiter_status
-    CHECK (status IN ('active', 'inactive', 'invited'));
-
-CREATE INDEX IF NOT EXISTS idx_recruiters_company ON company_recruiters (company_id);
-
--- ---------- LOWONGAN / TARGET ROLE PERUSAHAAN ----------
--- Satu tabel melayani dua layar yang sebelumnya punya JSON sendiri:
--- daftar target role di konsol HR dan moderasi lowongan di konsol admin.
-CREATE TABLE IF NOT EXISTS vacancies (
-    id         SERIAL PRIMARY KEY,
-    company_id INT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    title      VARCHAR(120) NOT NULL,
-    category   VARCHAR(60),
-    location   VARCHAR(120),
-    type       VARCHAR(40)  NOT NULL DEFAULT 'Full-time',
-    status     VARCHAR(20)  NOT NULL DEFAULT 'open',
-    positions  INTEGER NOT NULL DEFAULT 1 CHECK (positions >= 1),
-    created_by INT REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-ALTER TABLE vacancies DROP CONSTRAINT IF EXISTS chk_vacancy_status;
-ALTER TABLE vacancies ADD CONSTRAINT chk_vacancy_status
-    CHECK (status IN ('open', 'closed', 'draft', 'pending', 'rejected'));
-
-CREATE INDEX IF NOT EXISTS idx_vacancies_company ON vacancies (company_id);
-CREATE INDEX IF NOT EXISTS idx_vacancies_status  ON vacancies (status);
-
--- Penghubung lowongan <-> skill yang dibutuhkan.
--- Ini pengganti localStorage sb.rec.mapping.{roleId}.
-CREATE TABLE IF NOT EXISTS vacancy_skills (
-    vacancy_id   INT NOT NULL REFERENCES vacancies(id) ON DELETE CASCADE,
-    skill_id     INT NOT NULL REFERENCES skills(id)    ON DELETE CASCADE,
-    is_mandatory BOOLEAN NOT NULL DEFAULT TRUE,
-    PRIMARY KEY (vacancy_id, skill_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_vacancy_skills_skill ON vacancy_skills (skill_id);
-
--- ---------- PIPELINE KANDIDAT ----------
--- Status seleksi per kandidat per lowongan. Kandidatnya sendiri adalah
--- baris users (role 'user'); yang dihitung hanyalah keputusan rekruter.
-CREATE TABLE IF NOT EXISTS candidate_reviews (
-    id         SERIAL PRIMARY KEY,
-    company_id INT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    user_id    INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    vacancy_id INT REFERENCES vacancies(id) ON DELETE CASCADE,
-    status     VARCHAR(20) NOT NULL DEFAULT 'new',
-    note       TEXT,
-    updated_by INT REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-ALTER TABLE candidate_reviews DROP CONSTRAINT IF EXISTS chk_candidate_status;
-ALTER TABLE candidate_reviews ADD CONSTRAINT chk_candidate_status
-    CHECK (status IN ('new', 'reviewing', 'interview', 'offered', 'rejected', 'hired'));
-
--- vacancy_id boleh NULL (tinjauan umum tanpa lowongan), sehingga UNIQUE
--- biasa tidak cukup; indeks ekspresi ini menutup celah duplikat.
-CREATE UNIQUE INDEX IF NOT EXISTS uq_candidate_review
-    ON candidate_reviews (company_id, user_id, COALESCE(vacancy_id, 0));
-
-CREATE INDEX IF NOT EXISTS idx_candidate_reviews_company ON candidate_reviews (company_id);
-
--- ---------- LOG AKTIVITAS ----------
-CREATE TABLE IF NOT EXISTS activity_log (
-    id            SERIAL PRIMARY KEY,
-    company_id    INT REFERENCES companies(id) ON DELETE CASCADE,
-    actor_user_id INT REFERENCES users(id) ON DELETE SET NULL,
-    actor         VARCHAR(100) NOT NULL,
-    action        VARCHAR(30)  NOT NULL,
-    text          TEXT NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_activity_company ON activity_log (company_id, created_at DESC);
-
--- ---------- PROFIL MAHASISWA YANG RELAI DILIHAT REKRUTER ----------
--- Kandidat hanya datang dari profil yang sengaja dibuat publik oleh
--- pemiliknya. Ini memakai kolom is_public dan public_token yang selama
--- ini tidak pernah dibaca kode, sekaligus menjawab temuan PII di laporan:
--- tanpa opt-in, tidak ada satu pun nama mahasiswa yang muncul di konsol HR.
-CREATE OR REPLACE VIEW v_public_candidates AS
-SELECT
-    u.id,
-    u.name,
-    u.email,
-    sp.target_career_id,
-    c.name AS target_role,
-    sp.institution,
-    sp.location
-FROM users u
-JOIN student_profiles sp ON sp.user_id = u.id
-LEFT JOIN careers c ON c.id = sp.target_career_id
-WHERE u.role = 'user'
-  AND u.status = 'active'
-  AND sp.is_public = TRUE;
-
-DROP TRIGGER IF EXISTS trg_companies_updated_at ON companies;
-CREATE TRIGGER trg_companies_updated_at
-    BEFORE UPDATE ON companies
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
-DROP TRIGGER IF EXISTS trg_vacancies_updated_at ON vacancies;
-CREATE TRIGGER trg_vacancies_updated_at
-    BEFORE UPDATE ON vacancies
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
-INSERT INTO schema_migrations (version) VALUES ('003_hr_module')
-ON CONFLICT (version) DO NOTHING;
-
-COMMIT;
-
-
--- ============================================================
 -- 004 — Perluasan katalog skill (DATA, bukan struktur)
 --
--- Skema lama hanya mengenal 18 skill. Katalog UI dan target role HR
+-- Skema lama hanya mengenal 18 skill. Katalog UI dan relasi karier
 -- ternyata meminta skill yang tidak ada di database: Node.js,
 -- Express.js, TypeScript, Vue, React, MySQL, Pandas, Tableau, Power BI,
--- Testing, Deployment. Tanpa baris ini, relasi vacancy_skills dan bukti
--- mahasiswa tidak bisa menunjuk ke skill nyata. Categories sengaja
--- memakai enam nama yang sudah dikenal UI supaya ikon kategori tetap
--- konsisten.
+-- Testing, Deployment. Tanpa baris ini, relasi career_skill_requirements
+-- dan bukti mahasiswa tidak bisa menunjuk ke skill nyata. Categories
+-- sengaja memakai enam nama yang sudah dikenal UI supaya ikon kategori
+-- tetap konsisten.
 -- ============================================================
 
 BEGIN;
@@ -405,7 +243,7 @@ ON CONFLICT (version) DO NOTHING;
 -- 006 — Stempel waktu pada master data
 --
 -- Dashboard admin menampilkan "aktivitas terbaru" yang digabung dari
--- users, skills, careers, dan vacancies. Tanpa created_at, baris
+-- users, skills, dan careers. Tanpa created_at, baris
 -- keterampilan dan target karier tidak punya waktu sama sekali sehingga
 -- mustahil diurutkan (lihat public/api/admin/stats.php).
 --
@@ -420,6 +258,84 @@ ALTER TABLE careers ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEF
 
 INSERT INTO schema_migrations (version)
 VALUES ('006_master_timestamps')
+ON CONFLICT (version) DO NOTHING;
+
+COMMIT;
+
+
+-- ============================================================
+-- 007 — Hapus total modul HR (DESTRUKTIF)
+--
+-- Menghapus enam tabel HR, view kandidat lama, dan seluruh akun role 'hr'.
+-- Tidak ada rollback otomatis. Backup dulu:
+--   pg_dump "$TARGET_DB" > backup_sebelum_007.sql
+-- ============================================================
+
+BEGIN;
+
+DROP VIEW IF EXISTS v_public_candidates;
+
+DROP TABLE IF EXISTS activity_log, candidate_reviews, vacancy_skills,
+    vacancies, company_recruiters, companies CASCADE;
+
+DELETE FROM users WHERE role::text = 'hr';
+
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM pg_enum e
+        JOIN pg_type t ON t.oid = e.enumtypid
+        WHERE t.typname = 'user_role' AND e.enumlabel = 'hr'
+    ) THEN
+        ALTER TABLE users ALTER COLUMN role DROP DEFAULT;
+        ALTER TYPE user_role RENAME TO user_role_old;
+        CREATE TYPE user_role AS ENUM ('user', 'admin');
+        ALTER TABLE users
+            ALTER COLUMN role TYPE user_role USING role::text::user_role;
+        ALTER TABLE users ALTER COLUMN role SET DEFAULT 'user';
+        DROP TYPE user_role_old;
+    END IF;
+END $$;
+
+INSERT INTO schema_migrations (version)
+VALUES ('007_remove_hr_module')
+ON CONFLICT (version) DO NOTHING;
+
+COMMIT;
+
+
+-- ============================================================
+-- 008 — View direktori profil publik
+--
+-- Hanya mahasiswa aktif yang memilih Public. Tidak ada email.
+-- ============================================================
+
+BEGIN;
+
+CREATE OR REPLACE VIEW v_public_profiles AS
+SELECT
+    u.id,
+    u.name,
+    sp.public_token,
+    sp.target_career_id,
+    c.name AS target_role,
+    sp.institution,
+    sp.program,
+    sp.semester,
+    sp.location,
+    sp.bio,
+    sp.photo_path,
+    u.created_at AS member_since
+FROM users u
+JOIN student_profiles sp ON sp.user_id = u.id
+LEFT JOIN careers c ON c.id = sp.target_career_id
+WHERE u.role = 'user'
+  AND u.status = 'active'
+  AND sp.is_public = TRUE;
+
+INSERT INTO schema_migrations (version)
+VALUES ('008_public_profile_directory')
 ON CONFLICT (version) DO NOTHING;
 
 COMMIT;
